@@ -1,0 +1,51 @@
+.course-detail {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.course-detail img {
+  width: 50%;
+  border-radius: 12px;
+}
+
+.info {
+  flex: 1;
+}
+
+.info h1 {
+  font-size: 28px;
+}
+
+.instructor {
+  color: gray;
+  margin: 10px 0;
+}
+
+.description {
+  margin: 15px 0;
+  line-height: 1.6;
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price {
+  font-size: 22px;
+  color: green;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .course-detail {
+    flex-direction: column;
+  }
+
+  .course-detail img {
+    width: 100%;
+  }
+}

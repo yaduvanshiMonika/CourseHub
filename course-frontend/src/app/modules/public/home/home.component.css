@@ -1,0 +1,438 @@
+/* ================= GLOBAL ================= */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: white;
+}
+
+/* ================= COURSE CARDS ================= */
+.course-card {
+  overflow: hidden;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.course-card img {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+/* ================= HERO ================= */
+.hero {
+  min-height: 90vh;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  display: flex;
+  align-items: center;
+}
+
+.hero-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.hero-left {
+  flex: 1;
+}
+
+.hero-left h1 {
+  font-size: 48px;
+  line-height: 1.2;
+}
+
+.hero-left span {
+  color: #8b5cf6;
+}
+
+.hero-left p {
+  margin: 20px 0;
+  color: #cbd5f5;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 20px;
+}
+
+/* ================= TESTIMONIALS ================= */
+.testimonials {
+  background: transparent;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+/* SCROLL */
+.testimonial-scroll {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 20px;
+  scroll-behavior: smooth;
+}
+
+/* HIDE SCROLLBAR */
+.testimonial-scroll::-webkit-scrollbar {
+  display: none;
+}
+.testimonial-scroll {
+  scrollbar-width: none;
+}
+
+/* CARD */
+.testimonial-card {
+  min-width: 260px;
+  flex-shrink: 0;
+
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+
+  padding: 20px;
+  border-radius: 12px;
+
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+
+  transition: transform 0.3s;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ================= PRODUCTS ================= */
+.products {
+  background: transparent;
+}
+
+.product-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+/* CARD */
+.product-card {
+  width: 230px;
+
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+
+  border-radius: 14px;
+  padding: 15px;
+
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  transition: 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+/* IMAGE */
+.product-card img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* TEXT */
+.product-card h3 {
+  font-size: 15px;
+  margin: 10px 0 5px;
+}
+
+.product-card p {
+  font-size: 12px;
+  color: #cbd5f5;
+  margin-bottom: 10px;
+}
+
+/* ================= CART ================= */
+.cart-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cart-controls button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cart-controls span {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* BUTTON */
+.btn {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* ================= FOOTER ================= */
+.footer {
+  background: #1e293b;
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+/* ================= HERO RIGHT ================= */
+.hero-right {
+  perspective: 1000px;
+}
+
+/* ================= CODE CARD ================= */
+.code-card {
+  position: relative;
+  padding: 3px;
+  border-radius: 18px;
+
+  background: linear-gradient(270deg, #6366f1, #8b5cf6, #ec4899);
+  background-size: 400% 400%;
+
+  animation: glowMove 6s ease infinite;
+  transition: transform 0.15s ease-out;
+  transform-style: preserve-3d;
+}
+
+/* GLOW */
+@keyframes glowMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* BACK GLOW */
+.code-card::before {
+  content: '';
+  position: absolute;
+  inset: -30px;
+  background: radial-gradient(circle, rgba(99,102,241,0.3), transparent);
+  filter: blur(50px);
+  z-index: -1;
+}
+
+/* CODE BOX */
+.code-box {
+  background: #020617;
+  border-radius: 16px;
+  padding: 20px;
+  width: 420px;
+  height: 220px;
+
+  font-family: monospace;
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.4);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* CODE TEXT */
+pre {
+  color: #a5b4fc;
+  font-size: 14px;
+  white-space: pre-wrap;
+
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+}
+
+/* HEADER DOTS */
+.code-header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.red { background: #ef4444; }
+.yellow { background: #facc15; }
+.green { background: #22c55e; }
+
+/* CURSOR */
+.cursor {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-left h1 {
+    font-size: 32px;
+  }
+
+  .code-box {
+    width: 100%;
+  }
+
+}
+/* ================= CONTACT SECTION ================= */
+.contact {
+  padding: 100px 20px;
+  background: linear-gradient(135deg, #020617, #0f172a);
+}
+
+.contact-container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+/* LEFT */
+.contact-left {
+  flex: 1;
+}
+
+.contact-left h1 {
+  font-size: 48px;
+}
+
+.contact-left span {
+  color: #8b5cf6;
+}
+
+.contact-left p {
+  color: #9ca3af;
+  margin: 20px 0 40px;
+}
+
+/* FORM */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  gap: 20px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  outline: none;
+}
+
+textarea {
+  height: 120px;
+  resize: none;
+}
+
+/* BUTTON */
+.btn-submit {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-submit:hover {
+  transform: scale(1.05);
+}
+
+/* RIGHT */
+.contact-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* CARD */
+.contact-card {
+  position: relative;
+  padding: 20px;
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+
+  border: 1px solid rgba(255,255,255,0.1);
+
+  box-shadow: 0 0 50px rgba(139,92,246,0.2);
+}
+
+/* IMAGE */
+.contact-card img {
+  width: 300px;
+}
+
+/* STATUS */
+.status {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 12px;
+  color: #22c55e;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .contact-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .input-group {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,43 @@
+<div class="auth-container">
+
+  <div class="auth-card">
+
+    <h2>{{ isLogin ? 'Welcome Back 👋' : 'Create Account 🚀' }}</h2>
+    <p>{{ isLogin ? 'Login to continue learning' : 'Start your journey today' }}</p>
+
+    <!-- FORM -->
+    <form (ngSubmit)="handleSubmit()">
+
+      <!-- NAME (ONLY REGISTER) -->
+      <div *ngIf="!isLogin" class="input-group">
+        <input type="text" [(ngModel)]="name" name="name" placeholder="Full Name" required>
+      </div>
+
+      <!-- EMAIL -->
+      <div class="input-group">
+        <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required>
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="input-group">
+        <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required>
+      </div>
+
+      <!-- BUTTON -->
+      <button type="submit" class="auth-btn">
+        {{ isLogin ? 'Login' : 'Register' }}
+      </button>
+
+    </form>
+
+    <!-- SWITCH -->
+    <p class="switch-text">
+      {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
+      <span (click)="toggleMode()">
+        {{ isLogin ? 'Register' : 'Login' }}
+      </span>
+    </p>
+
+  </div>
+
+</div>

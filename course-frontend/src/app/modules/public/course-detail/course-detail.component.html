@@ -1,0 +1,21 @@
+<div class="container" *ngIf="course">
+
+  <div class="course-detail">
+
+    <img [src]="course.image">
+
+    <div class="info">
+      <h1>{{course.title}}</h1>
+      <p class="instructor">By {{course.instructor}}</p>
+
+      <p class="description">{{course.description}}</p>
+
+      <div class="bottom">
+        <span class="price">₹{{course.price}}</span>
+        <button class="btn btn-primary">Enroll Now</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>

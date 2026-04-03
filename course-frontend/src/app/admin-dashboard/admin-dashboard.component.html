@@ -1,0 +1,342 @@
+<div class="admin-page-wrapper">
+  <main class="admin-content-area">
+    
+    <!-- ACTION BAR -->
+    <div class="action-bar slide-up">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" [placeholder]="'Search ' + activeTab + '...'">
+      </div>
+
+      <button class="btn-primary"
+        (click)="openAddModal()"
+        *ngIf="activeTab !== 'deleted-students'">
+        <span>+</span>
+        Add {{ activeTab === 'users' ? 'Student' : (activeTab | titlecase | slice:0:-1) }}
+      </button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card blue-glow slide-up">
+        <div class="card-inner">
+          <div class="icon-box">👥</div>
+          <div class="data">
+            <h3>{{ displayStats.students }}</h3>
+            <p>Total Students</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card green-glow slide-up">
+        <div class="card-inner">
+          <div class="icon-box">👨‍🏫</div>
+          <div class="data">
+            <h3>{{ displayStats.teachers }}</h3>
+            <p>Active Teachers</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card purple-glow slide-up">
+        <div class="card-inner">
+          <div class="icon-box">📚</div>
+          <div class="data">
+            <h3>{{ displayStats.courses }}</h3>
+            <p>Total Courses</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGEMENT -->
+    <section class="management-section slide-up">
+      <div class="table-card">
+
+        <div class="table-header">
+          <h2>Manage {{ activeTab | titlecase }}</h2>
+
+          <div class="table-tabs">
+            <button class="tab-btn" [class.active]="activeTab === 'courses'" (click)="setTab('courses')">Courses</button>
+            <button class="tab-btn" [class.active]="activeTab === 'videos'" (click)="setTab('videos')">Videos</button>
+            <button class="tab-btn" [class.active]="activeTab === 'teachers'" (click)="setTab('teachers')">Teachers</button>
+            <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="setTab('users')">Users</button>
+            <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setTab('payments')">Payments</button>
+            <button class="tab-btn" [class.active]="activeTab === 'deleted-students'" (click)="setTab('deleted-students')">Deleted</button>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+       <div class="table-responsive">
+
+  <!-- ===================== -->
+  <!-- 🎬 VIDEOS TAB (ADMIN CONTENT PANEL) -->
+  <!-- ===================== -->
+  <div *ngIf="activeTab === 'videos'" class="content-panel">
+
+    <!-- COURSE SELECT -->
+    <div class="form-group" style="margin-bottom: 20px;">
+      <label style="display:block; margin-bottom:6px;">Select Course</label>
+
+      <select (change)="onCourseSelect($event)" class="form-control">
+        <option value="">-- Select Course --</option>
+
+        <option *ngFor="let c of coursesList" [value]="c.id">
+          {{ c.title }} ({{ c.category }})
+        </option>
+      </select>
+    </div>
+
+    <!-- NO COURSE SELECTED -->
+    <div *ngIf="!selectedCourseId" style="color:#888;">
+      Please select a course to view content
+    </div>
+
+    <!-- CONTENT TABLE -->
+    <table *ngIf="selectedCourseId && courseContents.length > 0" class="custom-table">
+
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Type</th>
+          <th>Duration</th>
+          <th>View</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let item of courseContents">
+
+          <td>{{ item.title || 'N/A' }}</td>
+
+          <td>
+            <span *ngIf="item.type === 'video'">🎥 Video</span>
+            <span *ngIf="item.type === 'pdf'">📄 PDF</span>
+          </td>
+
+          <td>
+            {{ item.duration ? item.duration + ' min' : '—' }}
+          </td>
+
+          <td>
+            <a [href]="item.url" target="_blank">Open</a>
+          </td>
+
+          <td>
+            <button (click)="deleteItem(item.id)">🗑️ Delete</button>
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="selectedCourseId && courseContents.length === 0" style="color:#888;">
+      No content available for this course
+    </div>
+
+  </div>
+
+  <!-- ===================== -->
+  <!-- 📊 NORMAL TABLE (ALL OTHER TABS) -->
+  <!-- ===================== -->
+  <table *ngIf="allData.length > 0 && activeTab !== 'videos'">
+
+    <thead>
+      <tr *ngIf="activeTab === 'courses'">
+        <th>Title</th>
+        <th>Category</th>
+        <th>Instructor</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+
+      <tr *ngIf="activeTab === 'teachers'">
+        <th>Name</th>
+        <th>Expertise</th>
+        <th>Email</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+
+      <tr *ngIf="activeTab === 'users' || activeTab === 'deleted-students'">
+        <th>Name</th>
+        <th>Email</th>
+        <th>Date</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+
+      <tr *ngIf="activeTab === 'payments'">
+        <th>User</th>
+        <th>Course</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of allData">
+
+        <!-- COURSES -->
+        <ng-container *ngIf="activeTab === 'courses'">
+          <td>{{ item.title }}</td>
+          <td>{{ item.category }}</td>
+          <td>{{ item.instructor }}</td>
+          <td><span class="status-pill">Live</span></td>
+        </ng-container>
+
+        <!-- TEACHERS -->
+        <ng-container *ngIf="activeTab === 'teachers'">
+          <td>{{ item.name }}</td>
+          <td>{{ item.expertise }}</td>
+          <td>{{ item.email }}</td>
+          <td>{{ item.createdAt | date }}</td>
+        </ng-container>
+
+        <!-- USERS -->
+        <ng-container *ngIf="activeTab === 'users' || activeTab === 'deleted-students'">
+          <td>{{ item.name }}</td>
+          <td>{{ item.email }}</td>
+          <td>{{ item.createdAt | date }}</td>
+          <td>{{ item.role }}</td>
+        </ng-container>
+
+        <!-- PAYMENTS -->
+        <ng-container *ngIf="activeTab === 'payments'">
+          <td>{{ item.user }}</td>
+          <td>{{ item.course }}</td>
+          <td>{{ item.amount }}</td>
+          <td>{{ item.status }}</td>
+        </ng-container>
+
+        <!-- ACTIONS -->
+        <td>
+          <ng-container *ngIf="activeTab !== 'deleted-students'">
+            <button (click)="editItem(item)">✏️</button>
+            <button (click)="deleteItem(item.id)">🗑️</button>
+          </ng-container>
+
+          <button *ngIf="activeTab === 'deleted-students'"
+            (click)="restoreStudent(item.id)">
+            Restore
+          </button>
+        </td>
+
+      </tr>
+    </tbody>
+
+  </table>
+
+  <!-- NO DATA -->
+  <div *ngIf="allData.length === 0 && activeTab !== 'videos'">
+    No data found
+  </div>
+
+</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" *ngIf="showModal">
+    <div class="modal-content">
+
+      <h2>
+        Add {{ activeTab === 'users' ? 'Student' : (activeTab | titlecase | slice:0:-1) }}
+      </h2>
+
+      <form (ngSubmit)="onSave()">
+
+        <div class="form-group">
+
+          <!-- TEACHERS / USERS -->
+          <input type="text"
+            placeholder="Name"
+            [(ngModel)]="formData.fullName"
+            name="fullName"
+            *ngIf="activeTab === 'teachers' || activeTab === 'users'">
+
+          <input type="email"
+            placeholder="Email"
+            [(ngModel)]="formData.email"
+            name="email"
+            *ngIf="activeTab === 'teachers' || activeTab === 'users'">
+
+          <input type="text"
+            placeholder="Expertise"
+            [(ngModel)]="formData.expertise"
+            name="expertise"
+            *ngIf="activeTab === 'teachers'">
+
+          <!-- COURSES -->
+          <input type="text"
+            placeholder="Enter Course Title"
+            [(ngModel)]="formData.title"
+            name="title"
+            *ngIf="activeTab === 'courses'">
+
+          <!-- CATEGORY DROPDOWN -->
+          <select [(ngModel)]="formData.category"
+            name="category"
+            *ngIf="activeTab === 'courses'">
+            <option value="" disabled selected>Select Category</option>
+            <option value="Development">Development</option>
+            <option value="Design">Design</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Business">Business</option>
+            <option value="Data Science">Data Science</option>
+          </select>
+
+          <!-- INSTRUCTOR DROPDOWN -->
+          <select [(ngModel)]="formData.instructor"
+            name="instructor"
+            *ngIf="activeTab === 'courses'">
+            <option value="" disabled selected>Select Instructor</option>
+            <option *ngFor="let t of teachersList" [value]="t.name">
+              {{ t.name }}
+            </option>
+          </select>
+
+          <!-- PAYMENTS -->
+          <input type="text"
+            placeholder="User"
+            [(ngModel)]="formData.user"
+            name="user"
+            *ngIf="activeTab === 'payments'">
+
+          <input type="text"
+            placeholder="Course"
+            [(ngModel)]="formData.course"
+            name="course"
+            *ngIf="activeTab === 'payments'">
+
+          <input type="number"
+            placeholder="Amount"
+            [(ngModel)]="formData.amount"
+            name="amount"
+            *ngIf="activeTab === 'payments'">
+
+          <select [(ngModel)]="formData.status"
+            name="status"
+            *ngIf="activeTab === 'payments'">
+            <option>pending</option>
+            <option>completed</option>
+            <option>failed</option>
+          </select>
+
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" (click)="closeModal()">Cancel</button>
+          <button type="submit">Save</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>

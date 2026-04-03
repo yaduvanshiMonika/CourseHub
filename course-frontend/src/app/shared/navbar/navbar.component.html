@@ -1,0 +1,52 @@
+<nav class="navbar">
+  <div class="nav-wrapper">
+
+    <!-- LEFT LOGO -->
+    <div class="logo">
+      &lt; CourseHub
+    </div>
+
+    <!-- CENTER MENU -->
+    <div class="nav-pill">
+
+      <a routerLink="/" 
+         routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{ exact: true }"
+         (click)="setActive('home')">
+        Home
+      </a>
+
+      <a routerLink="/courses" 
+         routerLinkActive="active-link"
+         (click)="setActive('courses')">
+        Tutorials
+      </a>
+
+      <a (click)="scrollToContact(); setActive('contact')"
+         [class.active-manual]="activeTab === 'contact'">
+        Contact Us
+      </a>
+
+      <a href="#" (click)="setActive('article')"
+         [class.active-manual]="activeTab === 'article'">
+        Article
+      </a>
+
+      <a href="#" (click)="setActive('hackathon')"
+         [class.active-manual]="activeTab === 'hackathon'">
+        Hackathon
+      </a>
+
+    </div>
+
+    <!-- RIGHT BUTTON -->
+    <button class="login-btn" *ngIf="!isLoggedIn()" routerLink="/login">
+  → Login
+</button>
+
+<button class="login-btn" *ngIf="isLoggedIn()" (click)="logout()">
+  Logout
+</button>
+
+  </div>
+</nav>

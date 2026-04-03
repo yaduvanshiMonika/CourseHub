@@ -1,0 +1,95 @@
+/* ================= NAVBAR ================= */
+.navbar {
+  position: fixed;
+  top: 20px;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* ================= WRAPPER ================= */
+.nav-wrapper {
+  max-width: 1200px;
+  margin: auto;
+  padding: 12px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ================= LOGO ================= */
+.logo {
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* ================= CENTER PILL ================= */
+/* NAV PILL */
+.nav-pill {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 40px;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* LINKS */
+.nav-pill a {
+  padding: 10px 18px;
+  border-radius: 25px;
+
+  color: #cbd5f5;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+}
+
+/* 🔥 HOVER */
+.nav-pill a:hover {
+  color: white;
+  background: rgba(139,92,246,0.2);
+}
+
+/* 🔥 ROUTER ACTIVE */
+.active-link {
+  color: white !important;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  box-shadow: 0 0 20px rgba(139,92,246,0.6);
+}
+
+/* 🔥 MANUAL ACTIVE (CONTACT, ARTICLE...) */
+.active-manual {
+  color: white !important;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  box-shadow: 0 0 20px rgba(139,92,246,0.6);
+}
+/* ================= LOGIN BUTTON ================= */
+.login-btn {
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: none;
+
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.login-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .nav-pill {
+    display: none;
+  }
+}
