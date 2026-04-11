@@ -87,5 +87,25 @@ exports.login = async (req, res) => {
 
 // ✅ REGISTER (OUTSIDE — VERY IMPORTANT)
 exports.register = async (req, res) => {
-  res.status(200).json({ message: "Register working" });
+  const { name, email, password } = req.body;
+
+  try {
+    // 🔥 Insert into users table
+    await db.query(
+      "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)",
+      [name, email, password, 'student'] // default role
+    );
+
+    res.status(201).json({ message: "User registered successfully ✅" });
+
+  } catch (err) {
+    console.error("REGISTER ERROR:", err);
+
+    // 🔥 handle duplicate email
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(400).json({ message: "Email already exists ❌" });
+    }
+
+    res.status(500).json({ message: "Registration failed ❌" });
+  }
 };

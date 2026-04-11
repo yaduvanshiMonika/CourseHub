@@ -40,13 +40,51 @@
     </div>
 
     <!-- RIGHT BUTTON -->
-    <button class="login-btn" *ngIf="!isLoggedIn()" routerLink="/login">
+    <!-- <button class="login-btn" *ngIf="!isLoggedIn()" routerLink="/login">
   → Login
 </button>
 
 <button class="login-btn" *ngIf="isLoggedIn()" (click)="logout()">
   Logout
+</button> -->
+
+
+<!-- RIGHT SIDE -->
+
+<!-- LOGIN BUTTON -->
+<button class="login-btn" *ngIf="!isLoggedIn()" routerLink="/login">
+  → Login
 </button>
+
+<!-- PROFILE -->
+<div class="profile" *ngIf="isLoggedIn()" (click)="toggleDropdown()">
+
+  <div class="avatar">
+    {{ (userName || 'U')[0] }}
+  </div>
+
+  <span class="name">{{ userName }}</span>
+
+  <!-- DROPDOWN -->
+  <div class="dropdown" *ngIf="showDropdown">
+
+    <!-- ADMIN -->
+    <div *ngIf="userRole === 'admin'" (click)="goToAdmin()">
+      🛠 Admin Panel
+    </div>
+
+    <!-- TEACHER -->
+    <div *ngIf="userRole === 'teacher'" (click)="goToTeacher()">
+      🎓 Teacher Panel
+    </div>
+
+    <div (click)="logout()">
+      🚪 Logout
+    </div>
+
+  </div>
+
+</div>
 
   </div>
 </nav>

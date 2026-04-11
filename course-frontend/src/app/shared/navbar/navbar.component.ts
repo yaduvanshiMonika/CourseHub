@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -7,10 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor() { }
- 
+  constructor(private router: Router) { }
 activeTab: string = 'home';
-
+userName: string = '';
+userRole: string = '';
+showDropdown: boolean = false;
 setActive(tab: string) {
   this.activeTab = tab;
 }
@@ -32,11 +34,26 @@ isLoggedIn(): boolean {
 
 logout() {
   localStorage.removeItem('token');
+  localStorage.removeItem('role');
+  localStorage.removeItem('name');
   alert('Logged out successfully');
-  location.reload(); // simple refresh
+  this.router.navigate(['/login']);
 }
 
   ngOnInit(): void {
+   this.userName = localStorage.getItem('name') || '';
+  this.userRole = localStorage.getItem('role') || '';
   }
+  toggleDropdown() {
+  this.showDropdown = !this.showDropdown;
+}
+
+goToAdmin() {
+  this.router.navigate(['/admin-dashboard']);
+}
+
+goToTeacher() {
+  this.router.navigate(['/teacher-panel']);
+}
 
 }
