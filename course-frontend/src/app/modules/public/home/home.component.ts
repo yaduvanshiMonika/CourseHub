@@ -1,6 +1,7 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { CourseService } from 'src/app/services/course.service';
-
+import { AuthService } from '../../../services/auth.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html', 
@@ -55,7 +56,11 @@ student.startLearning();`;
   // 🔥 TESTIMONIAL AUTO SCROLL
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
-  constructor(private courseService: CourseService) {}
+  constructor(
+  private courseService: CourseService,
+  public authService: AuthService,
+  private router: Router
+) {}
 
   ngOnInit() {
 
@@ -177,5 +182,14 @@ student.startLearning();`;
   onSubmit() {
     console.log("Form submitted");
   }
+  // ✅ Navigate to Admin Panel
+goToAdmin() {
+  this.router.navigate(['/admin-dashboard']);
+}
+
+// ✅ Navigate to Teacher Panel
+goToTeacher() {
+  this.router.navigate(['/teacher-panel']);
+}
 
 }

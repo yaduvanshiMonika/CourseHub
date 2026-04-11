@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdminService } from '../services/admin.service';
-
+import { HostListener } from '@angular/core';
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
@@ -11,6 +11,8 @@ export class AdminDashboardComponent implements OnInit {
 
   showModal: boolean = false;
   isCollapsed: boolean = false;
+  userName: string = '';
+userRole: string = '';
 
   activeTab: 'courses' | 'videos' | 'tutorials' | 'users' | 'deleted-students' | 'teachers' | 'payments' = 'courses';
 
@@ -20,6 +22,7 @@ export class AdminDashboardComponent implements OnInit {
   teachersList: any[] = [];
   searchTerm: string = '';
 filteredData: any[] = [];
+showDropdown: boolean = false;
 
   formData = {
     id: null,
@@ -39,7 +42,12 @@ filteredData: any[] = [];
   displayStats = { students: 0, teachers: 0, courses: 0 };
   targetStats = { students: 0, teachers: 0, courses: 0 };
 
-  constructor(private router: Router, private adminService: AdminService) {}
+  constructor(private router: Router, private adminService: AdminService) {
+    
+  }
+  toggleDropdown() {
+  this.showDropdown = !this.showDropdown;
+}
 
   ngOnInit(): void {
     this.loadData();
@@ -47,6 +55,8 @@ filteredData: any[] = [];
     this.loadCourses();
      this.loadStats();  
     this.setTab('courses');
+    this.userName = localStorage.getItem('name') || 'Admin';
+this.userRole = localStorage.getItem('role') || 'admin';
   }
 
   // ✅ TEACHERS
@@ -303,10 +313,10 @@ else if (this.activeTab === 'users') {
     this.selectedFile = null;
   }
 
-  logout(): void {
-    localStorage.clear();
-    this.router.navigate(['/login']);
-  }
+  // logout(): void {
+  //   localStorage.clear();
+  //   this.router.navigate(['/login']);
+  // }
   coursesList: any[] = [];
 courseContents: any[] = [];
 selectedCourseId: number | null = null;
@@ -417,5 +427,25 @@ loadStats(): void {
     this.targetStats.courses = data.length;
     this.animateNumbers();
   });
+}
+
+
+
+@HostListener('document:click', ['$event'])
+onClickOutside(event: any) {
+  const clickedInside = event.target.closest('.profile');
+  if (!clickedInside) {
+    this.showDropdown = false;
+  }
+}
+goToWebsite() {
+  this.showDropdown = false;
+  this.router.navigate(['/']);
+}
+
+logout(): void {
+  this.showDropdown = false;
+  localStorage.clear();
+  this.router.navigate(['/login']);
 }
 }
