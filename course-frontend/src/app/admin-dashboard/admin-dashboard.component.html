@@ -1,4 +1,58 @@
 <div class="admin-page-wrapper">
+
+<!-- 🔥 TOP NAVBAR -->
+<!-- <header class="admin-header">
+
+  <div class="header-left">
+    <h2>CourseHub</h2>
+  </div>
+
+  <div class="header-right">
+
+    
+
+
+  </div>
+
+</header> -->
+
+<nav class="navbar">
+  <div class="nav-wrapper">
+
+    <!-- LEFT LOGO -->
+    <div class="logo">
+      &lt; CourseHub
+    </div>
+
+    <!-- RIGHT PROFILE -->
+    <div class="profile" (click)="toggleDropdown()">
+
+      <div class="avatar">
+        {{ (userName || 'A')[0] }}
+      </div>
+
+      <span class="name">{{ userName }}</span>
+
+      <!-- DROPDOWN -->
+      <div class="dropdown" *ngIf="showDropdown">
+
+        <div class="dropdown-item" (click)="goToWebsite()">
+          🌐 Back to Site
+        </div>
+
+        <div class="dropdown-item" (click)="logout()">
+          🚪 Logout
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</nav>
+
+
+
   <main class="admin-content-area">
     
     <!-- ACTION BAR -->
@@ -14,6 +68,7 @@
           [placeholder]="'Search ' + activeTab + '...'"
         >
       </div>
+     
 
       <button class="btn-primary"
         (click)="openAddModal()"

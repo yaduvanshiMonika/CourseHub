@@ -416,6 +416,14 @@ textarea {
   width: 300px;
 }
 
+
+.top-actions {
+  display: flex;
+  justify-content: flex-end; /* 🔥 THIS FIXES ALIGNMENT */
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
 /* STATUS */
 .status {
   position: absolute;
