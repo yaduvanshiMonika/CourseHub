@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule , ReactiveFormsModule} from '@angular/forms'; 
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 
@@ -9,14 +9,14 @@ import { PublicModule } from './modules/public/public.module';
 
 import { AppComponent } from './app.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
-import { TeacherDashboardComponent } from './teacher-dashboard/teacher-dashboard.component';
+import { DashboardComponent } from './teacher/pages/dashboard/dashboard.component';
 import { NavbarComponent } from './shared/navbar/navbar.component'; 
 import { RouterModule } from '@angular/router';
 @NgModule({
   declarations: [
     AppComponent,
     AdminDashboardComponent,
-    TeacherDashboardComponent,
+    // DashboardComponent,
     NavbarComponent
   ],
   imports: [
@@ -25,7 +25,9 @@ import { RouterModule } from '@angular/router';
     FormsModule,       
     HttpClientModule,
     PublicModule, // <--- ADD THIS HERE
-        RouterModule  
+        RouterModule,
+
+        ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

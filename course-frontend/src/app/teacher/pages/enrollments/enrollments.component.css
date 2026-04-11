@@ -1,0 +1,27 @@
+.page-box {
+  background: linear-gradient(180deg, #111827, #1f2937);
+  border-radius: 20px;
+  padding: 24px;
+  color: white;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+}
+
+th,
+td {
+  padding: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  text-align: left;
+}
+
+th {
+  color: #cbd5e1;
+}

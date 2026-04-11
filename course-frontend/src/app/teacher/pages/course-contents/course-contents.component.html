@@ -1,0 +1,98 @@
+
+<div class="course-contents-page">
+  <h2>Course Contents</h2>
+
+  <div class="content-form-card">
+    <form (ngSubmit)="submitContent()">
+      <div class="form-group">
+        <input
+          type="text"
+          [(ngModel)]="contentData.title"
+          name="title"
+          placeholder="Content title"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <select [(ngModel)]="contentData.type" name="type">
+          <option value="video">Video</option>
+          <option value="pdf">PDF</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <input
+          type="text"
+          [(ngModel)]="contentData.url"
+          name="url"
+          placeholder="Content URL"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="number"
+          [(ngModel)]="contentData.duration"
+          name="duration"
+          placeholder="Duration"
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="number"
+          [(ngModel)]="contentData.position"
+          name="position"
+          placeholder="Position"
+          required
+        />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ isEditMode ? 'Update Content' : 'Add Content' }}
+        </button>
+
+        <button
+          *ngIf="isEditMode"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelEdit()"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-box">
+    Loading contents...
+  </div>
+
+  <div *ngIf="!isLoading && contents.length === 0" class="empty-box">
+    No contents found.
+  </div>
+
+  <div class="content-list" *ngIf="!isLoading && contents.length > 0">
+    <div class="content-card" *ngFor="let content of contents">
+      <div class="content-info">
+        <h3>{{ content.title }}</h3>
+        <p><strong>Type:</strong> {{ content.type }}</p>
+        <p><strong>Position:</strong> {{ content.position }}</p>
+        <p><strong>Duration:</strong> {{ content.duration }}</p>
+      </div>
+
+      <div class="content-actions">
+        <button class="btn btn-warning" (click)="editContent(content)">
+          Edit
+        </button>
+
+        <button class="btn btn-danger" (click)="deleteContent(content.id)">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

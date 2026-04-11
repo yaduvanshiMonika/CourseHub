@@ -1,0 +1,48 @@
+<div class="my-courses-page">
+  <h2>My Courses</h2>
+  <p>Manage your created courses here.</p>
+
+  <div *ngIf="isLoading" class="loading-box">
+    Loading courses...
+  </div>
+
+  <div *ngIf="!isLoading && courses.length === 0" class="empty-box">
+    No courses found.
+  </div>
+
+  <div class="courses-grid" *ngIf="!isLoading && courses.length > 0">
+    <div class="course-card" *ngFor="let course of courses">
+      <img
+        [src]="course.thumbnail_url || 'https://via.placeholder.com/400x220?text=Course+Thumbnail'"
+        [alt]="course.title"
+        class="course-image"
+      />
+
+      <div class="course-body">
+        <h3>{{ course.title }}</h3>
+        <p><strong>Category:</strong> {{ course.category }}</p>
+        <p><strong>Instructor:</strong> {{ course.instructor }}</p>
+        <p><strong>Price:</strong> ₹{{ course.price }}</p>
+        <p><strong>Status:</strong> {{ course.status }}</p>
+
+        <div class="course-actions">
+          <button class="btn btn-primary" (click)="goToContents(course.id)">
+            Contents
+          </button>
+
+          <button class="btn btn-secondary" (click)="goToEnrollments(course.id)">
+            Enrollments
+          </button>
+
+          <button class="btn btn-warning" (click)="editCourse(course)">
+            Edit
+          </button>
+
+          <button class="btn btn-danger" (click)="deleteCourse(course.id)">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

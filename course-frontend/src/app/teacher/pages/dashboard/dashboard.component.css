@@ -1,0 +1,170 @@
+/* .teacher-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #050816;
+  color: #fff;
+}
+
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #0b1020, #111827);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.logo-box h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.logo-box p {
+  margin-top: 8px;
+  color: #a0aec0;
+  font-size: 14px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #d1d5db;
+  padding: 12px 14px;
+  border-radius: 12px;
+  transition: 0.3s;
+  background: rgba(255,255,255,0.03);
+}
+
+.menu a:hover,
+.menu a.active {
+  background: linear-gradient(90deg, #7c3aed, #9333ea);
+  color: #fff;
+}
+
+.content-area {
+  flex: 1;
+  padding: 28px;
+  overflow-y: auto;
+}
+
+*/
+
+/* .logout-btn {
+  width: 100%;
+  border: none;
+  background: #dc2626;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+} */
+
+
+
+ 
+.teacher-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #0b0f1a;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background: #111827;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Welcome text */
+.logo-box {
+  margin-bottom: 30px;
+}
+
+.logo-box p {
+  font-size: 16px;
+  color: #e5e7eb;
+  font-weight: 500;
+}
+
+/* Menu */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Links */
+.menu a {
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #d1d5db;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+/* Hover */
+.menu a:hover {
+  background: rgba(124, 58, 237, 0.15);
+  color: #fff;
+}
+
+/* Active */
+.menu a.active {
+  background: linear-gradient(90deg, #7c3aed, #9333ea);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Content area */
+.content-area {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+/* Scrollbar */
+.content-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-area::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .teacher-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .menu {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .content-area {
+    padding: 20px;
+  }
+}

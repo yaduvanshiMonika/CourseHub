@@ -1,0 +1,98 @@
+
+.course-contents-page {
+  padding: 24px;
+  color: #fff;
+}
+
+.content-form-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #0b1324;
+  color: #fff;
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.content-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.content-card {
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.content-info h3 {
+  margin: 0 0 10px;
+}
+
+.content-info p {
+  margin: 6px 0;
+}
+
+.content-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #7c3aed, #9333ea);
+}
+
+.btn-secondary {
+  background: #475569;
+}
+
+.btn-warning {
+  background: #f59e0b;
+}
+
+.btn-danger {
+  background: #ef4444;
+}
+
+.loading-box,
+.empty-box {
+  padding: 18px;
+  border-radius: 14px;
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.08);
+}

@@ -7,4 +7,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'course-frontend';
+
+  //add monika
+  isLoggedIn: boolean =false;
+  ngDoCheck(): void {
+    this.isLoggedIn = !!localStorage.getItem('token');
+  }
+
 }
