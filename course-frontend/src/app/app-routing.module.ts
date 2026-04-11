@@ -3,13 +3,23 @@ import { RouterModule, Routes } from '@angular/router';
 
 // Fix: Direct paths because components are in the same /app folder
 import { RoleGuard } from './guards/role.guard'; 
+import { CourseListComponent } from './modules/public/course-list/course-list.component';
+import { CourseDetailComponent } from './modules/public/course-detail/course-detail.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { TeacherDashboardComponent } from './teacher-dashboard/teacher-dashboard.component';
 // Find where your Login/Register actually sit and import them here:
 import { LoginComponent } from './modules/public/login/login.component'; 
+import { HomeComponent } from './modules/public/home/home.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
+
+  // ✅ PUBLIC ROUTES (ADD THESE)
+ { path: '', component: HomeComponent },
+  { path: 'home', component: HomeComponent },
+  { path: 'courses', component: CourseListComponent },
+  { path: 'course/:id', component: CourseDetailComponent },
+
   { 
     path: 'admin-dashboard', 
     component: AdminDashboardComponent, 
@@ -21,7 +31,9 @@ const routes: Routes = [
     component: TeacherDashboardComponent, 
     canActivate: [RoleGuard], 
     data: { expectedRoles: ['teacher'] } 
-  }
+  },
+  { path: '**', redirectTo: '' }
+  
 ];
 
 @NgModule({

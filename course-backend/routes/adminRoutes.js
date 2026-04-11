@@ -12,31 +12,39 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // --- GET COURSES ---
-router.get('/courses', authorize(['admin']), async (req, res) => {
+router.get('/courses', async (req, res) => {
     try {
-        const [results] = await db.query("SELECT * FROM courses ORDER BY id DESC");
+        const [results] = await db.query(
+            "SELECT * FROM courses  ORDER BY id DESC"
+        );
         res.json(results);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Error fetching courses" });
     }
 });
 
 // --- ADD COURSE (Maps to 'image' column) ---
-router.post('/courses/add', authorize(['admin']), upload.single('file'), async (req, res) => {
-    const { title, category, instructor } = req.body;
+router.post('/courses/add', upload.single('file'), async (req, res) => {
+    const { title, category, instructor, status } = req.body; // ✅ ADD STATUS
     
-    // Maps file path to 'image' column based on your DESCRIBE screenshot
     const filePath = req.file ? `/uploads/${req.file.filename}` : null;
-    
-    const sql = "INSERT INTO courses (title, category, instructor, image) VALUES (?, ?, ?, ?)";
-    
+
+    const sql = `
+    INSERT INTO courses (title, category, instructor, image, status)
+    VALUES (?, ?, ?, ?, ?)
+    `;
+
     try {
-        await db.query(sql, [title, category, instructor, filePath]);
+        await db.query(sql, [title, category, instructor, filePath, status || 'draft']); // ✅ USE STATUS
         res.json({ message: "Course saved successfully! ✅" });
+        console.log("BODY:", req.body);
+
     } catch (err) {
         console.error("SQL Error:", err.message);
         res.status(500).json({ message: "Database Error", error: err.message });
     }
+    
 });
 // ==============================
 // 🎬 GET COURSE CONTENT BY COURSE ID
@@ -49,7 +57,7 @@ router.get('/course-content/:courseId', authorize(['admin']), async (req, res) =
             "SELECT * FROM course_contents WHERE course_id = ? ORDER BY position ASC",
             [courseId]
         );
-
+status
         res.json(results);
     } catch (err) {
         console.error("Fetch content error:", err);
@@ -59,22 +67,29 @@ router.get('/course-content/:courseId', authorize(['admin']), async (req, res) =
 // ==============================
 // 🗑️ DELETE COURSE CONTENT
 // ==============================
-router.delete('/course-content/:id', authorize(['admin']), async (req, res) => {
+// ==============================
+// 🗑️ DELETE COURSE
+// ==============================
+router.delete('/courses/:id', authorize(['admin']), async (req, res) => {
+    const { id } = req.params;
+
     try {
-        console.log("Deleting ID:", req.params.id);
+        console.log("DELETE COURSE HIT:", id);
 
         const [result] = await db.query(
-            "DELETE FROM course_contents WHERE id = ?",
-            [req.params.id]
+            "DELETE FROM courses WHERE id=?",
+            [id]
         );
 
-        console.log("DB RESULT:", result);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Course not found ❌" });
+        }
 
-        res.json({ message: "Deleted ✅" });
+        res.json({ message: "Course deleted successfully ✅" });
 
     } catch (err) {
-        console.error("DELETE ERROR:", err); // 🔥 THIS WILL SHOW REAL ERROR
-        res.status(500).json({ message: err.message });
+        console.error("DELETE COURSE ERROR:", err);
+        res.status(500).json({ message: "Delete failed ❌" });
     }
 });
 router.get('/teachers', authorize(['admin']), async (req, res) => {
@@ -87,12 +102,12 @@ router.get('/teachers', authorize(['admin']), async (req, res) => {
 // ✏️ UPDATE COURSE
 // ==============================
 router.put('/courses/:id', authorize(['admin']), async (req, res) => {
-    const { title, category, instructor } = req.body;
+    const { title, category, instructor, status } = req.body; // ✅ FIX
 
     try {
         await db.query(
-            "UPDATE courses SET title=?, category=?, instructor=? WHERE id=?",
-            [title, category, instructor, req.params.id]
+            "UPDATE courses SET title=?, category=?, instructor=?, status=? WHERE id=?",
+            [title, category, instructor, status || 'draft', req.params.id]
         );
 
         res.json({ message: "Course updated successfully ✅" });
@@ -104,17 +119,7 @@ router.put('/courses/:id', authorize(['admin']), async (req, res) => {
 // ==============================
 // 🗑️ DELETE (GENERIC)
 // ==============================
-router.delete('/:table/:id', authorize(['admin']), async (req, res) => {
-    const { table, id } = req.params;
 
-    try {
-        await db.query(`DELETE FROM ${table} WHERE id=?`, [id]);
-        res.json({ message: "Deleted successfully ✅" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Delete failed ❌" });
-    }
-});
 // ==============================
 // ✏️ UPDATE TEACHER
 // ==============================
@@ -140,34 +145,148 @@ router.put('/teachers/:id', authorize(['admin']), async (req, res) => {
 });
 // ==============================
 // 🗑️ DELETE TEACHER
-// ==============================
-// ==============================
-// 🗑️ DELETE TEACHER
-// ==============================
 
-// ==============================
-// 🗑️ DELETE TEACHER
-// ==============================
 router.delete('/teachers/:id', authorize(['admin']), async (req, res) => {
     const { id } = req.params;
 
     try {
-        console.log("DELETE TEACHER HIT:", id); // 🔥 debug
+        console.log("DELETE TEACHER HIT:", id);
 
-        const [result] = await db.query(
+        await db.query(
             "DELETE FROM users WHERE id=? AND role='teacher'",
             [id]
         );
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Teacher not found ❌" });
-        }
-
         res.json({ message: "Teacher deleted successfully ✅" });
 
     } catch (err) {
-        console.error("DELETE ERROR:", err);
+        console.error(err);
         res.status(500).json({ message: "Delete failed ❌" });
     }
 });
+// ==============================
+// 👨‍🎓 GET STUDENTS ONLY
+// ==============================
+router.get('/users', authorize(['admin']), async (req, res) => {
+    try {
+        const [results] = await db.query(`
+            SELECT u.id, u.name, u.email, c.title AS course
+            FROM users u
+            LEFT JOIN payments p ON u.id = p.user_id
+            LEFT JOIN courses c ON p.course_id = c.id
+            WHERE u.role = 'student'
+        `);
+
+        res.json(results);
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching students ❌" });
+    }
+});
+router.delete('/users/:id', authorize(['admin']), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await db.query("DELETE FROM users WHERE id = ?", [id]);
+    res.json({ message: "Student deleted successfully ✅" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Delete failed ❌" });
+  }
+});
+router.delete('/users/:id', authorize(['admin']), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await db.query("DELETE FROM users WHERE id = ?", [id]);
+    res.json({ message: "Student deleted successfully ✅" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Delete failed ❌" });
+  }
+});
+
+// ==============================
+// ➕ ADD TEACHER
+// ==============================
+router.post('/teachers', authorize(['admin']), async (req, res) => {
+    const { name, email, expertise } = req.body;
+
+    // 1. Basic validation
+    if (!name || !email || !expertise) {
+        return res.status(400).json({ message: "All fields are required ❌" });
+    }
+
+    try {
+        // 2. Insert into the users table with the role 'teacher'
+        // Note: You might want to add a default password or a password field here
+        const sql = "INSERT INTO users (name, email, expertise, role) VALUES (?, ?, ?, 'teacher')";
+        
+        await db.query(sql, [name, email, expertise]);
+
+        res.status(201).json({ message: "Teacher added successfully! ✅" });
+    } catch (err) {
+        console.error("ADD TEACHER ERROR:", err);
+        
+        // Handle duplicate email error
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ message: "Email already exists ❌" });
+        }
+        
+        res.status(500).json({ message: "Database Error", error: err.message });
+    }
+});
+// ==============================
+// ➕ ADD STUDENT (The missing route)
+// ==============================
+router.post('/users', authorize(['admin']), async (req, res) => {
+    const { name, email } = req.body;
+
+    // 1. Basic validation
+    if (!name || !email) {
+        return res.status(400).json({ message: "Name and Email are required ❌" });
+    }
+
+    try {
+        // 2. Insert into the users table
+        // Note: I'm adding 'student' as the role and '123456' as a default password 
+        // so the database doesn't reject it for missing fields.
+        const sql = "INSERT INTO users (name, email, role, password) VALUES (?, ?, 'student', '123456')";
+        
+        await db.query(sql, [name, email]);
+
+        res.status(201).json({ message: "Student added successfully! ✅" });
+    } catch (err) {
+        console.error("ADD STUDENT ERROR:", err);
+
+        // Handle duplicate email error
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ message: "This email is already in use ❌" });
+        }
+        
+        res.status(500).json({ message: "Database Error", error: err.message });
+    }
+});
+// ==============================
+// ✏️ UPDATE STUDENT
+// ==============================
+router.put('/users/:id', authorize(['admin']), async (req, res) => {
+    const { name, email } = req.body;
+
+    if (!name || !email) {
+        return res.status(400).json({ message: "Name and Email required ❌" });
+    }
+
+    try {
+        await db.query(
+            "UPDATE users SET name=?, email=? WHERE id=? AND role='student'",
+            [name, email, req.params.id]
+        );
+
+        res.json({ message: "Student updated successfully ✅" });
+    } catch (err) {
+        console.error("UPDATE STUDENT ERROR:", err);
+        res.status(500).json({ message: "Update failed ❌" });
+    }
+});
+
 module.exports = router;

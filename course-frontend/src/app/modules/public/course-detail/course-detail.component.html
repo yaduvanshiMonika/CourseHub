@@ -1,19 +1,27 @@
-<div class="container" *ngIf="course">
+<div class="course-card" *ngIf="course">
 
-  <div class="course-detail">
+  <!-- IMAGE -->
+  <div class="image-box">
+    <img [src]="'http://localhost:5000' + course.image" alt="course">
+  </div>
 
-    <img [src]="course.image">
+  <!-- CONTENT -->
+  <div class="card-body">
 
-    <div class="info">
-      <h1>{{course.title}}</h1>
-      <p class="instructor">By {{course.instructor}}</p>
+    <h3>{{ course.title }}</h3>
 
-      <p class="description">{{course.description}}</p>
+    <p class="meta">{{ course.category }}</p>
 
-      <div class="bottom">
-        <span class="price">₹{{course.price}}</span>
-        <button class="btn btn-primary">Enroll Now</button>
-      </div>
+    <p class="meta">
+      👨‍🏫 {{ course.instructor }}
+    </p>
+
+    <div class="card-footer">
+      <span class="price">₹{{ course.price }}</span>
+
+      <a [routerLink]="['/course', course.id]" class="btn-view">
+        View Details
+      </a>
     </div>
 
   </div>

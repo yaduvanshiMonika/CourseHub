@@ -22,6 +22,16 @@ export class AdminService {
       })
     };
   }
+  // ✅ GENERIC DELETE (Works for Users, Teachers, Courses)
+deleteContent(table: string, id: number): Observable<any> {
+  // Uses 'getOptions()' to attach the required Bearer token
+  return this.http.delete(`${this.apiUrl}/${table}/${id}`, this.getOptions());
+}
+
+// ✅ GENERIC UPDATE (Works for any item with an ID)
+updateItem(table: string, id: number, data: any): Observable<any> {
+  return this.http.put(`${this.apiUrl}/${table}/${id}`, data, this.getOptions());
+}
 
   // ============================
   // 📥 1. FETCH DATA (DYNAMIC)
@@ -40,25 +50,36 @@ export class AdminService {
   // ============================
   // 📚 3. UPLOAD COURSE
   // ============================
-  uploadCourse(title: string, category: string, instructor: string, file: File | null): Observable<any> {
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('category', category);
-    formData.append('instructor', instructor);
+uploadCourse(title: string, category: string, instructor: string, file: File | null, status: string) {
+  const formData = new FormData();
 
-    if (file) {
-      formData.append('file', file);
-    }
+  formData.append('title', title);
+  formData.append('category', category);
+  formData.append('instructor', instructor);
+  formData.append('status', status);
 
-    return this.http.post(`${this.apiUrl}/courses/add`, formData, this.getOptions());
+  if (file) {
+    formData.append('file', file);
   }
 
+  const token = localStorage.getItem('token'); // 🔥 GET TOKEN
+
+  return this.http.post(
+    'http://localhost:5000/api/admin/courses/add',
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}` // 🔥 SEND TOKEN
+      }
+    }
+  );
+}
   // ============================
   // 🗑️ 4. DELETE
   // ============================
-  deleteContent(table: string, id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${table}/${id}`, this.getOptions());
-  }
+  // deleteContent(table: string, id: number): Observable<any> {
+  //   return this.http.delete(`${this.apiUrl}/${table}/${id}`, this.getOptions());
+  // }
 
   // ============================
   // 🔄 5. RESTORE USER
@@ -117,5 +138,22 @@ updateTeacher(data: any) {
   );
   
 }
-
+// ============================
+// 👨‍🎓 SAVE STUDENT (FIXED 🔥)
+// ============================
+saveStudent(data: any) {
+  // 1. Use the apiUrl variable for consistency
+  // 2. MUST include this.getOptions() to send the token
+  return this.http.post(`${this.apiUrl}/users`, data, this.getOptions());
+}
+// ============================
+// 👨‍🎓 9. UPDATE STUDENT (FIXED 🔥)
+// ============================
+updateStudent(data: any) {
+  return this.http.put(
+    `${this.apiUrl}/users/${data.id}`,
+    data,
+    this.getOptions() // ✅ THIS WAS MISSING
+  );
+}
 }

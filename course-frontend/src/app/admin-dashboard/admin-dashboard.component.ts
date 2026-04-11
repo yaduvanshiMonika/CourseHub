@@ -18,6 +18,8 @@ export class AdminDashboardComponent implements OnInit {
   selectedFile: File | null = null;
 
   teachersList: any[] = [];
+  searchTerm: string = '';
+filteredData: any[] = [];
 
   formData = {
     id: null,
@@ -30,7 +32,7 @@ export class AdminDashboardComponent implements OnInit {
     user: '',
     course: '',
     amount: '',
-    status: 'pending'
+    status: 'published'
   };
   
 
@@ -43,6 +45,7 @@ export class AdminDashboardComponent implements OnInit {
     this.loadData();
     this.loadTeachers();
     this.loadCourses();
+     this.loadStats();  
     this.setTab('courses');
   }
 
@@ -64,9 +67,10 @@ export class AdminDashboardComponent implements OnInit {
 }
   // ✅ DATA
   loadData(): void {
+ 
     this.adminService.getDataByTable(this.activeTab).subscribe({
       next: (data: any[]) => {
-
+  
         if (this.activeTab === 'courses') {
           this.allData = data.map(c => ({
             ...c,
@@ -77,7 +81,7 @@ export class AdminDashboardComponent implements OnInit {
         } else {
           this.allData = data;
         }
-
+  this.filteredData = [...this.allData];
         if (this.activeTab === 'teachers') this.targetStats.teachers = data.length;
         if (this.activeTab === 'courses') this.targetStats.courses = data.length;
         if (this.activeTab === 'users') this.targetStats.students = data.length;
@@ -103,43 +107,67 @@ export class AdminDashboardComponent implements OnInit {
       this.selectedFile = null;
     }
   }
+  applyFilter(): void {
+  const term = this.searchTerm.toLowerCase().trim();
+
+  if (!term) {
+    this.filteredData = [...this.allData];
+    return;
+  }
+
+  if (this.activeTab === 'users') {
+    this.filteredData = this.allData.filter(item =>
+      item.name?.toLowerCase().includes(term) ||
+      item.email?.toLowerCase().includes(term)
+    );
+  }
+
+  else if (this.activeTab === 'teachers') {
+    this.filteredData = this.allData.filter(item =>
+      item.name?.toLowerCase().includes(term) ||
+      item.email?.toLowerCase().includes(term) ||
+      item.expertise?.toLowerCase().includes(term)
+    );
+  }
+
+  else if (this.activeTab === 'courses') {
+    this.filteredData = this.allData.filter(item =>
+      item.title?.toLowerCase().includes(term) ||
+      item.category?.toLowerCase().includes(term) ||
+      item.instructor?.toLowerCase().includes(term)
+    );
+  }
+
+  else {
+    this.filteredData = [...this.allData];
+  }
+}
   
 
   // 🔥🔥🔥 MAIN FIX HERE
-  onSave(): void {
-
+ onSave(): void {
   // =====================
   // 👩‍🏫 TEACHERS
   // =====================
   if (this.activeTab === 'teachers') {
+    if (!this.formData.fullName || !this.formData.email || !this.formData.expertise) {
+      alert('Name, Email and Expertise are required ❌');
+      return;
+    }
 
-    // ✅ VALIDATION
-if (
-  !this.formData.fullName ||
-  !this.formData.email ||
-  !this.formData.expertise ||
-  this.formData.expertise.trim() === ''
-) {
-  alert('Name, Email and Expertise are required ❌');
-  return;
-}
-  const teacherPayload = {
-  id: this.formData.id,
-  name: this.formData.fullName,   // 🔥 CRITICAL FIX
-  email: this.formData.email,
-  expertise: this.formData.expertise
-};
+    const teacherPayload = {
+      id: this.formData.id,
+      name: this.formData.fullName, // Maps to 'name' in backend
+      email: this.formData.email,
+      expertise: this.formData.expertise
+    };
 
-    // 🔥 EDIT MODE
     if (this.formData.id) {
       this.adminService.updateTeacher(teacherPayload).subscribe({
         next: () => this.handleSuccess('Teacher Updated'),
         error: (err: any) => alert('Update failed: ' + err.message)
       });
-    }
-
-    // 🔥 ADD MODE
-    else {
+    } else {
       this.adminService.saveTeacher(teacherPayload).subscribe({
         next: () => this.handleSuccess('Teacher Added'),
         error: (err: any) => alert('Save failed: ' + err.message)
@@ -148,63 +176,67 @@ if (
   }
 
   // =====================
+  // 👨‍🎓 STUDENTS (The missing piece!)
+ // Inside onSave() in admin-dashboard.component.ts
+else if (this.activeTab === 'users') {
+  if (!this.formData.fullName || !this.formData.email) {
+    alert('Name and Email are required ❌');
+    return;
+  }
+
+  const studentPayload = {
+    id: this.formData.id, // Must include ID for update check
+    name: this.formData.fullName,
+    email: this.formData.email,
+    role: 'student'
+  };
+
+  if (this.formData.id) {
+    // EDIT MODE: Use updateTeacher logic which targets the users table
+    this.adminService.updateStudent(studentPayload).subscribe({ 
+      next: () => this.handleSuccess('Student Updated'),
+      error: (err: any) => alert('Update failed: ' + err.message)
+    });
+  } else {
+    // ADD MODE: Create new student
+    this.adminService.saveStudent(studentPayload).subscribe({
+      next: () => this.handleSuccess('Student Added'),
+      error: (err: any) => alert('Save failed: ' + err.message)
+    });
+  }
+}
+  // =====================
   // 📚 COURSES
   // =====================
   else if (this.activeTab === 'courses') {
-
     if (!this.formData.title || !this.formData.category || !this.formData.instructor) {
       alert("All course fields required ❌");
       return;
     }
 
-    // EDIT
     if (this.formData.id) {
       this.adminService.updateCourse({
         id: this.formData.id,
         title: this.formData.title,
         category: this.formData.category,
-        instructor: this.formData.instructor
+        instructor: this.formData.instructor,
+        status: this.formData.status
       }).subscribe({
         next: () => this.handleSuccess('Course Updated'),
         error: (err: any) => alert('Update failed: ' + err.message)
       });
-    }
-
-    // ADD
-    else {
+    } else {
       this.adminService.uploadCourse(
         this.formData.title,
         this.formData.category,
         this.formData.instructor,
-        this.selectedFile
+         this.selectedFile,
+  this.formData.status  
       ).subscribe({
         next: () => this.handleSuccess('Course Added'),
         error: (err: any) => alert('Save failed: ' + err.message)
       });
     }
-  }
-
-  // =====================
-  // 💳 PAYMENTS
-  // =====================
-  else if (this.activeTab === 'payments') {
-
-    if (!this.formData.user || !this.formData.course || !this.formData.amount) {
-      alert('All payment fields required ❌');
-      return;
-    }
-
-    const paymentPayload = {
-      user: this.formData.user,
-      course: this.formData.course,
-      amount: this.formData.amount,
-      status: this.formData.status
-    };
-
-    this.adminService.savePayment(paymentPayload).subscribe({
-      next: () => this.handleSuccess('Payment'),
-      error: (err: any) => alert('Payment failed: ' + err.message)
-    });
   }
 }
   private handleSuccess(type: string): void {
@@ -238,7 +270,7 @@ if (
       user: item.user || '',
       course: item.course || '',
       amount: item.amount || '',
-      status: item.status || 'pending'
+      status: item.status || 'published'
     };
 
     this.showModal = true;
@@ -266,7 +298,7 @@ if (
       user: '',
       course: '',
       amount: '',
-      status: 'pending'
+      status: 'published'
     };
     this.selectedFile = null;
   }
@@ -328,19 +360,62 @@ onCourseSelect(event: any) {
   });
 }
 
+// ✅ Updated deleteItem in admin-dashboard.component.ts
 deleteItem(id: number): void {
+  if (!confirm('Are you sure you want to delete this record?')) return;
 
-  if (!confirm('Delete this teacher?')) return;
+  let table = '';
 
-  this.adminService.deleteContent('teachers', id).subscribe({
+  // Map the active tab to the correct backend endpoint
+  if (this.activeTab === 'users' || this.activeTab === 'deleted-students') {
+    table = 'users'; // Matches your backend router.delete('/users/:id')
+  } else if (this.activeTab === 'teachers') {
+    table = 'teachers';
+  } else if (this.activeTab === 'courses') {
+    table = 'courses';
+  } else if (this.activeTab === 'videos') {
+    table = 'course-content';
+  }
+
+  // Ensure 'table' was set correctly before calling service
+  if (!table) {
+    alert('Error: Unknown table for deletion');
+    return;
+  }
+
+  this.adminService.deleteContent(table, id).subscribe({
     next: () => {
-      this.allData = this.allData.filter(item => item.id !== id);
+      
+      alert('Deleted successfully ✅');
+      
+
+  // ✅ Reload everything (BEST WAY)
+  this.loadData();
+  this.loadStats();
+
     },
     error: (err) => {
       console.error("DELETE ERROR:", err);
-      alert('Delete failed ❌');
+      // 401 Error usually means you need to re-login
+      const errorMsg = err.status === 401 ? 'Unauthorized - Please re-login' : 'Delete failed ❌';
+      alert(errorMsg);
     }
   });
 }
+loadStats(): void {
+  this.adminService.getDataByTable('users').subscribe(data => {
+    this.targetStats.students = data.length;
+    this.animateNumbers();
+  });
 
+  this.adminService.getDataByTable('teachers').subscribe(data => {
+    this.targetStats.teachers = data.length;
+    this.animateNumbers();
+  });
+
+  this.adminService.getDataByTable('courses').subscribe(data => {
+    this.targetStats.courses = data.length;
+    this.animateNumbers();
+  });
+}
 }

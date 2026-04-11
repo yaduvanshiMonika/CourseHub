@@ -1,17 +1,27 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // 1. Import this
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+
+// ✅ IMPORT YOUR COMPONENTS
 import { LoginComponent } from './login/login.component';
-// ... other imports
+import { CourseListComponent } from './course-list/course-list.component';
+import { CourseDetailComponent } from './course-detail/course-detail.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
     LoginComponent,
-    // ... other public components
+
+    // ✅ ADD THESE (VERY IMPORTANT)
+    CourseListComponent,
+    CourseDetailComponent,
+    HomeComponent
   ],
   imports: [
     CommonModule,
-    FormsModule // 2. Add this to imports
+    FormsModule,
+    RouterModule   // ✅ already correct
   ]
 })
 export class PublicModule { }

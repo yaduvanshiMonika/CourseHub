@@ -1,1 +1,42 @@
-<p>course-list works!</p>
+<div class="courses-page">
+  <div class="course-container">
+
+    <div class="course-grid">
+
+      <div class="course-card" *ngFor="let course of courses">
+
+        <!-- IMAGE -->
+        <div class="image-box">
+          <img 
+            [src]="course.image ? 'http://localhost:5000' + course.image : 'assets/default.jpg'" 
+            alt="course"
+            loading="lazy"
+            (error)="course.image = '/uploads/default.jpg'"
+          >
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+          <h3>{{ course.title }}</h3>
+
+          <p class="category">{{ course.category }}</p>
+
+          <p class="instructor">
+            👨‍🏫 {{ course.instructor }}
+          </p>
+
+          <div class="bottom">
+            <span class="price">₹{{ course.price }}</span>
+
+            <a [routerLink]="['/course', course.id]" class="btn">
+              View Details
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

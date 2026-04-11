@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { CourseService } from 'src/app/services/course.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { CourseService } from 'src/app/services/course.service';
   templateUrl: './home.component.html', 
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
 
   courses: any[] = [];
 
@@ -58,11 +58,17 @@ student.startLearning();`;
   constructor(private courseService: CourseService) {}
 
   ngOnInit() {
-    this.courses = this.courseService.getCourses();
+
+    // ✅ FIX: Handle Observable properly
+    this.courseService.getCourses().subscribe({
+      next: (data) => {
+        this.courses = data;
+      },
+      error: (err) => console.error(err)
+    });
 
     this.startTypingLoop();
 
-    // 🔥 start testimonial auto scroll AFTER DOM loads
     setTimeout(() => {
       this.startAutoScroll();
     }, 1000);
@@ -100,22 +106,23 @@ student.startLearning();`;
 
   // 🔥 CODE AUTO SCROLL FUNCTION
   scrollToBottom() {
-    try {
-      setTimeout(() => {
-        const el = this.codeContainer.nativeElement;
-        el.scrollTop = el.scrollHeight;
-      }, 0);
-    } catch (err) {}
+    if (!this.codeContainer) return; // ✅ FIX
+
+    setTimeout(() => {
+      const el = this.codeContainer.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    }, 0);
   }
 
   // 🔥 TESTIMONIAL AUTO SCROLL FUNCTION
   startAutoScroll() {
+    if (!this.scrollContainer) return; // ✅ FIX
+
     setInterval(() => {
       const el = this.scrollContainer.nativeElement;
 
       el.scrollLeft += 6;
 
-      // 🔁 reset when end reached
       if (el.scrollLeft + el.clientWidth >= el.scrollWidth) {
         el.scrollLeft = 0;
       }
@@ -148,25 +155,27 @@ student.startLearning();`;
     const card = event.currentTarget as HTMLElement;
     card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
   }
+
   quantities: number[] = [0, 0, 0];
 
-addToCart(index: number) {
-  this.quantities[index] = 1;
-}
-
-increaseQty(index: number) {
-  this.quantities[index]++;
-}
-
-decreaseQty(index: number) {
-  if (this.quantities[index] > 1) {
-    this.quantities[index]--;
-  } else {
-    this.quantities[index] = 0;
+  addToCart(index: number) {
+    this.quantities[index] = 1;
   }
-}
-onSubmit() {
-  console.log("Form submitted");
-}
+
+  increaseQty(index: number) {
+    this.quantities[index]++;
+  }
+
+  decreaseQty(index: number) {
+    if (this.quantities[index] > 1) {
+      this.quantities[index]--;
+    } else {
+      this.quantities[index] = 0;
+    }
+  }
+
+  onSubmit() {
+    console.log("Form submitted");
+  }
 
 }

@@ -121,14 +121,41 @@ table { width: 100%; border-collapse: collapse; text-align: left; }
 th { padding: 15px 25px; color: #8b949e; font-size: 0.85rem; text-transform: uppercase; }
 td { padding: 15px 25px; border-top: 1px solid #30363d; }
 
+/* 🔥 MODERN STATUS BADGE */
 .status-pill {
-  background: rgba(46, 160, 67, 0.1);
-  color: #3fb950;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
+/* ✅ PUBLISHED (LIVE) */
+.status-pill.published {
+  background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(16,185,129,0.15));
+  color: #22c55e;
+  border: 1px solid rgba(34,197,94,0.4);
+  box-shadow: 0 0 12px rgba(34,197,94,0.25);
+}
+
+/* 🔥 DRAFT */
+.status-pill.draft {
+  background: linear-gradient(135deg, rgba(255,159,67,0.2), rgba(255,94,0,0.15));
+  color: #ff9f43;
+  border: 1px solid rgba(255,159,67,0.4);
+  box-shadow: 0 0 12px rgba(255,159,67,0.25);
+}
+
+/* ✨ HOVER EFFECT */
+.status-pill:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
 .actions { display: flex; gap: 10px; justify-content: center; }
 .edit-btn, .delete-btn {
   background: #21262d;

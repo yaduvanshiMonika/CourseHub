@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { TeacherDashboardComponent } from './teacher-dashboard/teacher-dashboard.component';
 import { NavbarComponent } from './shared/navbar/navbar.component'; 
-
+import { RouterModule } from '@angular/router';
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,7 +24,8 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
     AppRoutingModule,
     FormsModule,       
     HttpClientModule,
-    PublicModule // <--- ADD THIS HERE
+    PublicModule, // <--- ADD THIS HERE
+        RouterModule  
   ],
   providers: [],
   bootstrap: [AppComponent]

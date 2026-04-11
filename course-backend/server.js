@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
+const courseRoutes = require('./routes/courseRoutes'); // ✅ ADD THIS
 
 const app = express();
 
@@ -16,14 +18,19 @@ app.use(cors({
 
 app.use(express.json());
 
-// 🔥 DEBUG LOGGER (ADD THIS)
+// ✅ Serve uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// ✅ DEBUG LOGGER (keep only ONE)
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
+  console.log("HIT:", req.method, req.url);
   next();
 });
 
+// ✅ ROUTES (IMPORTANT ORDER)
 app.use('/api/auth', authRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api', courseRoutes);        // 🔥 PUBLIC ROUTES
+app.use('/api/admin', adminRoutes);   // 🔥 ADMIN ROUTES
 app.use('/api/teacher', teacherRoutes);
 
 app.get('/', (req, res) => {

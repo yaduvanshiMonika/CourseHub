@@ -2,10 +2,17 @@
   <main class="admin-content-area">
     
     <!-- ACTION BAR -->
+    <!-- ACTION BAR -->
     <div class="action-bar slide-up">
       <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" [placeholder]="'Search ' + activeTab + '...'">
+        
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm"
+          (input)="applyFilter()"
+          [placeholder]="'Search ' + activeTab + '...'"
+        >
       </div>
 
       <button class="btn-primary"
@@ -60,7 +67,7 @@
             <button class="tab-btn" [class.active]="activeTab === 'courses'" (click)="setTab('courses')">Courses</button>
             <button class="tab-btn" [class.active]="activeTab === 'videos'" (click)="setTab('videos')">Videos</button>
             <button class="tab-btn" [class.active]="activeTab === 'teachers'" (click)="setTab('teachers')">Teachers</button>
-            <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="setTab('users')">Users</button>
+            <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="setTab('users')">Students</button>
             <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setTab('payments')">Payments</button>
             <button class="tab-btn" [class.active]="activeTab === 'deleted-students'" (click)="setTab('deleted-students')">Deleted</button>
           </div>
@@ -142,7 +149,7 @@
   <!-- ===================== -->
   <!-- 📊 NORMAL TABLE (ALL OTHER TABS) -->
   <!-- ===================== -->
-  <table *ngIf="allData.length > 0 && activeTab !== 'videos'">
+  <table *ngIf="filteredData.length > 0 && activeTab !== 'videos'">
 
     <thead>
       <tr *ngIf="activeTab === 'courses'">
@@ -157,15 +164,14 @@
         <th>Name</th>
         <th>Expertise</th>
         <th>Email</th>
-        <th>Date</th>
+        
         <th>Actions</th>
       </tr>
 
       <tr *ngIf="activeTab === 'users' || activeTab === 'deleted-students'">
         <th>Name</th>
         <th>Email</th>
-        <th>Date</th>
-        <th>Role</th>
+       <th>ENROLLED COURSE</th>
         <th>Actions</th>
       </tr>
 
@@ -179,14 +185,25 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let item of allData">
+      <tr *ngFor="let item of filteredData">
 
         <!-- COURSES -->
         <ng-container *ngIf="activeTab === 'courses'">
           <td>{{ item.title }}</td>
           <td>{{ item.category }}</td>
           <td>{{ item.instructor }}</td>
-          <td><span class="status-pill">Live</span></td>
+   <td>
+  <span 
+    class="status-pill"
+    [ngClass]="{
+      'published': item.status === 'published',
+      'draft': item.status === 'draft'
+    }"
+  >
+    <span class="dot"></span>
+    {{ item.status === 'published' ? 'Live' : 'Draft' }}
+  </span>
+</td>
         </ng-container>
 
         <!-- TEACHERS -->
@@ -194,15 +211,15 @@
           <td>{{ item.name }}</td>
           <td>{{ item.expertise }}</td>
           <td>{{ item.email }}</td>
-          <td>{{ item.createdAt | date }}</td>
+        
         </ng-container>
 
         <!-- USERS -->
         <ng-container *ngIf="activeTab === 'users' || activeTab === 'deleted-students'">
           <td>{{ item.name }}</td>
           <td>{{ item.email }}</td>
-          <td>{{ item.createdAt | date }}</td>
-          <td>{{ item.role }}</td>
+          <td>{{ item.course || 'Not Enrolled' }}</td>
+          
         </ng-container>
 
         <!-- PAYMENTS -->
@@ -300,6 +317,11 @@
               {{ t.name }}
             </option>
           </select>
+          <!-- STATUS DROPDOWN -->
+<select [(ngModel)]="formData.status" name="status" *ngIf="activeTab === 'courses'">
+  <option value="published">Published</option>
+  <option value="draft">Draft</option>
+</select>
 
           <!-- PAYMENTS -->
           <input type="text"

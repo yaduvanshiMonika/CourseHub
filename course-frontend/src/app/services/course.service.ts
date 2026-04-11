@@ -1,42 +1,22 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CourseService {
 
-  courses = [
-    {
-      id: 1,
-      title: 'Angular for Beginners',
-      instructor: 'John Doe',
-      image: 'https://picsum.photos/400/200',
-      description: 'Learn Angular step by step',
-      price: 499
-    },
-    {
-      id: 2,
-      title: 'Node.js Mastery',
-      instructor: 'Jane Smith',
-      image: 'https://picsum.photos/400/201',
-      description: 'Master backend development',
-      price: 599
-    },
-    {
-      id: 3,
-      title: 'Full Stack Web Dev',
-      instructor: 'Alex Ray',
-      image: 'https://picsum.photos/400/202',
-      description: 'Frontend + Backend complete',
-      price: 799
-    }
-  ];
+  private apiUrl = 'http://localhost:5000/api'; // ✅ FIXED
 
+  constructor(private http: HttpClient) {}
+
+  // ✅ GET ONLY PUBLISHED COURSES
   getCourses() {
-    return this.courses;
+    return this.http.get<any[]>(`${this.apiUrl}/courses/public`);
   }
 
+  // ✅ GET SINGLE COURSE
   getCourseById(id: number) {
-    return this.courses.find(c => c.id === id);
+    return this.http.get<any>(`${this.apiUrl}/courses/${id}`);
   }
 }
