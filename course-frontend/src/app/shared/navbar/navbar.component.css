@@ -87,6 +87,58 @@
   box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
 }
 
+
+
+/* PROFILE */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+/* AVATAR */
+.avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* NAME */
+.name {
+  color: white;
+  font-size: 14px;
+}
+
+/* DROPDOWN */
+.dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: #0d1117;
+  border-radius: 10px;
+  width: 180px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+
+.dropdown div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown div:hover {
+  background: rgba(139,92,246,0.2);
+  color: white;
+}
+
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
   .nav-pill {
