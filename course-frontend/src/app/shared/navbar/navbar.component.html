@@ -22,11 +22,17 @@
         Tutorials
       </a>
 
-      <a (click)="scrollToContact(); setActive('contact')"
+      <!-- <a (click)="scrollToContact(); setActive('contact')"
          [class.active-manual]="activeTab === 'contact'">
         Contact Us
-      </a>
+      </a> -->
 
+      <a routerLink="/" 
+   fragment="contact" 
+   (click)="setActive('contact')"
+   [class.active-manual]="activeTab === 'contact'">
+  Contact Us
+</a>
       <a href="#" (click)="setActive('article')"
          [class.active-manual]="activeTab === 'article'">
         Article

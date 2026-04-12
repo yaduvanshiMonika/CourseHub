@@ -10,6 +10,7 @@ import { TeacherDashboardComponent } from './teacher-dashboard/teacher-dashboard
 // Find where your Login/Register actually sit and import them here:
 import { LoginComponent } from './modules/public/login/login.component'; 
 import { HomeComponent } from './modules/public/home/home.component';
+import { ReceiptComponent } from './receipt/receipt.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -32,12 +33,17 @@ const routes: Routes = [
     canActivate: [RoleGuard], 
     data: { expectedRoles: ['teacher'] } 
   },
-  { path: '**', redirectTo: '' }
+  { path: 'receipt/:id', component: ReceiptComponent },
+  { path: '**', redirectTo: '' },
+
   
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    anchorScrolling: 'enabled', // 👈 This is the magic line
+    scrollPositionRestoration: 'enabled' // 👈 This makes sure you don't stay at the bottom
+  })],
   exports: [RouterModule] // This MUST be here to fix the "no exported member" error
 })
 export class AppRoutingModule { }

@@ -62,11 +62,12 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/login`, data).pipe(
       tap((res: any) => {
         if (res && res.token) {
-          localStorage.setItem('token', res.token);
+          // localStorage.setItem('token', res.token);
+          sessionStorage.setItem('token', res.token);
 
           // 🔥 ADD THESE (VERY IMPORTANT)
-          localStorage.setItem('role', res.role);
-          localStorage.setItem('name', res.name);
+          sessionStorage.setItem('role', res.role);
+          sessionStorage.setItem('name', res.name);
         }
       })
     );
@@ -79,24 +80,24 @@ export class AuthService {
 
   // ✅ LOGOUT
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('name');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('name');
   }
 
   // ✅ CHECK LOGIN
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return !!sessionStorage.getItem('token')
   }
 
   // ✅ GET TOKEN
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return sessionStorage.getItem('token')
   }
 
   // 🔥 ADD THIS (FIXES YOUR ERROR)
   getRole(): string | null {
-    return localStorage.getItem('role');
+    return sessionStorage.getItem('role');
   }
 
   // 🔥 ROLE HELPERS
@@ -110,6 +111,6 @@ export class AuthService {
 
   // ✅ OPTIONAL
   getName(): string | null {
-    return localStorage.getItem('name');
+    return sessionStorage.getItem('name');
   }
 }

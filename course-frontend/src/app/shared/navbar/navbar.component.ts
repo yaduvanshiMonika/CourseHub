@@ -29,20 +29,20 @@ scrollToContact() {
   }
 }
 isLoggedIn(): boolean {
-  return !!localStorage.getItem('token');
+  return !!sessionStorage.getItem('token');
 }
 
 logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('role');
-  localStorage.removeItem('name');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('role');
+  sessionStorage.removeItem('name');
   alert('Logged out successfully');
   this.router.navigate(['/login']);
 }
 
   ngOnInit(): void {
-   this.userName = localStorage.getItem('name') || '';
-  this.userRole = localStorage.getItem('role') || '';
+   this.userName = sessionStorage.getItem('name') || '';
+  this.userRole = sessionStorage.getItem('role') || '';
   }
   toggleDropdown() {
   this.showDropdown = !this.showDropdown;

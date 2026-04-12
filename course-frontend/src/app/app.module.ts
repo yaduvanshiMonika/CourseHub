@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; 
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
-
+import { SafePipe } from './safe.pipe';
 // Add this import line
 import { PublicModule } from './modules/public/public.module'; 
 
@@ -12,12 +12,15 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { TeacherDashboardComponent } from './teacher-dashboard/teacher-dashboard.component';
 import { NavbarComponent } from './shared/navbar/navbar.component'; 
 import { RouterModule } from '@angular/router';
+import { ReceiptComponent } from './receipt/receipt.component';
 @NgModule({
   declarations: [
     AppComponent,
     AdminDashboardComponent,
     TeacherDashboardComponent,
-    NavbarComponent
+    NavbarComponent,
+    ReceiptComponent,
+      SafePipe
   ],
   imports: [
     BrowserModule,

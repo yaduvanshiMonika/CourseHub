@@ -617,3 +617,25 @@ td { padding: 15px 25px; border-top: 1px solid #30363d; }
   background: rgba(139,92,246,0.2);
   color: white;
 }
+
+/* ✅ PAID (Success) - reusing your published green logic */
+.status-pill.success {
+  background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(16,185,129,0.15));
+  color: #22c55e;
+  border: 1px solid rgba(34,197,94,0.4);
+}
+
+/* ⏳ PENDING - using your draft orange logic */
+.status-pill.pending {
+  background: linear-gradient(135deg, rgba(255,159,67,0.2), rgba(255,94,0,0.15));
+  color: #ff9f43;
+  border: 1px solid rgba(255,159,67,0.4);
+}
+
+/* ❌ FAILED */
+.status-pill.failed {
+  background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(220,38,38,0.15));
+  color: #ef4444;
+  border: 1px solid rgba(239,68,68,0.4);
+  box-shadow: 0 0 12px rgba(239,68,68,0.25);
+}

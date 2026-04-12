@@ -55,8 +55,8 @@ showDropdown: boolean = false;
     this.loadCourses();
      this.loadStats();  
     this.setTab('courses');
-    this.userName = localStorage.getItem('name') || 'Admin';
-this.userRole = localStorage.getItem('role') || 'admin';
+    this.userName = sessionStorage.getItem('name') || 'Admin';
+this.userRole = sessionStorage.getItem('role') || 'admin';
   }
 
   // ✅ TEACHERS
@@ -77,6 +77,21 @@ this.userRole = localStorage.getItem('role') || 'admin';
 }
   // ✅ DATA
   loadData(): void {
+      if (this.activeTab === 'payments') {
+
+    this.adminService.getPayments().subscribe({
+      next: (data: any[]) => {
+        console.log("PAYMENTS DATA:", data); // 🔥 DEBUG
+
+        this.allData = data;
+        this.filteredData = [...data];
+      },
+      error: (err: any) => console.error('Payments error:', err)
+    });
+
+    return; // 🔥 IMPORTANT (stop further execution)
+  }
+
  
     this.adminService.getDataByTable(this.activeTab).subscribe({
       next: (data: any[]) => {
@@ -101,11 +116,12 @@ this.userRole = localStorage.getItem('role') || 'admin';
       error: (err: any) => console.error(`Error loading ${this.activeTab}:`, err)
     });
   }
-
-  setTab(tab: any): void {
-    this.activeTab = tab;
-    this.loadData();
-  }
+setTab(tab: any): void {
+  console.log("👉 TAB CLICKED:", tab);        // 🔥 ADD THIS
+  this.activeTab = tab;
+  console.log("👉 ACTIVE TAB SET:", this.activeTab); // 🔥 ADD THIS
+  this.loadData();
+}
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
@@ -445,7 +461,7 @@ goToWebsite() {
 
 logout(): void {
   this.showDropdown = false;
-  localStorage.clear();
+  sessionStorage.clear();
   this.router.navigate(['/login']);
 }
 }

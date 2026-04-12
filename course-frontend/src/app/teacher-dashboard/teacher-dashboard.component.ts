@@ -18,7 +18,7 @@ export class TeacherDashboardComponent {
   constructor(private http: HttpClient) {}
 
   handleUpload() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.post('http://localhost:5000/api/teacher/upload-content', this.contentData, { headers })
