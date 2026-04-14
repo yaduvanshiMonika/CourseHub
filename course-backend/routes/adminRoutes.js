@@ -3,6 +3,11 @@ const router = express.Router();
 const db = require('../config/db');
 const authorize = require('../middleware/authMiddleware');
 const multer = require('multer');
+// ✅ FIXED IMPORTS
+// 1. Get the actual function from your middleware file
+const authFile = require('../middleware/authMiddleware');
+const verifyToken = authFile.verifyToken || authFile;
+
 
 // Configure Multer
 const storage = multer.diskStorage({
@@ -57,7 +62,7 @@ router.get('/course-content/:courseId', authorize(['admin']), async (req, res) =
             "SELECT * FROM course_contents WHERE course_id = ? ORDER BY position ASC",
             [courseId]
         );
-status
+
         res.json(results);
     } catch (err) {
         console.error("Fetch content error:", err);
@@ -289,4 +294,43 @@ router.put('/users/:id', authorize(['admin']), async (req, res) => {
     }
 });
 
+
+// ✅ GENERIC FETCH WITH SPECIAL CASE FOR PAYMENTS
+
+// ✅ UPDATED GENERIC FETCH
+router.get('/:table', verifyToken, async (req, res) => {
+    const { table } = req.params;
+    try {
+        let query;
+        let params = [];
+if (table === 'payments') {
+            // Mapping u.name to 'user' so Angular can display it
+            // Using COALESCE to show the ID if the name is missing from the users table
+         query = `
+SELECT 
+    e.id,
+    u.name AS user,
+    c.title AS course,
+    COALESCE(p.amount, 0.00) AS amount,
+    COALESCE(p.status, 'Pending') AS status
+FROM enrollments e
+LEFT JOIN users u ON e.user_id = u.id
+LEFT JOIN courses c ON e.course_id = c.id
+LEFT JOIN payments p 
+ON e.id = p.enrollment_id 
+AND e.course_id = p.course_id
+ORDER BY e.id DESC
+`;
+        }else {
+            query = `SELECT * FROM ?? WHERE deleted_at IS NULL`;
+            params = [table];
+        }
+
+        const [data] = await db.query(query, params);
+        res.json(data);
+    } catch (err) {
+        console.error("Fetch Error:", err);
+        res.status(500).json({ message: "Error fetching data" });
+    }
+});
 module.exports = router;

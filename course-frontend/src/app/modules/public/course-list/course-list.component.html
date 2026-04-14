@@ -25,13 +25,29 @@
             👨‍🏫 {{ course.instructor }}
           </p>
 
-          <div class="bottom">
+          <!-- <div class="bottom">
             <span class="price">₹{{ course.price }}</span>
 
             <a [routerLink]="['/course', course.id]" class="btn">
               View Details
             </a>
-          </div>
+          </div> -->
+
+          <div class="bottom">
+  <span class="price">₹{{ course.price }}</span>
+
+  <a [routerLink]="['/course', course.id]" class="btn">
+    View Details
+  </a>
+
+  <!-- ✅ NEW ENROLL BUTTON -->
+  <button class="btn enroll-btn" (click)="enroll(course)">
+    Enroll
+  </button>
+  <!-- <button *ngIf="lastEnrollmentId" (click)="downloadReceipt(lastEnrollmentId)">
+  Download Receipt
+</button> -->
+</div>
         </div>
 
       </div>

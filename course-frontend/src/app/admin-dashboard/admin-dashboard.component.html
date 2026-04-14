@@ -278,12 +278,34 @@
         </ng-container>
 
         <!-- PAYMENTS -->
-        <ng-container *ngIf="activeTab === 'payments'">
+        <!-- <ng-container *ngIf="activeTab === 'payments'">
           <td>{{ item.user }}</td>
           <td>{{ item.course }}</td>
           <td>{{ item.amount }}</td>
           <td>{{ item.status }}</td>
-        </ng-container>
+        </ng-container> -->
+
+        <ng-container *ngIf="activeTab === 'payments'">
+  <td>
+    <div style="font-weight: 600;">{{ item.user || 'Unknown User' }}</div>
+    <div style="font-size: 11px; color: #888;">{{ item.user_email }}</div>
+  </td>
+  <td>{{ item.course || 'N/A' }}</td>
+  <td>
+    <strong>{{ item.amount ? (item.amount | currency:'INR') : '₹0.00' }}</strong>
+  </td>
+  <td>
+    <span class="status-pill" 
+          [ngClass]="{
+            'published': item.status === 'success', 
+            'draft': item.status === 'pending' || !item.status,
+            'failed': item.status === 'failed'
+          }">
+      <span class="dot"></span>
+      {{ item.status === 'success' ? 'Paid' : (item.status || 'Pending') }}
+    </span>
+  </td>
+</ng-container>
 
         <!-- ACTIONS -->
         <td>

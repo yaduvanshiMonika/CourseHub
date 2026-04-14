@@ -178,7 +178,7 @@ export class AdminService {
    * ✅ Attach Bearer Token
    */
   private getOptions() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     return {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${token}`
@@ -334,4 +334,7 @@ export class AdminService {
       this.getOptions()
     );
   }
+  getPayments() {
+  return this.http.get<any[]>('http://localhost:5000/api/payments');
+}
 }
