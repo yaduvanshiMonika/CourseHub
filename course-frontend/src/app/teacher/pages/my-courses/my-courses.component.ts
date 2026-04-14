@@ -20,16 +20,24 @@ export class MyCoursesComponent implements OnInit {
     this.loadCourses();
   }
 
-  loadCourses(): void {
+   loadCourses(): void {
     this.isLoading = true;
 
     this.teacherService.getMyCourses().subscribe({
       next: (res: any) => {
-        this.courses = res?.data || [];
-        this.isLoading = false;
+        console.log('GET MY COURSES RESPONSE =', res);
+
+        if (res && res.success) {
+          this.courses = res.data || [];
+        } else {
+          this.courses = [];
+        }
+
+            this.isLoading = false;
       },
       error: (err) => {
         console.error('Get my courses error:', err);
+        this.courses = [];
         this.isLoading = false;
       }
     });

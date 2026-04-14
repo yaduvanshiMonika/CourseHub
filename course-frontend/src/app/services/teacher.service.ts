@@ -18,11 +18,25 @@ export class TeacherService {
     });
   }
 
+//add today
+uploadCourseWithPdf(formData: FormData) {
+  return this.http.post(
+    `${this.baseUrl}/courses/upload`,
+    formData,
+    {
+      headers: this.getHeaders() // token 
+    }
+  );
+}
+
+
   addCourse(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/courses`, data, {
       headers: this.getHeaders()
     });
   }
+
+
 
   getMyCourses(): Observable<any> {
     return this.http.get(`${this.baseUrl}/courses`, {

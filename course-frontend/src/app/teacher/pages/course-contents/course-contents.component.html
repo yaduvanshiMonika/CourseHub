@@ -1,4 +1,3 @@
-
 <div class="course-contents-page">
   <h2>Course Contents</h2>
 
@@ -15,19 +14,21 @@
       </div>
 
       <div class="form-group">
-        <select [(ngModel)]="contentData.type" name="type">
-          <option value="video">Video</option>
-          <option value="pdf">PDF</option>
-        </select>
-      </div>
-
-      <div class="form-group">
+        <label>Video URL (Optional)</label>
         <input
           type="text"
           [(ngModel)]="contentData.url"
           name="url"
-          placeholder="Content URL"
-          required
+          placeholder="Enter video URL"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Upload PDF (Optional)</label>
+        <input
+          type="file"
+          accept="application/pdf"
+          (change)="onFileSelect($event)"
         />
       </div>
 
@@ -50,6 +51,8 @@
         />
       </div>
 
+  
+
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">
           {{ isEditMode ? 'Update Content' : 'Add Content' }}
@@ -71,27 +74,72 @@
     Loading contents...
   </div>
 
-  <div *ngIf="!isLoading && contents.length === 0" class="empty-box">
+  <div *ngIf="!isLoading && groupedContents.length === 0" class="empty-box">
     No contents found.
   </div>
 
-  <div class="content-list" *ngIf="!isLoading && contents.length > 0">
-    <div class="content-card" *ngFor="let content of contents">
-      <div class="content-info">
-        <h3>{{ content.title }}</h3>
-        <p><strong>Type:</strong> {{ content.type }}</p>
-        <p><strong>Position:</strong> {{ content.position }}</p>
-        <p><strong>Duration:</strong> {{ content.duration }}</p>
-      </div>
+  <div class="content-list" *ngIf="!isLoading && groupedContents.length > 0">
+    <div class="content-card" *ngFor="let content of groupedContents">
+      <div class="content-card-inner">
+        <!-- LEFT -->
+        <div class="content-info">
+          <h3>{{ content.title }}</h3>
+          <p><strong>Type:</strong> {{ content.typeLabel }}</p>
+          <p><strong>Position:</strong> {{ content.position }}</p>
+          <p><strong>Duration:</strong> {{ content.duration }}</p>
+        </div>
 
-      <div class="content-actions">
-        <button class="btn btn-warning" (click)="editContent(content)">
-          Edit
-        </button>
+        <!-- RIGHT -->
+        <div class="content-media">
+          <div *ngIf="content.videoUrl" class="video-container">
+            <iframe
+              [src]="getSafeUrl(content.videoUrl)"
+              frameborder="0"
+              allowfullscreen
+            ></iframe>
+          </div>
 
-        <button class="btn btn-danger" (click)="deleteContent(content.id)">
-          Delete
-        </button>
+          <div *ngIf="content.pdfUrl" class="pdf-file">
+            <div class="pdf-info">
+              <div class="pdf-icon">📄</div>
+
+              <div class="pdf-details">
+               <!-- <p class="pdf-name">{{ getPdfDisplayName(content.pdfUrl) }}</p> -->
+                <p class="pdf-name">{{ getPdfDisplayName(content.pdfName) }}</p>
+                 <p class="pdf-type">PDF File</p>
+              </div>
+            </div>
+
+            <!-- <a
+              [href]="getFileUrl(content.pdfUrl)"
+              download
+              class="btn btn-download"
+            >
+              ⬇ Download PDF
+            </a> -->
+
+<a
+  [href]="'http://localhost:5000/api/teacher/content/pdf/' + content.pdfId"
+  class="btn btn-download"
+>
+  ⬇ Download PDF
+</a>
+
+          </div>
+
+          <div class="content-actions">
+            <button class="btn btn-warning" (click)="editContent(content)">
+              Edit
+            </button>
+
+            <button
+              class="btn btn-danger"
+              (click)="deleteContent(content.videoId || content.pdfId)"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

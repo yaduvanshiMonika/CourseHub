@@ -17,16 +17,25 @@ export class AddCourseComponent implements OnInit {
     instructor: '',
     price: '',
     status: 'draft',
+     level: 'beginner',
     description: '',
     video_link: '',
-    pdf_link: '',
+    // pdf_link: '',
     thumbnailUrl: ''
   };
+  selectedFile: File | null = null;
 
   constructor(
     private teacherService: TeacherService,
     private router: Router
   ) {}
+
+  onFileSelect(event: any) {
+  const file = event.target.files[0];
+  if (file) {
+    this.selectedFile = file;
+  }
+}
 
   ngOnInit(): void {
     const navState = history.state;
@@ -41,6 +50,7 @@ export class AddCourseComponent implements OnInit {
         instructor: navState.editCourse.instructor || '',
         price: navState.editCourse.price || '',
         status: navState.editCourse.status || 'draft',
+        level: navState.editCourse.level || 'beginner',
         description: navState.editCourse.description || '',
         video_link: navState.editCourse.video_link || '',
         pdf_link: navState.editCourse.pdf_link || '',
@@ -49,29 +59,148 @@ export class AddCourseComponent implements OnInit {
     }
   }
 
-  submitCourse(): void {
-    if (this.isEditMode && this.editCourseId) {
-      this.teacherService.updateCourse(this.editCourseId, this.courseData).subscribe({
-        next: () => {
-          alert('Course updated successfully');
-          this.router.navigate(['/teacher/my-courses']);
-        },
-        error: (err) => {
-          console.error('Update course error:', err);
-          alert('Course update failed');
-        }
-      });
-    } else {
-      this.teacherService.addCourse(this.courseData).subscribe({
-        next: () => {
-          alert('Course added successfully');
-          this.router.navigate(['/teacher/my-courses']);
-        },
-        error: (err) => {
-          console.error('Add course error:', err);
-          alert('Course add failed');
-        }
-      });
-    }
+  // submitCourse(): void {
+  //   if (this.isEditMode && this.editCourseId) {
+  //     this.teacherService.updateCourse(this.editCourseId, this.courseData).subscribe({
+  //       next: () => {
+  //         alert('Course updated successfully');
+  //         this.router.navigate(['/teacher/my-courses']);
+  //       },
+  //       error: (err) => {
+  //         console.error('Update course error:', err);
+  //         alert('Course update failed');
+  //       }
+  //     });
+  //   } else {
+  //     this.teacherService.addCourse(this.courseData).subscribe({
+  //       next: () => {
+  //         alert('Course added successfully');
+  //         this.router.navigate(['/teacher/my-courses']);
+  //       },
+  //       error: (err) => {
+  //         console.error('Add course error:', err);
+  //         alert('Course add failed');
+  //       }
+  //     });
+  //   }
+  // }
+
+
+
+  //today close
+  // submitCourse(): void {
+
+  // if (this.isEditMode && this.editCourseId) {
+  //   this.teacherService.updateCourse(this.editCourseId, this.courseData).subscribe({
+  //     next: () => {
+  //       alert('Course updated successfully');
+  //       this.router.navigate(['/teacher/my-courses']);
+  //     },
+  //     error: (err) => {
+  //       console.error('Update course error:', err);
+  //       alert('Course update failed');
+  //     }
+  //   });
+
+  // } else {
+
+    
+
+    // // 🔥 CASE 1: FILE UPLOAD
+    // if (this.selectedFile) {
+    //   const formData = new FormData();
+
+    //   Object.keys(this.courseData).forEach(key => {
+    //     formData.append(key, this.courseData[key]);
+    //   });
+
+    //   formData.append('file', this.selectedFile);
+
+    //   this.teacherService.uploadCourseWithPdf(formData).subscribe({
+    //     next: () => {
+    //       alert('Course added with PDF upload');
+    //       this.router.navigate(['/teacher/my-courses']);
+    //     },
+    //     error: (err) => {
+    //       console.error(err);
+    //       alert('Upload failed');
+    //     }
+    //   });
+
+  //   } else {
+  //     // 🔥 CASE 2: NORMAL (URL)
+  //     this.teacherService.addCourse(this.courseData).subscribe({
+  //       next: () => {
+  //         alert('Course added successfully');
+  //         this.router.navigate(['/teacher/my-courses']);
+  //       },
+  //       error: (err) => {
+  //         console.error('Add course error:', err);
+  //         alert('Course add failed');
+  //       }
+  //     });
+  //   }
+//   }
+// }
+
+submitCourse(): void {
+
+  // 🔥 EDIT MODE
+  if (this.isEditMode && this.editCourseId) {
+    this.teacherService.updateCourse(this.editCourseId, this.courseData).subscribe({
+      next: () => {
+        alert('Course updated successfully');
+        this.router.navigate(['/teacher/my-courses']);
+      },
+      error: (err) => {
+        console.error('Update course error:', err);
+        alert('Course update failed');
+      }
+    });
+    return; // 🔥 important
+  }
+
+  // 🔥 ADD MODE
+  if (this.selectedFile) {
+    // 👉 PDF upload case
+    const formData = new FormData();
+
+    Object.keys(this.courseData).forEach((key) => {
+      formData.append(key, this.courseData[key] ?? '');
+    });
+
+    formData.append('file', this.selectedFile);
+
+    this.teacherService.uploadCourseWithPdf(formData).subscribe({
+      next: () => {
+        alert('Course added with PDF upload');
+        this.router.navigate(['/teacher/my-courses']);
+      },
+      error: (err) => {
+        console.error('Upload course error:', err);
+        alert('Course upload failed');
+      }
+    });
+
+  } else {
+    // 👉 Normal add (no file)
+    this.teacherService.addCourse(this.courseData).subscribe({
+      next: () => {
+        alert('Course added successfully');
+        this.router.navigate(['/teacher/my-courses']);
+      },
+      error: (err) => {
+        console.error('Add course error:', err);
+        alert('Course add failed');
+      }
+    });
   }
 }
+
+
+
+
+
+
+
+ }

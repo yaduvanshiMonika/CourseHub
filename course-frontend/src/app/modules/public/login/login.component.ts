@@ -126,7 +126,7 @@ export class LoginComponent {
           if (res.role === 'admin') {
             this.router.navigate(['/admin-dashboard']);
           } else if (res.role === 'teacher') {
-            this.router.navigate(['/teacher-panel']);
+            this.router.navigate(['/teacher']);
           } else {
             this.router.navigate(['/']);
           }

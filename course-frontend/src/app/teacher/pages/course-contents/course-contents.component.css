@@ -1,19 +1,38 @@
-
 .course-contents-page {
-  padding: 24px;
+  padding: 24px 5%;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.course-contents-page h2 {
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 700;
   color: #fff;
 }
 
+/* ---------- FORM CARD ---------- */
 .content-form-card {
+  max-width: 1180px;
+  margin: 0 auto 24px;
   background: #0f172a;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
+  border-radius: 20px;
   padding: 20px;
-  margin-bottom: 24px;
+  box-sizing: border-box;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
 
 .form-group {
   margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .form-group input,
@@ -21,49 +40,175 @@
   width: 100%;
   padding: 14px 16px;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: #0b1324;
   color: #fff;
   outline: none;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: rgba(124, 58, 237, 0.9);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
 }
 
 .form-actions {
   display: flex;
   gap: 12px;
   margin-top: 14px;
-}
-
-.content-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.content-card {
-  background: #0f172a;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 18px;
-  padding: 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-}
-
-.content-info h3 {
-  margin: 0 0 10px;
-}
-
-.content-info p {
-  margin: 6px 0;
-}
-
-.content-actions {
-  display: flex;
-  gap: 10px;
   flex-wrap: wrap;
 }
 
+/* ---------- CONTENT LIST ---------- */
+.content-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* ---------- SINGLE CONTENT CARD ---------- */
+.content-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 18px;
+  box-sizing: border-box;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+.content-card-inner {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* ---------- LEFT INFO ---------- */
+.content-info {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 18px 16px;
+  box-sizing: border-box;
+  min-height: 100%;
+}
+
+.content-info h3 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  word-break: break-word;
+}
+
+.content-info p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #e5e7eb;
+}
+
+.content-info strong {
+  color: #fff;
+}
+
+/* ---------- RIGHT SIDE WRAPPER ---------- */
+.content-media {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px;
+  grid-template-areas:
+    "video actions"
+    "pdf actions";
+  gap: 14px 16px;
+  align-items: start;
+  min-width: 0;
+}
+
+/* ---------- VIDEO ---------- */
+.video-container {
+  grid-area: video;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.video-container iframe {
+  width: 100%;
+  height: 300px;
+  border: 0;
+  border-radius: 14px;
+  display: block;
+}
+
+/* ---------- PDF ---------- */
+.pdf-file {
+  grid-area: pdf;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 16px;
+  border-radius: 14px;
+  box-sizing: border-box;
+}
+
+.pdf-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.pdf-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.pdf-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pdf-name {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.pdf-type {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ---------- ACTIONS ---------- */
+.content-actions {
+  grid-area: actions;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 12px;
+  height: 100%;
+}
+
+.content-actions .btn {
+  width: 84px;
+  text-align: center;
+}
+
+/* ---------- BUTTONS ---------- */
 .btn {
   border: none;
   padding: 10px 16px;
@@ -71,6 +216,13 @@
   color: #fff;
   cursor: pointer;
   font-weight: 600;
+  font-size: 14px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
 }
 
 .btn-primary {
@@ -89,10 +241,126 @@
   background: #ef4444;
 }
 
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-download:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+/* ---------- STATES ---------- */
 .loading-box,
 .empty-box {
+  max-width: 1180px;
+  margin: 0 auto;
   padding: 18px;
   border-radius: 14px;
   background: #0f172a;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e5e7eb;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 991px) {
+  .course-contents-page {
+    padding: 20px 16px;
+  }
+
+  .content-form-card,
+  .content-list,
+  .loading-box,
+  .empty-box {
+    max-width: 100%;
+  }
+
+  .content-card-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .content-media {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "video"
+      "pdf"
+      "actions";
+  }
+
+  .content-actions {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    height: auto;
+  }
+
+  .video-container iframe {
+    height: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-form-card,
+  .content-card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .content-info {
+    padding: 14px;
+  }
+
+  .content-info h3 {
+    font-size: 18px;
+  }
+
+  .video-container iframe {
+    height: 210px;
+  }
+
+  .pdf-file {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-download {
+    width: 100%;
+    text-align: center;
+  }
+
+  .content-actions .btn {
+    width: auto;
+    min-width: 84px;
+  }
+}
+
+@media (max-width: 480px) {
+  .course-contents-page {
+    padding: 16px 12px;
+  }
+
+  .video-container iframe {
+    height: 190px;
+  }
+
+  .content-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .content-actions .btn {
+    width: 100%;
+  }
 }

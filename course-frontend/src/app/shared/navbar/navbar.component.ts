@@ -53,7 +53,7 @@ goToAdmin() {
 }
 
 goToTeacher() {
-  this.router.navigate(['/teacher-panel']);
+  this.router.navigate(['/teacher']);
 }
 
 }
