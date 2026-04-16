@@ -23,7 +23,7 @@ export class EnrollmentsComponent implements OnInit {
   }
 
   fetchEnrollments(): void {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`

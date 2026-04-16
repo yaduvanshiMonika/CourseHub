@@ -23,7 +23,8 @@ export class AppComponent {
   //add monika
   isLoggedIn: boolean =false;
   ngDoCheck(): void {
-    this.isLoggedIn = !!localStorage.getItem('token');
+    // this.isLoggedIn = !!localStorage.getItem('token');
+    this.isLoggedIn = !!sessionStorage.getItem('token');
   }
 
   constructor(private router: Router) {}

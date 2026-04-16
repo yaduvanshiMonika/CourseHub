@@ -17,8 +17,12 @@ import { ReceiptComponent } from './receipt/receipt.component';
   declarations: [
     AppComponent,
     AdminDashboardComponent,
+    ReceiptComponent, 
+    SafePipe,
+  
    
-    NavbarComponent
+    NavbarComponent,
+     
  ],
   imports: [
     BrowserModule,

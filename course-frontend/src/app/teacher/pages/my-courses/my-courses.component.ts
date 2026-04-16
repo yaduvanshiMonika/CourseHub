@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TeacherService } from 'src/app/services/teacher.service';
+import { NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-my-courses',
@@ -16,9 +18,16 @@ export class MyCoursesComponent implements OnInit {
     private router: Router
   ) {}
 
+  
   ngOnInit(): void {
-    this.loadCourses();
-  }
+  this.loadCourses();
+
+  this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe(() => {
+      this.loadCourses();   // 🔥 auto refresh when coming back
+    });
+}
 
    loadCourses(): void {
     this.isLoading = true;
@@ -54,23 +63,16 @@ export class MyCoursesComponent implements OnInit {
   editCourse(course: any): void {
     this.router.navigate(['/teacher/add-course'], {
       state: { editCourse: course }
+      
     });
   }
 
-  deleteCourse(courseId: number): void {
-    const confirmDelete = confirm('Are you sure you want to delete this course?');
-
-    if (!confirmDelete) return;
-
-    this.teacherService.deleteCourse(courseId).subscribe({
-      next: () => {
-        alert('Course deleted successfully');
-        this.loadCourses();
-      },
-      error: (err) => {
-        console.error('Delete course error:', err);
-        alert('Failed to delete course');
-      }
-    });
-  }
+  
+  deleteCourse(courseId: number) {
+  this.teacherService.deleteCourse(courseId).subscribe(() => {
+    alert('Deleted');
+    this.loadCourses();   //  auto refresh
+  });
+}
+  
 }

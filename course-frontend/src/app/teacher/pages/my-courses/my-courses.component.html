@@ -1,5 +1,5 @@
 <div class="my-courses-page">
-  <h2>My Courses</h2>
+  <!-- <h2>My Courses</h2> -->
   <div *ngIf="isLoading" class="loading-box">
     Loading courses...
   </div>
@@ -20,10 +20,10 @@
 
         <div class="course-meta-top">
     <span class="level-badge">{{ course.level | uppercase }}</span>
-    <span class="lecture-count">{{ course.total_contents }} lectures</span>
+    <!-- <span class="lecture-count">{{ course.total_contents }} lectures</span> -->
+     <span class="lecture-count">{{ course.lectureCount }} lectures</span>
   </div>
 
-         <!-- <span class="level-badge">{{ course.level | uppercase }}</span> -->
         <h3>{{ course.title }}</h3>
         <p><strong>Category:</strong> {{ course.category }}</p>
         <p><strong>Instructor:</strong> {{ course.instructor }}</p>

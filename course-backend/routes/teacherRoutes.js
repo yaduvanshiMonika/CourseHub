@@ -34,7 +34,8 @@ const {
   updateCourseContent,
   deleteCourseContent,
   reorderCourseContents,
-  getCourseEnrollments
+  getCourseEnrollments,
+  getContentPdf   // 👈 add this line
 } = require("../controllers/teacherController");
 
 router.use(authMiddleware(["teacher"]));
@@ -75,7 +76,7 @@ router.put(
   updateCourseContent
 );
 router.delete("/contents/:contentId", deleteCourseContent);
-
+router.get("/content/pdf/:contentId", getContentPdf);  // 👈 add this line
 
 // Enrollments
 router.get("/courses/:courseId/enrollments", getCourseEnrollments);

@@ -11,14 +11,27 @@ export class TeacherService {
 
   constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
-  }
+  // private getHeaders(): HttpHeaders {
+  //   const token = sessionStorage.getItem('token') || '';
+  //   return new HttpHeaders({
+  //     Authorization: `Bearer ${token}`
+  //   });
+  // }
+private getHeaders(): HttpHeaders {
+  const token = sessionStorage.getItem('token') || localStorage.getItem('token') || '';
+  return new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+}
 
-//add today
+//add new 
+downloadPdf(fileUrl: string): Observable<Blob> {
+  return this.http.get(fileUrl, {
+    headers: this.getHeaders(),
+    responseType: 'blob'
+  });
+}
+
 uploadCourseWithPdf(formData: FormData) {
   return this.http.post(
     `${this.baseUrl}/courses/upload`,
