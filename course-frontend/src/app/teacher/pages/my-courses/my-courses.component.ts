@@ -1,0 +1,78 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { TeacherService } from 'src/app/services/teacher.service';
+import { NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-my-courses',
+  templateUrl: './my-courses.component.html',
+  styleUrls: ['./my-courses.component.css']
+})
+export class MyCoursesComponent implements OnInit {
+  courses: any[] = [];
+  isLoading: boolean = false;
+
+  constructor(
+    private teacherService: TeacherService,
+    private router: Router
+  ) {}
+
+  
+  ngOnInit(): void {
+  this.loadCourses();
+
+  this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe(() => {
+      this.loadCourses();   // 🔥 auto refresh when coming back
+    });
+}
+
+   loadCourses(): void {
+    this.isLoading = true;
+
+    this.teacherService.getMyCourses().subscribe({
+      next: (res: any) => {
+        console.log('GET MY COURSES RESPONSE =', res);
+
+        if (res && res.success) {
+          this.courses = res.data || [];
+        } else {
+          this.courses = [];
+        }
+
+            this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Get my courses error:', err);
+        this.courses = [];
+        this.isLoading = false;
+      }
+    });
+  }
+
+  goToContents(courseId: number): void {
+    this.router.navigate(['/teacher/contents', courseId]);
+  }
+
+  goToEnrollments(courseId: number): void {
+    this.router.navigate(['/teacher/enrollments', courseId]);
+  }
+
+  editCourse(course: any): void {
+    this.router.navigate(['/teacher/add-course'], {
+      state: { editCourse: course }
+      
+    });
+  }
+
+  
+  deleteCourse(courseId: number) {
+  this.teacherService.deleteCourse(courseId).subscribe(() => {
+    alert('Deleted');
+    this.loadCourses();   //  auto refresh
+  });
+}
+  
+}

@@ -1,0 +1,242 @@
+.course-contents-page {
+  padding: 24px 5%;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.course-contents-page h2 {
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ---------- FORM CARD ---------- */
+.content-form-card {
+  max-width: 1180px;
+  margin: 0 auto 16px; /* gap reduce */
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+/* ---------- SCROLL BOX (NEW) ---------- */
+.content-scroll-box {
+  max-width: 1180px;
+  margin: 0 auto;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* scrollbar (minimal) */
+.content-scroll-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-scroll-box::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* ---------- FORM ---------- */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0b1324;
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: rgba(124, 58, 237, 0.9);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+/* ---------- CONTENT LIST ---------- */
+.content-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---------- CARD ---------- */
+.content-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 12px 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+.content-card-inner {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* ---------- LEFT ---------- */
+.content-info {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.content-info h3 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.content-info p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #e5e7eb;
+}
+
+/* ---------- RIGHT ---------- */
+.content-media {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px;
+  grid-template-areas:
+    "video actions"
+    "pdf actions";
+  gap: 14px 16px;
+}
+
+/* ---------- VIDEO ---------- */
+.video-container iframe {
+  width: 100%;
+  height: 200px;
+  border-radius: 14px;
+}
+
+/* ---------- PDF ---------- */
+
+
+.pdf-file {
+  grid-area: pdf;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 8px 12px;     
+  border-radius: 10px;  
+  height: auto;          
+}
+
+.pdf-info {
+  display: flex;
+  align-items: center;   /* 🔥 vertical center */
+  gap: 10px;
+}
+
+.pdf-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.pdf-name {
+  font-weight: 600;
+}
+
+/* ---------- ACTION ---------- */
+
+.content-actions {
+  grid-area: actions;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   
+  align-items: center;       
+  gap: 12px;
+  height: 100%;             
+}
+
+
+.content-actions .btn {
+  width: 110px;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #7c3aed, #9333ea);
+}
+
+.btn-warning {
+  background: #f59e0b;
+}
+
+.btn-danger {
+  background: #ef4444;
+}
+
+.btn-download {
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  padding: 10px 16px;
+  border-radius: 10px;
+}
+
+/* ---------- STATES ---------- */
+.loading-box,
+.empty-box {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px;
+  border-radius: 14px;
+  background: #0f172a;
+}
+
+.btn-secondary {
+  background: #334155;   /* dark background */
+  color: #fff;           /* text white */
+  opacity: 0.8;
+}
+
+.btn-secondary:hover {
+  opacity: 1;
+}

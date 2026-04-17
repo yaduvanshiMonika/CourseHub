@@ -18,11 +18,19 @@ import { Router } from '@angular/router';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
+  title = 'course-frontend';
+
+  //add monika
+  isLoggedIn: boolean =false;
+  ngDoCheck(): void {
+    // this.isLoggedIn = !!localStorage.getItem('token');
+    this.isLoggedIn = !!sessionStorage.getItem('token');
+  }
 
   constructor(private router: Router) {}
 
   isAdminRoute(): boolean {
     return this.router.url.includes('admin-dashboard') ||
-           this.router.url.includes('teacher-panel');
+           this.router.url.includes('teacher');
   }
 }

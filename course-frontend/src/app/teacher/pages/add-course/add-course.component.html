@@ -1,0 +1,64 @@
+<div class="add-course-page">
+  <div class="form-card">
+    <!-- <h2>{{ isEditMode ? 'Edit Course' : 'Add Course' }}</h2> -->
+
+    <form (ngSubmit)="submitCourse()">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" [(ngModel)]="courseData.title" name="title" required />
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <input type="text" [(ngModel)]="courseData.category" name="category" required />
+      </div>
+
+      <div class="form-group">
+        <label>Instructor</label>
+        <input type="text" [(ngModel)]="courseData.instructor" name="instructor" />
+      </div>
+      
+      <div class="form-group">
+        <label>Price</label>
+        <input type="number" [(ngModel)]="courseData.price" name="price" />
+      </div>
+
+      <div class="form-group">
+        <label>Status</label>
+        <select [(ngModel)]="courseData.status" name="status">
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+  <label>Level</label>
+  <select [(ngModel)]="courseData.level" name="level">
+    <option value="beginner">Beginner</option>
+    <option value="intermediate">Intermediate</option>
+    <option value="advanced">Advanced</option>
+  </select>
+</div>
+
+      <div class="form-group">
+        <label>Video Link</label>
+        <input type="text" [(ngModel)]="courseData.video_link" name="video_link" />
+      </div>
+
+      <div class="form-group">
+        <label>Thumbnail URL</label>
+        <input type="text" [(ngModel)]="courseData.thumbnailUrl" name="thumbnailUrl" />
+      </div>
+
+      <div class="form-group full-width">
+        <label>Description</label>
+        <textarea [(ngModel)]="courseData.description" name="description" rows="2"></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        {{ isEditMode ? 'Update Course' : 'Add Course' }}
+      </button>
+    </form>
+  </div>
+</div>

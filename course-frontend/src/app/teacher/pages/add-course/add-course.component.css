@@ -1,0 +1,110 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: radial-gradient(circle at top, #020617, #020617 60%, #000);
+  box-sizing: border-box;
+}
+
+/* ===== MAIN WRAPPER ===== */
+.add-course-page {
+  width: 100%;
+}
+
+/* ===== BIG CENTER CARD (LIKE PRIMEFINAXIS) ===== */
+.form-card {
+  width: 75%;              /* card chhota & clean */
+  max-width: 900px;
+
+  margin: 4px auto 4px;   /* 🔥 upar shift (top gap kam, bottom normal) */
+
+  padding: 28px 32px;
+  border-radius: 22px;
+
+  background: linear-gradient(180deg, rgba(16, 23, 38, 0.96), rgba(10, 15, 30, 0.98));
+  border: 1px solid rgba(124, 58, 237, 0.25);
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  backdrop-filter: blur(12px);
+}
+/* ===== GRID ===== */
+form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px 32px;
+}
+
+/* ===== GROUP ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* ===== LABEL ===== */
+label {
+  margin-bottom: 8px;
+  color: #cbd5f5;
+  font-size: 14px;
+}
+
+/* ===== INPUT ===== */
+input,
+select,
+textarea {
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(17, 24, 39, 0.95);
+  color: #fff;
+  font-size: 14px;
+  transition: 0.25s;
+}
+
+/* ===== FOCUS ===== */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+}
+
+/* ===== TEXTAREA ===== */
+textarea {
+  min-height: 150px;
+}
+
+/* ===== BUTTON ===== */
+.submit-btn {
+  grid-column: 1 / -1;
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: 16px;
+
+  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+
+  box-shadow: 0 18px 50px rgba(124, 58, 237, 0.5);
+  cursor: pointer;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+  form {
+    grid-template-columns: 1fr;
+  }
+
+  .form-card {
+    width: 100%;
+    padding: 30px;
+  }
+}

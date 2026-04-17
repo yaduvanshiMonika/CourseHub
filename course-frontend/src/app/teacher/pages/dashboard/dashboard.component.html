@@ -1,0 +1,40 @@
+<div class="teacher-layout">
+  <aside class="sidebar">
+    <div class="logo-box">
+      <p>Welcome, {{ teacherName }}</p>
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/teacher/add-course" routerLinkActive="active">Add Course</a>
+      <a routerLink="/teacher/my-courses" routerLinkActive="active">My Courses</a>
+    </nav>
+  </aside>
+
+  <main class="content-area">
+
+    <!--  TOP HEADER (CourseHub style) -->
+    <div class="topbar-full">
+      <div class="brand">&lt; CourseHub</div>
+
+      <div class="profile-menu" (click)="toggleMenu(); $event.stopPropagation()">
+        <div class="avatar">{{ teacherInitial }}</div>
+        <span class="role-text">Teacher</span>
+
+        <div class="dropdown" *ngIf="menuOpen" (click)="$event.stopPropagation()">
+          <button class="dropdown-item" (click)="goToSite()">
+            🌐 Back to Site
+          </button>
+          <button class="dropdown-item" (click)="logout()">
+            🚪 Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE -->
+    <div class="page-body">
+      <router-outlet></router-outlet>
+    </div>
+
+  </main>
+</div>

@@ -329,10 +329,7 @@ else if (this.activeTab === 'users') {
     this.selectedFile = null;
   }
 
-  // logout(): void {
-  //   localStorage.clear();
-  //   this.router.navigate(['/login']);
-  // }
+
   coursesList: any[] = [];
 courseContents: any[] = [];
 selectedCourseId: number | null = null;

@@ -1,0 +1,93 @@
+<div class="course-contents-page">
+  <h2>Course Contents</h2>
+
+  <div class="content-form-card">
+    <form (ngSubmit)="submitContent()">
+      <div class="form-group">
+        <input type="text" [(ngModel)]="contentData.title" name="title" placeholder="Content title" required />
+      </div>
+      <div class="form-group">
+        <label>Video URL</label>
+        <input type="text" [(ngModel)]="contentData.url" name="url" placeholder="Enter video URL" />
+      </div>
+      <div class="form-group">
+        <label>Upload PDF </label>
+        <input type="file" accept="application/pdf" (change)="onFileSelect($event)" />
+      </div>
+      <div class="form-group">
+        <input type="number" [(ngModel)]="contentData.position" name="position" placeholder="Position" required />
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ isEditMode ? 'Update Content' : 'Add Content' }}
+        </button>
+
+        <button *ngIf="isEditMode" type="button" class="btn btn-secondary" (click)="cancelEdit()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-box">
+    Loading contents...
+  </div>
+
+  <div *ngIf="!isLoading && groupedContents.length === 0" class="empty-box">
+    No contents found.
+  </div>
+
+
+<div class="content-scroll-box">
+  <div class="content-list" *ngIf="!isLoading && groupedContents.length > 0">
+    <div class="content-card" *ngFor="let content of groupedContents">
+      <div class="content-card-inner">
+        <!-- LEFT -->
+        <div class="content-info">
+          <h3>{{ content.title }}</h3>
+          <p><strong>Type:</strong> {{ content.typeLabel }}</p>
+          <p><strong>Position:</strong> {{ content.position }}</p>
+
+          <p><strong>Duration:</strong> {{ formatDuration(content.duration) }}</p>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="content-media">
+          <div *ngIf="content.videoUrl" class="video-container">
+            <iframe [src]="getSafeUrl(content.videoUrl)" frameborder="0" allowfullscreen></iframe>
+          </div>
+
+
+          <div *ngIf="content.pdfName" class="pdf-file">
+            <div class="pdf-info">
+              <div class="pdf-icon">📄</div>
+
+              <div class="pdf-details">
+
+                <p class="pdf-name">{{ content.pdfName }}</p>
+               
+              </div>
+            </div>
+
+
+            <button class="btn btn-download" (click)="downloadPdfFile(content.pdfId, content.pdfName)">
+              ⬇ Download PDF
+            </button>
+
+          </div>
+
+          <div class="content-actions">
+            <button class="btn btn-warning" (click)="editContent(content)">
+              Edit
+            </button>
+
+            <button class="btn btn-danger" (click)="deleteContent(content)">
+              Delete
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

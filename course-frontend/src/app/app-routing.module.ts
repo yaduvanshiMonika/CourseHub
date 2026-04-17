@@ -6,11 +6,11 @@ import { RoleGuard } from './guards/role.guard';
 import { CourseListComponent } from './modules/public/course-list/course-list.component';
 import { CourseDetailComponent } from './modules/public/course-detail/course-detail.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
-import { TeacherDashboardComponent } from './teacher-dashboard/teacher-dashboard.component';
+
 // Find where your Login/Register actually sit and import them here:
 import { LoginComponent } from './modules/public/login/login.component'; 
 import { HomeComponent } from './modules/public/home/home.component';
-import { ReceiptComponent } from './receipt/receipt.component';
+
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -27,14 +27,15 @@ const routes: Routes = [
     canActivate: [RoleGuard], 
     data: { expectedRoles: ['admin'] } 
   },
-  { 
-    path: 'teacher-panel', 
-    component: TeacherDashboardComponent, 
-    canActivate: [RoleGuard], 
-    data: { expectedRoles: ['teacher'] } 
-  },
-  { path: 'receipt/:id', component: ReceiptComponent },
-  { path: '**', redirectTo: '' },
+
+{
+  path: 'teacher',
+  loadChildren: () =>
+    import('./teacher/teacher.module').then(m => m.TeacherModule),
+  canActivate: [RoleGuard],
+  data: { expectedRoles: ['teacher'] }
+},
+  { path: '**', redirectTo: '' }
 
   
 ];
