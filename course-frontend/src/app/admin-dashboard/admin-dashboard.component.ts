@@ -14,7 +14,7 @@ export class AdminDashboardComponent implements OnInit {
   userName: string = '';
 userRole: string = '';
 
-  activeTab: 'courses' | 'videos' | 'tutorials' | 'users' | 'deleted-students' | 'teachers' | 'payments' = 'courses';
+  activeTab: 'dashboard'|'courses' | 'videos' | 'tutorials' | 'users' | 'deleted-students' | 'teachers' | 'payments' = 'courses';
 
   allData: any[] = [];
   selectedFile: File | null = null;
@@ -463,5 +463,10 @@ logout(): void {
   this.showDropdown = false;
   sessionStorage.clear();
   this.router.navigate(['/login']);
+}
+
+
+viewReceipt(id: number) {
+  window.open(`http://localhost:5000/api/payments/receipt/${id}`, '_blank');
 }
 }

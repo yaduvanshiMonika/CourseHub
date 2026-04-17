@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { CourseService } from 'src/app/services/course.service';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html', 
@@ -59,7 +60,8 @@ student.startLearning();`;
   constructor(
   private courseService: CourseService,
   public authService: AuthService,
-  private router: Router
+  private router: Router,
+  private http: HttpClient
 ) {}
 
   ngOnInit() {
@@ -192,4 +194,28 @@ goToTeacher() {
   this.router.navigate(['/teacher-panel']);
 }
 
+
+contact = {
+  name: '',
+  email: '',
+  phone: '',
+  subject: '',
+  message: ''
+};
+
+submitContact() {
+  this.http.post('http://localhost:5000/api/contact', this.contact)
+    .subscribe(() => {
+      alert("Message sent successfully ✅");
+
+      // reset form
+      this.contact = {
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      };
+    });
+}
 }

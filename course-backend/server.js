@@ -102,6 +102,9 @@ app.get('/', (req, res) => {
   res.send('API Running 🚀');
 });
 
+const contactRoutes = require('./routes/contactRoutes');
+app.use('/api/contact', contactRoutes);
+
 app.listen(5000, () => {
   console.log('Server running on port 5000');
 });

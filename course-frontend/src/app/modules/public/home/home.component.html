@@ -163,8 +163,7 @@
         Have questions about our courses? Want to discuss your learning journey? 
         We're here to help you succeed.
       </p>
-
-      <form class="contact-form">
+<!-- <form class="contact-form" (ngSubmit)="submitContact()">
 
         <div class="input-group">
           <input type="text" placeholder="Full Name *">
@@ -180,8 +179,57 @@
 
         <button class="btn-submit">Send Message</button>
 
-      </form>
-    </div>
+      </form> -->
+    
+    
+    <form class="contact-form" (ngSubmit)="submitContact()">
+
+  <div class="input-group">
+    <input 
+      type="text" 
+      placeholder="Full Name *"
+      [(ngModel)]="contact.name"
+      name="name"
+      required
+    >
+
+    <input 
+      type="email" 
+      placeholder="Email Address *"
+      [(ngModel)]="contact.email"
+      name="email"
+      required
+    >
+  </div>
+
+  <div class="input-group">
+    <input 
+      type="text" 
+      placeholder="Phone Number *"
+      [(ngModel)]="contact.phone"
+      name="phone"
+    >
+
+    <input 
+      type="text" 
+      placeholder="Subject *"
+      [(ngModel)]="contact.subject"
+      name="subject"
+    >
+  </div>
+
+  <textarea 
+    placeholder="Tell us more about your inquiry..."
+    [(ngModel)]="contact.message"
+    name="message"
+    required
+  ></textarea>
+
+  <button class="btn-submit" type="submit">
+    Send Message
+  </button>
+
+</form></div>
 
     <!-- RIGHT SIDE -->
     <div class="contact-right">
