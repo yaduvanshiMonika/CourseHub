@@ -15,6 +15,19 @@
   </div>
 
 </header> -->
+<div class="sidebar">
+  <button class="tab-btn" [class.active]="activeTab === 'dashboard'" (click)="setTab('dashboard')">
+      📊 Dashboard
+    </button>
+            <button class="tab-btn" [class.active]="activeTab === 'courses'" (click)="setTab('courses')">Courses</button>
+            <button class="tab-btn" [class.active]="activeTab === 'videos'" (click)="setTab('videos')">Videos</button>
+            <button class="tab-btn" [class.active]="activeTab === 'teachers'" (click)="setTab('teachers')">Teachers</button>
+            <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="setTab('users')">Students</button>
+            <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setTab('payments')">Payments</button>
+            <button class="tab-btn" [class.active]="activeTab === 'deleted-students'" (click)="setTab('deleted-students')">Deleted</button>
+          </div>
+
+
 
 <nav class="navbar">
   <div class="nav-wrapper">
@@ -51,7 +64,7 @@
   </div>
 </nav>
 
-
+<div class="main-body">
 
   <main class="admin-content-area">
     
@@ -118,14 +131,7 @@
         <div class="table-header">
           <h2>Manage {{ activeTab | titlecase }}</h2>
 
-          <div class="table-tabs">
-            <button class="tab-btn" [class.active]="activeTab === 'courses'" (click)="setTab('courses')">Courses</button>
-            <button class="tab-btn" [class.active]="activeTab === 'videos'" (click)="setTab('videos')">Videos</button>
-            <button class="tab-btn" [class.active]="activeTab === 'teachers'" (click)="setTab('teachers')">Teachers</button>
-            <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="setTab('users')">Students</button>
-            <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setTab('payments')">Payments</button>
-            <button class="tab-btn" [class.active]="activeTab === 'deleted-students'" (click)="setTab('deleted-students')">Deleted</button>
-          </div>
+          
         </div>
 
         <!-- TABLE -->
@@ -309,10 +315,18 @@
 
         <!-- ACTIONS -->
         <td>
-          <ng-container *ngIf="activeTab !== 'deleted-students'">
-            <button (click)="editItem(item)">✏️</button>
-            <button (click)="deleteItem(item.id)">🗑️</button>
+          <ng-container *ngIf="activeTab === 'payments'">
+             <button class="view-btn" (click)="viewReceipt(item.id)">
+    👁
+  </button>
           </ng-container>
+
+<!-- ✅ OTHER TABS KEEP ORIGINAL ACTIONS -->
+<ng-container *ngIf="activeTab !== 'payments' && activeTab !== 'deleted-students'">
+  <button (click)="editItem(item)">✏️</button>
+  <button (click)="deleteItem(item.id)">🗑️</button>
+</ng-container>
+
 
           <button *ngIf="activeTab === 'deleted-students'"
             (click)="restoreStudent(item.id)">
@@ -333,109 +347,53 @@
 </div>
       </div>
     </section>
-  </main>
+  </main></div>
 
   <!-- MODAL -->
-  <div class="modal-overlay" *ngIf="showModal">
-    <div class="modal-content">
 
-      <h2>
-        Add {{ activeTab === 'users' ? 'Student' : (activeTab | titlecase | slice:0:-1) }}
-      </h2>
-
-      <form (ngSubmit)="onSave()">
-
-        <div class="form-group">
-
-          <!-- TEACHERS / USERS -->
-          <input type="text"
-            placeholder="Name"
-            [(ngModel)]="formData.fullName"
-            name="fullName"
-            *ngIf="activeTab === 'teachers' || activeTab === 'users'">
-
-          <input type="email"
-            placeholder="Email"
-            [(ngModel)]="formData.email"
-            name="email"
-            *ngIf="activeTab === 'teachers' || activeTab === 'users'">
-
-          <input type="text"
-            placeholder="Expertise"
-            [(ngModel)]="formData.expertise"
-            name="expertise"
-            *ngIf="activeTab === 'teachers'">
-
-          <!-- COURSES -->
-          <input type="text"
-            placeholder="Enter Course Title"
-            [(ngModel)]="formData.title"
-            name="title"
-            *ngIf="activeTab === 'courses'">
-
-          <!-- CATEGORY DROPDOWN -->
-          <select [(ngModel)]="formData.category"
-            name="category"
-            *ngIf="activeTab === 'courses'">
-            <option value="" disabled selected>Select Category</option>
-            <option value="Development">Development</option>
-            <option value="Design">Design</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Business">Business</option>
-            <option value="Data Science">Data Science</option>
-          </select>
-
-          <!-- INSTRUCTOR DROPDOWN -->
-          <select [(ngModel)]="formData.instructor"
-            name="instructor"
-            *ngIf="activeTab === 'courses'">
-            <option value="" disabled selected>Select Instructor</option>
-            <option *ngFor="let t of teachersList" [value]="t.name">
-              {{ t.name }}
-            </option>
-          </select>
-          <!-- STATUS DROPDOWN -->
-<select [(ngModel)]="formData.status" name="status" *ngIf="activeTab === 'courses'">
-  <option value="published">Published</option>
-  <option value="draft">Draft</option>
-</select>
-
-          <!-- PAYMENTS -->
-          <input type="text"
-            placeholder="User"
-            [(ngModel)]="formData.user"
-            name="user"
-            *ngIf="activeTab === 'payments'">
-
-          <input type="text"
-            placeholder="Course"
-            [(ngModel)]="formData.course"
-            name="course"
-            *ngIf="activeTab === 'payments'">
-
-          <input type="number"
-            placeholder="Amount"
-            [(ngModel)]="formData.amount"
-            name="amount"
-            *ngIf="activeTab === 'payments'">
-
-          <select [(ngModel)]="formData.status"
-            name="status"
-            *ngIf="activeTab === 'payments'">
-            <option>pending</option>
-            <option>completed</option>
-            <option>failed</option>
-          </select>
-
-        </div>
-
-        <div class="modal-actions">
-          <button type="button" (click)="closeModal()">Cancel</button>
-          <button type="submit">Save</button>
-        </div>
-
-      </form>
-
+</div>
+ <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h2>Add {{ activeTab === 'users' ? 'Student' : (activeTab | titlecase | slice:0:-1) }}</h2>
+      <span class="close-icon" (click)="closeModal()">&times;</span>
     </div>
+
+    <form (ngSubmit)="onSave()">
+      <div class="modal-body">
+        <input type="text" placeholder="Full Name" [(ngModel)]="formData.fullName" name="fullName" *ngIf="activeTab === 'teachers' || activeTab === 'users'">
+        <input type="email" placeholder="Email Address" [(ngModel)]="formData.email" name="email" *ngIf="activeTab === 'teachers' || activeTab === 'users'">
+        <input type="text" placeholder="Expertise (e.g. Java, UI/UX)" [(ngModel)]="formData.expertise" name="expertise" *ngIf="activeTab === 'teachers'">
+
+        <input type="text" placeholder="Enter Course Title" [(ngModel)]="formData.title" name="title" *ngIf="activeTab === 'courses'">
+        
+        <select [(ngModel)]="formData.category" name="category" *ngIf="activeTab === 'courses'">
+          <option value="" disabled selected>Select Category</option>
+          <option value="Development">Development</option>
+          <option value="Design">Design</option>
+          <option value="Marketing">Marketing</option>
+        </select>
+
+        <select [(ngModel)]="formData.instructor" name="instructor" *ngIf="activeTab === 'courses'">
+          <option value="" disabled selected>Select Instructor</option>
+          <option *ngFor="let t of teachersList" [value]="t.name">{{ t.name }}</option>
+        </select>
+
+        <select [(ngModel)]="formData.status" name="status" *ngIf="activeTab === 'courses'">
+          <option value="published">Published (Live)</option>
+          <option value="draft">Draft</option>
+        </select>
+
+        <input type="text" placeholder="User Name" [(ngModel)]="formData.user" name="user" *ngIf="activeTab === 'payments'">
+        <input type="number" placeholder="Amount (INR)" [(ngModel)]="formData.amount" name="amount" *ngIf="activeTab === 'payments'">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn-save">Save Data</button>
+      </div>
+    </form>
+    
   </div>
 </div>
