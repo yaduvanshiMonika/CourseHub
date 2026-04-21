@@ -458,67 +458,7 @@ tr:hover td {
   font-size: 12px;
 }
 
-/* --- DROPDOWN BOX (FLOATING) --- */
-.profile {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #58a6ff, #2188ff);
-}
-.dropdown {
-  position: absolute;
-  top: 55px;
-  right: 0;
-  width: 220px;
-  background: rgba(22, 27, 34, 0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-  padding: 8px;
-  z-index: 10000;
-  animation: dropdownFade 0.2s ease;
-}
 
-@keyframes dropdownFade {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.dropdown-header {
-  padding: 12px 15px;
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #8b949e;
-  border-bottom: 1px solid #30363d;
-}
-
-.dropdown-item {
-  padding: 12px 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: #c9d1d9;
-  transition: 0.2s;
-}
-
-.dropdown-item:hover {
-  background: rgba(88, 166, 255, 0.1);
-  color: #58a6ff;
-}
-
-.dropdown-item.logout:hover {
-  background: rgba(248, 81, 73, 0.1);
-  color: #f85149;
-}
 
 .divider {
   height: 1px;
@@ -907,3 +847,389 @@ tr:hover td {
 
 .empty-icon { font-size: 40px; }
 .contact-empty p { font-size: 13px; color: #555; }
+/* ═══════════════════════════════════════════════
+   NAVBAR — Professional Avatar + Dropdown
+   Paste at bottom of admin-dashboard.component.css
+   ═══════════════════════════════════════════════ */
+ 
+/* ── PROFILE TRIGGER ──────────────────────────── */
+.profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 10px 6px 6px;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.2s, border-color 0.2s;
+  margin-left: auto;
+}
+ 
+.profile:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.14);
+}
+ 
+/* ── AVATAR CIRCLE ────────────────────────────── */
+.avatar-circle {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #58a6ff, #2188ff);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px rgba(88,166,255,0.3);
+  overflow: hidden;
+  text-transform: uppercase;
+}
+ 
+/* ── PROFILE TEXT ─────────────────────────────── */
+.profile-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+ 
+.profile-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f0f6fc;
+}
+ 
+.profile-role {
+  font-size: 10px;
+  color: #8b949e;
+  letter-spacing: 0.03em;
+}
+ 
+/* ── CHEVRON ──────────────────────────────────── */
+.chevron-icon {
+  color: #8b949e;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+ 
+.chevron-icon.rotated {
+  transform: rotate(180deg);
+}
+ 
+/* ── DROPDOWN MENU ────────────────────────────── */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 220px;
+  background: rgba(22, 27, 34, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  overflow: hidden;
+  z-index: 10000;
+  animation: dropdownFade 0.18s ease;
+}
+ 
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+ 
+/* ── DROPDOWN HEADER ──────────────────────────── */
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.03);
+}
+ 
+.dh-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #58a6ff, #2188ff);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+ 
+.dh-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+  overflow: hidden;
+}
+ 
+.dh-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f0f6fc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+ 
+.dh-role {
+  font-size: 10px;
+  color: #58a6ff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+ 
+/* ── DIVIDER ──────────────────────────────────── */
+.dropdown-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin: 0;
+}
+ 
+/* ── DROPDOWN ITEMS ───────────────────────────── */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  font-size: 13px;
+  color: #c9d1d9;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+ 
+.dropdown-item:last-child { border-bottom: none; }
+ 
+.dropdown-item:hover {
+  background: rgba(88,166,255,0.08);
+  color: #58a6ff;
+}
+ 
+.dropdown-item:hover .di-icon svg {
+  stroke: #58a6ff;
+}
+ 
+/* Logout item — red on hover */
+.logout-item:hover {
+  background: rgba(248, 81, 73, 0.08) !important;
+  color: #f85149 !important;
+}
+ 
+.logout-item:hover .di-icon svg {
+  stroke: #f85149 !important;
+}
+ 
+.di-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  flex-shrink: 0;
+}
+ 
+.di-icon svg {
+  stroke: #8b949e;
+  transition: stroke 0.15s;
+}
+/* ═══════════════════════════════════════════
+   PAGINATION — paste at bottom of CSS
+   ═══════════════════════════════════════════ */
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-top: 1px solid #30363d;
+  background: #0d1117;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid #30363d !important;
+  background: transparent !important;
+  color: #c9d1d9 !important;
+  font-size: 13px !important;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  margin: 0 !important;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: rgba(88,166,255,0.1) !important;
+  border-color: rgba(88,166,255,0.4) !important;
+  color: #58a6ff !important;
+}
+
+.page-btn:hover:not(:disabled) svg {
+  stroke: #58a6ff;
+}
+
+.page-btn.active {
+  background: #58a6ff !important;
+  border-color: #58a6ff !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+.page-btn:disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+}
+
+.page-ellipsis {
+  font-size: 13px;
+  color: #555;
+  padding: 0 4px;
+  user-select: none;
+}
+/* ═══════════════════════════════════════════════════
+   GLASS SWAL — add to styles.css
+   Replace ALL previous swal-related CSS with this
+   ═══════════════════════════════════════════════════ */
+
+.swal-naked {
+  background:  transparent !important;
+  border:      none        !important;
+  box-shadow:  none        !important;
+  padding:     0           !important;
+  max-width:   260px       !important;
+  width:       82%         !important;
+}
+
+.swal-naked .swal2-html-container {
+  margin:   0        !important;
+  padding:  0        !important;
+  overflow: visible  !important;
+}
+
+.swal-naked .swal2-timer-progress-bar {
+  background:    rgba(108,99,255,0.75) !important;
+  height:        2px                  !important;
+  border-radius: 0 0 18px 18px        !important;
+}
+
+/* ── Glass card (rendered inside html:) ── */
+.gs-card {
+  background:               rgba(10, 12, 22, 0.82)      !important;
+  backdrop-filter:          blur(28px)                   !important;
+  -webkit-backdrop-filter:  blur(28px)                   !important;
+  border:                   1px solid rgba(255,255,255,0.18) !important;
+  border-radius:            18px                         !important;
+  padding:                  22px 20px 18px               !important;
+  text-align:               center                       !important;
+  box-shadow:               0 16px 48px rgba(0,0,0,0.65), 
+                            inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.gs-icon  { font-size: 26px;   margin-bottom: 10px; line-height: 1; }
+.gs-title { font-size: 13px;   font-weight: 700; margin-bottom: 6px; }
+.gs-text  { font-size: 11.5px; color: rgba(255,255,255,0.6); line-height: 1.55; }
+
+/* ── Confirm / Cancel buttons ── */
+/* ═══════════════════════════════════════════════════
+   GLASS SWAL — add to styles.css
+   Replace ALL previous swal-related CSS with this
+   ═══════════════════════════════════════════════════ */
+
+.swal-naked {
+  background:  transparent !important;
+  border:      none        !important;
+  box-shadow:  none        !important;
+  padding:     0           !important;
+  max-width:   260px       !important;
+  width:       82%         !important;
+}
+
+.swal-naked .swal2-html-container {
+  margin:   0        !important;
+  padding:  0        !important;
+  overflow: visible  !important;
+}
+
+.swal-naked .swal2-timer-progress-bar {
+  background:    rgba(108,99,255,0.75) !important;
+  height:        2px                  !important;
+  border-radius: 0 0 18px 18px        !important;
+}
+
+/* ── Glass card (rendered inside html:) ── */
+.gs-card {
+  background:          rgba(15,18,30,0.60);
+  backdrop-filter:     blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border:              1px solid rgba(255,255,255,0.12);
+  border-radius:       18px;
+  padding:             22px 20px 18px;
+  text-align:          center;
+  box-shadow:          0 12px 40px rgba(0,0,0,0.45);
+}
+
+.gs-icon  { font-size: 26px;   margin-bottom: 10px; line-height: 1; }
+.gs-title { font-size: 13px;   font-weight: 700; margin-bottom: 6px; }
+.gs-text  { font-size: 11.5px; color: rgba(255,255,255,0.6); line-height: 1.55; }
+
+/* ── Confirm / Cancel buttons ── */
+.swal-naked .swal2-actions {
+  margin-top: 14px !important;
+  gap:        10px !important;
+  padding:    0    !important;
+}
+
+.swal-naked .swal2-confirm {
+  background:    rgba(218,54,51,0.75)       !important;
+  border:        1px solid rgba(255,255,255,0.15) !important;
+  border-radius: 10px  !important;
+  font-size:     12px  !important;
+  padding:       8px 18px !important;
+  color:         #fff  !important;
+  box-shadow:    none  !important;
+}
+
+.swal-naked .swal2-cancel {
+  background:    rgba(255,255,255,0.08)     !important;
+  border:        1px solid rgba(255,255,255,0.15) !important;
+  border-radius: 10px  !important;
+  font-size:     12px  !important;
+  padding:       8px 18px !important;
+  color:         rgba(255,255,255,0.75) !important;
+  box-shadow:    none  !important;
+}
+
+.swal-naked .swal2-confirm:hover { background: rgba(218,54,51,0.95)    !important; }
+.swal-naked .swal2-cancel:hover  { background: rgba(255,255,255,0.15)  !important; }
+
+/* Hide default swal icon/title — we use .gs-card html instead */
+.swal-naked .swal2-icon,
+.swal-naked .swal2-title,
+.swal-naked .swal2-content { display: none !important; }

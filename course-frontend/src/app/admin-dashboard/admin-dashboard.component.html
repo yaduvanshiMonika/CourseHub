@@ -17,32 +17,70 @@
   <div class="nav-wrapper">
 
     <!-- LEFT LOGO -->
-    <div class="logo">
-      &lt; CourseHub
-    </div>
+    <div class="logo">&lt; CourseHub</div>
 
     <!-- RIGHT PROFILE -->
     <div class="profile" (click)="toggleDropdown()">
 
-      <div class="avatar">
-        {{ (userName || 'A')[0] }}
+      <!-- AVATAR CIRCLE -->
+      <div class="avatar-circle">
+        {{ (userName || 'A')[0].toUpperCase() }}
       </div>
 
-      <span class="name">{{ userName }}</span>
+      <!-- NAME + ROLE -->
+      <div class="profile-text">
+        <span class="profile-name">{{ userName }}</span>
+        <span class="profile-role">Super Admin</span>
+      </div>
+
+      <!-- CHEVRON -->
+      <svg class="chevron-icon" [class.rotated]="showDropdown"
+        width="14" height="14" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
 
       <!-- DROPDOWN -->
       <div class="dropdown" *ngIf="showDropdown">
 
-        <div class="dropdown-item" (click)="goToWebsite()">
-          🌐 Back to Site
+        <!-- HEADER -->
+        <div class="dropdown-header">
+          <div class="dh-avatar">{{ (userName || 'A')[0].toUpperCase() }}</div>
+          <div class="dh-info">
+            <span class="dh-name">{{ userName }}</span>
+            <span class="dh-role">Super Admin</span>
+          </div>
         </div>
 
-        <div class="dropdown-item" (click)="logout()">
-          🚪 Logout
+        <div class="dropdown-divider"></div>
+
+        <!-- BACK TO SITE -->
+        <div class="dropdown-item" (click)="goToWebsite()">
+          <span class="di-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </span>
+          <span>Back to Site</span>
+        </div>
+
+        <!-- LOGOUT -->
+        <div class="dropdown-item logout-item" (click)="logout()">
+          <span class="di-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </span>
+          <span>Logout</span>
         </div>
 
       </div>
-
     </div>
 
   </div>
@@ -204,7 +242,7 @@
             </thead>
 
             <tbody>
-              <tr *ngFor="let item of filteredData">
+              <tr *ngFor="let item of paginatedData">
 
                 <!-- COURSES -->
                 <ng-container *ngIf="activeTab === 'courses'">
@@ -286,6 +324,45 @@
             </tbody>
 
           </table>
+
+          <!-- ✅ PAGINATION -->
+          <div class="pagination-bar"
+            *ngIf="filteredData.length > itemsPerPage && activeTab !== 'videos' && activeTab !== 'contacts'">
+
+            <span class="pagination-info">
+              Showing {{ (currentPage - 1) * itemsPerPage + 1 }}–{{ Math.min(currentPage * itemsPerPage, filteredData.length) }}
+              of {{ filteredData.length }}
+            </span>
+
+            <div class="pagination-controls">
+
+              <!-- PREV -->
+              <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+              </button>
+
+              <!-- PAGE NUMBERS -->
+              <ng-container *ngFor="let p of pageNumbers">
+                <span *ngIf="p === -1" class="page-ellipsis">…</span>
+                <button *ngIf="p !== -1"
+                  class="page-btn"
+                  [class.active]="p === currentPage"
+                  (click)="goToPage(p)">
+                  {{ p }}
+                </button>
+              </ng-container>
+
+              <!-- NEXT -->
+              <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+
+            </div>
+          </div>
 
           <!-- ✅ FIX 3: No data message hidden on contacts and videos tabs -->
           <div *ngIf="allData.length === 0 && activeTab !== 'videos' && activeTab !== 'contacts'">
