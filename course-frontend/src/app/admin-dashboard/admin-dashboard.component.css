@@ -526,3 +526,384 @@ tr:hover td {
   margin: 5px 0;
 }
 
+
+/* ═══════════════════════════════════════════════════
+   📩  CONTACTS TAB STYLES — paste at bottom of CSS
+   ═══════════════════════════════════════════════════ */
+
+.contacts-panel {
+  padding: 0;
+}
+
+/* ── STATS ROW ──────────────────────────────────── */
+.contacts-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 0;
+  padding: 20px 25px 16px;
+}
+
+.cstat {
+  flex: 1;
+  background: #0d1117;
+  border-radius: 12px;
+  padding: 16px 20px;
+  text-align: center;
+  border: 1px solid #30363d;
+}
+
+.cstat h3 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #fff;
+}
+
+.cstat p {
+  font-size: 12px;
+  color: #8b949e;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cstat.blue-glow   h3 { color: #58a6ff; }
+.cstat.orange-glow h3 { color: #ffaa44; }
+.cstat.green-glow  h3 { color: #44dd88; }
+
+/* ── FILTER BAR ─────────────────────────────────── */
+.contact-filter-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 25px;
+  border-bottom: 1px solid #30363d;
+}
+
+.contact-filter-bar button {
+  padding: 6px 18px !important;
+  border-radius: 20px !important;
+  border: 1px solid #30363d !important;
+  background: transparent !important;
+  color: #8b949e !important;
+  font-size: 13px !important;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 0 !important;
+}
+
+.contact-filter-bar button:hover {
+  background: rgba(255,255,255,0.06) !important;
+  color: #ccc !important;
+}
+
+.contact-filter-bar button.cf-active {
+  background: rgba(88,166,255,0.15) !important;
+  color: #58a6ff !important;
+  border-color: rgba(88,166,255,0.4) !important;
+}
+
+/* ── TWO-COLUMN LAYOUT ──────────────────────────── */
+.contacts-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  min-height: 480px;
+}
+
+/* ── LEFT: MESSAGE LIST ─────────────────────────── */
+.contacts-list {
+  border-right: 1px solid #30363d;
+  overflow-y: auto;
+  max-height: 540px;
+}
+
+.contact-item {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.contact-item:hover        { background: rgba(255,255,255,0.03); }
+.contact-item.ci-selected  { background: rgba(88,166,255,0.08); border-left: 3px solid #58a6ff; }
+
+.contact-item.unread::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #58a6ff;
+}
+
+.ci-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.ci-name    { font-size: 13px; font-weight: 600; color: #e0e0e0; }
+.ci-time    { font-size: 11px; color: #555; }
+.ci-subject { font-size: 12px; color: #aaa; margin-bottom: 3px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ci-preview { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+
+.ci-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-pending { background: rgba(255,170,68,0.15); color: #ffaa44; }
+.badge-replied { background: rgba(68,221,136,0.12); color: #44dd88; }
+
+.no-contacts {
+  padding: 32px 20px;
+  text-align: center;
+  color: #555;
+  font-size: 13px;
+}
+
+/* ── RIGHT: DETAIL PANEL ────────────────────────── */
+.contact-detail {
+  display: flex;
+  flex-direction: column;
+}
+
+.cd-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid #30363d;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #0d1117;
+}
+
+.cdh-left { flex: 1; }
+
+.cd-subject {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e8e8e8;
+  margin: 0 0 6px;
+}
+
+.cd-meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #666;
+}
+
+.btn-delete-contact {
+  background: rgba(255,80,80,0.1) !important;
+  color: #ff6060 !important;
+  border: 1px solid rgba(255,80,80,0.25) !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  cursor: pointer;
+  margin: 0 !important;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-delete-contact:hover {
+  background: rgba(255,80,80,0.22) !important;
+}
+
+/* ── MESSAGE BUBBLES ────────────────────────────── */
+.cd-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 280px;
+}
+
+.msg-bubble {
+  border-radius: 12px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.user-bubble  { background: #1c2040; }
+.admin-bubble { background: #1a2e22; margin-left: 28px; border-color: rgba(68,221,136,0.15); }
+
+.bubble-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.bubble-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-av  { background: rgba(88,166,255,0.2);  color: #58a6ff; }
+.admin-av { background: rgba(68,221,136,0.2);  color: #44dd88; }
+
+.bubble-info strong {
+  display: block;
+  font-size: 13px;
+  color: #ccc;
+  margin-bottom: 2px;
+}
+
+.bubble-info span { font-size: 11px; color: #666; }
+
+.bubble-text {
+  font-size: 13px;
+  color: #bbb;
+  line-height: 1.7;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ── REPLY BOX ──────────────────────────────────── */
+.cd-reply-box {
+  padding: 16px 24px 20px;
+  border-top: 1px solid #30363d;
+  background: #0d1117;
+}
+
+.reply-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.reply-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tmpl-wrap { position: relative; }
+
+.tmpl-trigger {
+  background: transparent !important;
+  border: 1px solid #30363d !important;
+  color: #8b949e !important;
+  font-size: 12px !important;
+  padding: 5px 12px !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  margin: 0 !important;
+  transition: all 0.2s;
+}
+
+.tmpl-trigger:hover {
+  background: rgba(255,255,255,0.06) !important;
+  color: #ccc !important;
+}
+
+.tmpl-dropdown {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  width: 240px;
+  overflow: hidden;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.tmpl-option {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #bbb;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.15s;
+}
+
+.tmpl-option:last-child { border-bottom: none; }
+.tmpl-option:hover      { background: rgba(88,166,255,0.1); color: #58a6ff; }
+
+.reply-textarea {
+  width: 100%;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  color: #ddd;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 12px 14px;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.reply-textarea:focus { border-color: rgba(88,166,255,0.5); }
+
+.reply-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.reply-hint { font-size: 11px; color: #555; }
+
+.btn-send-reply {
+  background: linear-gradient(135deg, #238636, #2ea043) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 9px 22px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  margin: 0 !important;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn-send-reply:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.btn-send-reply:disabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+}
+
+/* ── EMPTY STATE ────────────────────────────────── */
+.contact-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 300px;
+}
+
+.empty-icon { font-size: 40px; }
+.contact-empty p { font-size: 13px; color: #555; }

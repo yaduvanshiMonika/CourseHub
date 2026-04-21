@@ -1,20 +1,5 @@
 <div class="admin-page-wrapper">
 
-<!-- 🔥 TOP NAVBAR -->
-<!-- <header class="admin-header">
-
-  <div class="header-left">
-    <h2>CourseHub</h2>
-  </div>
-
-  <div class="header-right">
-
-    
-
-
-  </div>
-
-</header> -->
 <div class="sidebar">
   <button class="tab-btn" [class.active]="activeTab === 'dashboard'" (click)="setTab('dashboard')">
       📊 Dashboard
@@ -24,10 +9,9 @@
             <button class="tab-btn" [class.active]="activeTab === 'teachers'" (click)="setTab('teachers')">Teachers</button>
             <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="setTab('users')">Students</button>
             <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setTab('payments')">Payments</button>
+            <button class="tab-btn" [class.active]="activeTab === 'contacts'" (click)="setTab('contacts')">Contacts</button>
             <button class="tab-btn" [class.active]="activeTab === 'deleted-students'" (click)="setTab('deleted-students')">Deleted</button>
           </div>
-
-
 
 <nav class="navbar">
   <div class="nav-wrapper">
@@ -67,25 +51,23 @@
 <div class="main-body">
 
   <main class="admin-content-area">
-    
-    <!-- ACTION BAR -->
+
     <!-- ACTION BAR -->
     <div class="action-bar slide-up">
       <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        
-        <input 
-          type="text" 
+        <input
+          type="text"
           [(ngModel)]="searchTerm"
           (input)="applyFilter()"
           [placeholder]="'Search ' + activeTab + '...'"
         >
       </div>
-     
 
+      <!-- ✅ FIX 1: Hide + Add button on contacts and deleted-students tabs -->
       <button class="btn-primary"
         (click)="openAddModal()"
-        *ngIf="activeTab !== 'deleted-students'">
+        *ngIf="activeTab !== 'deleted-students' && activeTab !== 'contacts'">
         <span>+</span>
         Add {{ activeTab === 'users' ? 'Student' : (activeTab | titlecase | slice:0:-1) }}
       </button>
@@ -130,231 +112,354 @@
 
         <div class="table-header">
           <h2>Manage {{ activeTab | titlecase }}</h2>
-
-          
         </div>
 
         <!-- TABLE -->
-       <div class="table-responsive">
+        <div class="table-responsive">
 
-  <!-- ===================== -->
-  <!-- 🎬 VIDEOS TAB (ADMIN CONTENT PANEL) -->
-  <!-- ===================== -->
-  <div *ngIf="activeTab === 'videos'" class="content-panel">
+          <!-- ===================== -->
+          <!-- 🎬 VIDEOS TAB -->
+          <!-- ===================== -->
+          <div *ngIf="activeTab === 'videos'" class="content-panel">
 
-    <!-- COURSE SELECT -->
-    <div class="form-group" style="margin-bottom: 20px;">
-      <label style="display:block; margin-bottom:6px;">Select Course</label>
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label style="display:block; margin-bottom:6px;">Select Course</label>
+              <select (change)="onCourseSelect($event)" class="form-control">
+                <option value="">-- Select Course --</option>
+                <option *ngFor="let c of coursesList" [value]="c.id">
+                  {{ c.title }} ({{ c.category }})
+                </option>
+              </select>
+            </div>
 
-      <select (change)="onCourseSelect($event)" class="form-control">
-        <option value="">-- Select Course --</option>
+            <div *ngIf="!selectedCourseId" style="color:#888;">
+              Please select a course to view content
+            </div>
 
-        <option *ngFor="let c of coursesList" [value]="c.id">
-          {{ c.title }} ({{ c.category }})
-        </option>
-      </select>
-    </div>
+            <table *ngIf="selectedCourseId && courseContents.length > 0" class="custom-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Duration</th>
+                  <th>View</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of courseContents">
+                  <td>{{ item.title || 'N/A' }}</td>
+                  <td>
+                    <span *ngIf="item.type === 'video'">🎥 Video</span>
+                    <span *ngIf="item.type === 'pdf'">📄 PDF</span>
+                  </td>
+                  <td>{{ item.duration ? item.duration + ' min' : '—' }}</td>
+                  <td><a [href]="item.url" target="_blank">Open</a></td>
+                  <td><button (click)="deleteItem(item.id)">🗑️ Delete</button></td>
+                </tr>
+              </tbody>
+            </table>
 
-    <!-- NO COURSE SELECTED -->
-    <div *ngIf="!selectedCourseId" style="color:#888;">
-      Please select a course to view content
-    </div>
+            <div *ngIf="selectedCourseId && courseContents.length === 0" style="color:#888;">
+              No content available for this course
+            </div>
 
-    <!-- CONTENT TABLE -->
-    <table *ngIf="selectedCourseId && courseContents.length > 0" class="custom-table">
+          </div>
 
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Type</th>
-          <th>Duration</th>
-          <th>View</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+          <!-- ===================== -->
+          <!-- 📊 NORMAL TABLE (courses, teachers, users, payments, deleted-students) -->
+          <!-- ===================== -->
+          <table *ngIf="filteredData.length > 0 && activeTab !== 'videos' && activeTab !== 'contacts'">
 
-      <tbody>
-        <tr *ngFor="let item of courseContents">
+            <thead>
+              <tr *ngIf="activeTab === 'courses'">
+                <th>Title</th>
+                <th>Category</th>
+                <th>Instructor</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
 
-          <td>{{ item.title || 'N/A' }}</td>
+              <tr *ngIf="activeTab === 'teachers'">
+                <th>Name</th>
+                <th>Expertise</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
 
-          <td>
-            <span *ngIf="item.type === 'video'">🎥 Video</span>
-            <span *ngIf="item.type === 'pdf'">📄 PDF</span>
-          </td>
+              <tr *ngIf="activeTab === 'users' || activeTab === 'deleted-students'">
+                <th>Name</th>
+                <th>Email</th>
+                <th>ENROLLED COURSE</th>
+                <th>Actions</th>
+              </tr>
 
-          <td>
-            {{ item.duration ? item.duration + ' min' : '—' }}
-          </td>
+              <tr *ngIf="activeTab === 'payments'">
+                <th>User</th>
+                <th>Course</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
 
-          <td>
-            <a [href]="item.url" target="_blank">Open</a>
-          </td>
+            <tbody>
+              <tr *ngFor="let item of filteredData">
 
-          <td>
-            <button (click)="deleteItem(item.id)">🗑️ Delete</button>
-          </td>
+                <!-- COURSES -->
+                <ng-container *ngIf="activeTab === 'courses'">
+                  <td>{{ item.title }}</td>
+                  <td>{{ item.category }}</td>
+                  <td>{{ item.instructor }}</td>
+                  <td>
+                    <span
+                      class="status-pill"
+                      [ngClass]="{
+                        'published': item.status === 'published',
+                        'draft': item.status === 'draft'
+                      }"
+                    >
+                      <span class="dot"></span>
+                      {{ item.status === 'published' ? 'Live' : 'Draft' }}
+                    </span>
+                  </td>
+                </ng-container>
 
-        </tr>
-      </tbody>
+                <!-- TEACHERS -->
+                <ng-container *ngIf="activeTab === 'teachers'">
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.expertise }}</td>
+                  <td>{{ item.email }}</td>
+                </ng-container>
 
-    </table>
+                <!-- USERS -->
+                <ng-container *ngIf="activeTab === 'users' || activeTab === 'deleted-students'">
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.email }}</td>
+                  <td>{{ item.course || 'Not Enrolled' }}</td>
+                </ng-container>
 
-    <!-- EMPTY STATE -->
-    <div *ngIf="selectedCourseId && courseContents.length === 0" style="color:#888;">
-      No content available for this course
-    </div>
+                <!-- PAYMENTS -->
+                <ng-container *ngIf="activeTab === 'payments'">
+                  <td>
+                    <div style="font-weight: 600;">{{ item.user || 'Unknown User' }}</div>
+                    <div style="font-size: 11px; color: #888;">{{ item.user_email }}</div>
+                  </td>
+                  <td>{{ item.course || 'N/A' }}</td>
+                  <td>
+                    <strong>{{ item.amount ? (item.amount | currency:'INR') : '₹0.00' }}</strong>
+                  </td>
+                  <td>
+                    <span class="status-pill"
+                          [ngClass]="{
+                            'published': item.status === 'success',
+                            'draft': item.status === 'pending' || !item.status,
+                            'failed': item.status === 'failed'
+                          }">
+                      <span class="dot"></span>
+                      {{ item.status === 'success' ? 'Paid' : (item.status || 'Pending') }}
+                    </span>
+                  </td>
+                </ng-container>
 
-  </div>
+                <!-- ACTIONS -->
+                <td>
+                  <!-- Payments: view receipt only -->
+                  <ng-container *ngIf="activeTab === 'payments'">
+                    <button class="view-btn" (click)="viewReceipt(item.id)">👁</button>
+                  </ng-container>
 
-  <!-- ===================== -->
-  <!-- 📊 NORMAL TABLE (ALL OTHER TABS) -->
-  <!-- ===================== -->
-  <table *ngIf="filteredData.length > 0 && activeTab !== 'videos'">
+                  <!-- ✅ Edit + Delete for courses, teachers, users -->
+                  <ng-container *ngIf="activeTab !== 'payments' && activeTab !== 'deleted-students'">
+                    <button (click)="editItem(item)">✏️</button>
+                    <button (click)="deleteItem(item.id)">🗑️</button>
+                  </ng-container>
 
-    <thead>
-      <tr *ngIf="activeTab === 'courses'">
-        <th>Title</th>
-        <th>Category</th>
-        <th>Instructor</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
+                  <!-- ✅ FIX 2: Restore only on deleted-students tab -->
+                  <button *ngIf="activeTab === 'deleted-students'"
+                    (click)="restoreStudent(item.id)">
+                    Restore
+                  </button>
+                </td>
 
-      <tr *ngIf="activeTab === 'teachers'">
-        <th>Name</th>
-        <th>Expertise</th>
-        <th>Email</th>
-        
-        <th>Actions</th>
-      </tr>
+              </tr>
+            </tbody>
 
-      <tr *ngIf="activeTab === 'users' || activeTab === 'deleted-students'">
-        <th>Name</th>
-        <th>Email</th>
-       <th>ENROLLED COURSE</th>
-        <th>Actions</th>
-      </tr>
+          </table>
 
-      <tr *ngIf="activeTab === 'payments'">
-        <th>User</th>
-        <th>Course</th>
-        <th>Amount</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
+          <!-- ✅ FIX 3: No data message hidden on contacts and videos tabs -->
+          <div *ngIf="allData.length === 0 && activeTab !== 'videos' && activeTab !== 'contacts'">
+            No data found
+          </div>
 
-    <tbody>
-      <tr *ngFor="let item of filteredData">
+        </div>
 
-        <!-- COURSES -->
-        <ng-container *ngIf="activeTab === 'courses'">
-          <td>{{ item.title }}</td>
-          <td>{{ item.category }}</td>
-          <td>{{ item.instructor }}</td>
-   <td>
-  <span 
-    class="status-pill"
-    [ngClass]="{
-      'published': item.status === 'published',
-      'draft': item.status === 'draft'
-    }"
-  >
-    <span class="dot"></span>
-    {{ item.status === 'published' ? 'Live' : 'Draft' }}
-  </span>
-</td>
-        </ng-container>
+        <!-- ===================== -->
+        <!-- 📩 CONTACTS TAB -->
+        <!-- ===================== -->
+        <div *ngIf="activeTab === 'contacts'" class="contacts-panel">
 
-        <!-- TEACHERS -->
-        <ng-container *ngIf="activeTab === 'teachers'">
-          <td>{{ item.name }}</td>
-          <td>{{ item.expertise }}</td>
-          <td>{{ item.email }}</td>
-        
-        </ng-container>
+          <!-- STATS BAR -->
+          <div class="contacts-stats">
+            <div class="cstat blue-glow">
+              <h3>{{ contactStats.total || 0 }}</h3>
+              <p>Total</p>
+            </div>
+            <div class="cstat orange-glow">
+              <h3>{{ contactStats.pending || 0 }}</h3>
+              <p>Pending</p>
+            </div>
+            <div class="cstat green-glow">
+              <h3>{{ contactStats.replied || 0 }}</h3>
+              <p>Replied</p>
+            </div>
+          </div>
 
-        <!-- USERS -->
-        <ng-container *ngIf="activeTab === 'users' || activeTab === 'deleted-students'">
-          <td>{{ item.name }}</td>
-          <td>{{ item.email }}</td>
-          <td>{{ item.course || 'Not Enrolled' }}</td>
-          
-        </ng-container>
+          <!-- FILTER TABS -->
+          <div class="contact-filter-bar">
+            <button [class.cf-active]="contactFilter === 'all'"     (click)="contactFilter='all'">All</button>
+            <button [class.cf-active]="contactFilter === 'pending'" (click)="contactFilter='pending'">Pending</button>
+            <button [class.cf-active]="contactFilter === 'replied'" (click)="contactFilter='replied'">Replied</button>
+          </div>
 
-        <!-- PAYMENTS -->
-        <!-- <ng-container *ngIf="activeTab === 'payments'">
-          <td>{{ item.user }}</td>
-          <td>{{ item.course }}</td>
-          <td>{{ item.amount }}</td>
-          <td>{{ item.status }}</td>
-        </ng-container> -->
+          <div class="contacts-layout">
 
-        <ng-container *ngIf="activeTab === 'payments'">
-  <td>
-    <div style="font-weight: 600;">{{ item.user || 'Unknown User' }}</div>
-    <div style="font-size: 11px; color: #888;">{{ item.user_email }}</div>
-  </td>
-  <td>{{ item.course || 'N/A' }}</td>
-  <td>
-    <strong>{{ item.amount ? (item.amount | currency:'INR') : '₹0.00' }}</strong>
-  </td>
-  <td>
-    <span class="status-pill" 
-          [ngClass]="{
-            'published': item.status === 'success', 
-            'draft': item.status === 'pending' || !item.status,
-            'failed': item.status === 'failed'
-          }">
-      <span class="dot"></span>
-      {{ item.status === 'success' ? 'Paid' : (item.status || 'Pending') }}
-    </span>
-  </td>
-</ng-container>
+            <!-- MESSAGE LIST -->
+            <div class="contacts-list">
 
-        <!-- ACTIONS -->
-        <td>
-          <ng-container *ngIf="activeTab === 'payments'">
-             <button class="view-btn" (click)="viewReceipt(item.id)">
-    👁
-  </button>
-          </ng-container>
+              <div *ngIf="getFilteredContacts().length === 0" class="no-contacts">
+                No messages found
+              </div>
 
-<!-- ✅ OTHER TABS KEEP ORIGINAL ACTIONS -->
-<ng-container *ngIf="activeTab !== 'payments' && activeTab !== 'deleted-students'">
-  <button (click)="editItem(item)">✏️</button>
-  <button (click)="deleteItem(item.id)">🗑️</button>
-</ng-container>
+              <div
+                *ngFor="let msg of getFilteredContacts()"
+                class="contact-item"
+                [class.unread]="msg.status === 'pending'"
+                [class.ci-selected]="selectedContact?.id === msg.id"
+                (click)="selectContact(msg)">
 
+                <div class="ci-top">
+                  <span class="ci-name">{{ msg.name }}</span>
+                  <span class="ci-time">{{ msg.created_at | date:'d MMM, h:mm a' }}</span>
+                </div>
+                <div class="ci-subject">{{ msg.subject }}</div>
+                <div class="ci-preview">{{ msg.message | slice:0:60 }}...</div>
+                <span class="ci-badge"
+                  [ngClass]="{
+                    'badge-pending': msg.status === 'pending',
+                    'badge-replied': msg.status === 'replied'
+                  }">
+                  {{ msg.status === 'pending' ? 'Pending' : 'Replied' }}
+                </span>
+              </div>
 
-          <button *ngIf="activeTab === 'deleted-students'"
-            (click)="restoreStudent(item.id)">
-            Restore
-          </button>
-        </td>
+            </div>
 
-      </tr>
-    </tbody>
+            <!-- MESSAGE DETAIL -->
+            <div class="contact-detail" *ngIf="selectedContact">
 
-  </table>
+              <div class="cd-header">
+                <div class="cdh-left">
+                  <h3 class="cd-subject">{{ selectedContact.subject }}</h3>
+                  <div class="cd-meta">
+                    <span>{{ selectedContact.name }}</span>
+                    <span>{{ selectedContact.email }}</span>
+                    <span *ngIf="selectedContact.phone">📞 {{ selectedContact.phone }}</span>
+                    <span>{{ selectedContact.created_at | date:'medium' }}</span>
+                  </div>
+                </div>
+                <div class="cdh-actions">
+                  <button class="btn-delete-contact" (click)="deleteContact(selectedContact.id)">🗑 Delete</button>
+                </div>
+              </div>
 
-  <!-- NO DATA -->
-  <div *ngIf="allData.length === 0 && activeTab !== 'videos'">
-    No data found
-  </div>
+              <!-- MESSAGE BUBBLES -->
+              <div class="cd-body">
 
-</div>
+                <!-- User's original message -->
+                <div class="msg-bubble user-bubble">
+                  <div class="bubble-head">
+                    <div class="bubble-avatar user-av">{{ selectedContact.name[0].toUpperCase() }}</div>
+                    <div class="bubble-info">
+                      <strong>{{ selectedContact.name }}</strong>
+                      <span>{{ selectedContact.email }}</span>
+                    </div>
+                  </div>
+                  <p class="bubble-text">{{ selectedContact.message }}</p>
+                </div>
+
+                <!-- Admin reply bubble (shown if reply exists) -->
+                <div class="msg-bubble admin-bubble" *ngIf="selectedContact.reply">
+                  <div class="bubble-head">
+                    <div class="bubble-avatar admin-av">A</div>
+                    <div class="bubble-info">
+                      <strong>You (Admin)</strong>
+                      <span>{{ selectedContact.replied_at | date:'medium' }}</span>
+                    </div>
+                  </div>
+                  <p class="bubble-text">{{ selectedContact.reply }}</p>
+                </div>
+
+              </div>
+
+              <!-- REPLY BOX -->
+              <div class="cd-reply-box">
+                <div class="reply-top">
+                  <span class="reply-label">Reply to {{ selectedContact.name }}</span>
+                  <div class="tmpl-wrap">
+                    <button class="tmpl-trigger" (click)="showTemplates = !showTemplates">
+                      📋 Use template
+                    </button>
+                    <div class="tmpl-dropdown" *ngIf="showTemplates">
+                      <div *ngFor="let t of replyTemplates" class="tmpl-option" (click)="applyTemplate(t.text)">
+                        {{ t.label }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <textarea
+                  [(ngModel)]="replyText"
+                  name="replyText"
+                  class="reply-textarea"
+                  rows="4"
+                  placeholder="Type your reply here...">
+                </textarea>
+
+                <div class="reply-actions">
+                  <span class="reply-hint" *ngIf="replyText.trim()">
+                    Will be sent to {{ selectedContact.email }}
+                  </span>
+                  <button class="btn-send-reply" (click)="sendReply()"
+                    [disabled]="!replyText.trim() || isSendingReply">
+                    {{ isSendingReply ? 'Sending...' : '✉ Send Reply' }}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- NO MESSAGE SELECTED -->
+            <div class="contact-empty" *ngIf="!selectedContact">
+              <div class="empty-icon">📬</div>
+              <p>Select a message to read and reply</p>
+            </div>
+
+          </div>
+        </div>
+        <!-- END CONTACTS TAB -->
+
       </div>
     </section>
-  </main></div>
-
-  <!-- MODAL -->
+  </main>
+</div>
 
 </div>
- <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+
+<!-- MODAL -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
-    
+
     <div class="modal-header">
       <h2>Add {{ activeTab === 'users' ? 'Student' : (activeTab | titlecase | slice:0:-1) }}</h2>
       <span class="close-icon" (click)="closeModal()">&times;</span>
@@ -367,7 +472,7 @@
         <input type="text" placeholder="Expertise (e.g. Java, UI/UX)" [(ngModel)]="formData.expertise" name="expertise" *ngIf="activeTab === 'teachers'">
 
         <input type="text" placeholder="Enter Course Title" [(ngModel)]="formData.title" name="title" *ngIf="activeTab === 'courses'">
-        
+
         <select [(ngModel)]="formData.category" name="category" *ngIf="activeTab === 'courses'">
           <option value="" disabled selected>Select Category</option>
           <option value="Development">Development</option>
@@ -394,6 +499,6 @@
         <button type="submit" class="btn-save">Save Data</button>
       </div>
     </form>
-    
+
   </div>
 </div>
