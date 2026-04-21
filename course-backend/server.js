@@ -44,12 +44,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/', (req, res) => {
   res.send('API Running 🚀');
 });
-
 const contactRoutes = require('./routes/contactRoutes');
-app.use('/api/contact', contactRoutes);
-
+app.use('/api/contacts', contactRoutes);
 app.listen(5000, () => {
   console.log('Server running on port 5000');
 });
-
-

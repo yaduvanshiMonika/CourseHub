@@ -45,3 +45,38 @@ exports.replyContact = async (req, res) => {
     res.status(500).json(err);
   }
 };
+exports.updateStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const allowed = ['pending', 'replied'];
+    if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status.' });
+    await db.query(`UPDATE contacts SET status = ? WHERE id = ?`, [status, id]);
+    res.json({ message: 'Status updated ✅' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update status.' });
+  }
+};
+
+exports.deleteContact = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await db.query(`DELETE FROM contacts WHERE id = ?`, [id]);
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Contact not found.' });
+    res.json({ message: 'Contact deleted ✅' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete contact.' });
+  }
+};
+
+exports.getContactStats = async (req, res) => {
+  try {
+    const [[stats]] = await db.query(`
+      SELECT COUNT(*) AS total, SUM(status='pending') AS pending, SUM(status='replied') AS replied
+      FROM contacts
+    `);
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch stats.' });
+  }
+};
