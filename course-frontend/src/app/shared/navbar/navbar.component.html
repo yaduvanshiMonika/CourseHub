@@ -1,10 +1,11 @@
 <nav class="navbar">
   <div class="nav-wrapper">
 
-    
+    <!-- LEFT LOGO -->
     <div class="logo">&lt; CourseHub</div>
 
-    
+    <!-- CENTER PILL -->
+
     <div class="nav-pill">
       <a routerLink="/"
          routerLinkActive="active-link"
@@ -14,84 +15,6 @@
       <a routerLink="/courses"
          routerLinkActive="active-link"
          (click)="setActive('courses')">Tutorials</a>
-
-      <a routerLink="/"
-         fragment="contact"
-         (click)="setActive('contact')"
-         [class.active-manual]="activeTab === 'contact'">Contact Us</a>
-
-      <a href="#" (click)="setActive('article')"
-         [class.active-manual]="activeTab === 'article'">Article</a>
-
-      <a href="#" (click)="setActive('hackathon')"
-         [class.active-manual]="activeTab === 'hackathon'">Hackathon</a>
-    </div>
-
-    
-    <button class="login-btn" *ngIf="!isLoggedIn()" routerLink="/login">
-      → Login
-    </button>
-
-  
-    <div class="profile" *ngIf="isLoggedIn()" (click)="toggleDropdown()">
-
-    
-      <div class="avatar-circle">
-        {{ (userName || 'U')[0].toUpperCase() }}
-      </div>
-
-      <div class="profile-text">
-        <span class="profile-name">{{ userName }}</span>
-        <span class="profile-role">{{ userRole | titlecase }}</span>
-      </div>
-
-      
-      <svg class="chevron-icon" [class.rotated]="showDropdown"
-        width="13" height="13" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2.5">
-        <polyline points="6 9 12 15 18 9"/>
-      </svg>
-
-     
-      <div class="dropdown" *ngIf="showDropdown">
-
-      
-        <div class="dropdown-header">
-          <div class="dh-avatar">{{ (userName || 'U')[0].toUpperCase() }}</div>
-          <div class="dh-info">
-            <span class="dh-name">{{ userName }}</span>
-            <span class="dh-role">{{ userRole | titlecase }}</span>
-          </div>
-        </div>
-
-        <div class="dropdown-divider"></div>
-
-       
-        <div class="dropdown-item" *ngIf="userRole === 'admin'" (click)="goToAdmin()">
-          <span class="di-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
-          </span>
-          <span>Admin Panel</span>
-        </div>
-
-        <div class="dropdown-item" *ngIf="userRole === 'teacher'" (click)="goToTeacher()">
-          <span class="di-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </span>
-          <span>Teacher Panel</span>
-        </div>
 
         <div class="dropdown-item" *ngIf="userRole === 'student'" (click)="goToStudent()">
   <span class="di-icon">
@@ -105,7 +28,88 @@
   <span>Student Panel</span>
 </div>
 
-       
+      <a routerLink="/"
+         fragment="contact"
+         (click)="setActive('contact')"
+         [class.active-manual]="activeTab === 'contact'">Contact Us</a>
+
+      <a href="#" (click)="setActive('article')"
+         [class.active-manual]="activeTab === 'article'">Article</a>
+
+      <a href="#" (click)="setActive('hackathon')"
+         [class.active-manual]="activeTab === 'hackathon'">Hackathon</a>
+    </div>
+
+    <!-- RIGHT: LOGIN or PROFILE -->
+    <button class="login-btn" *ngIf="!isLoggedIn()" routerLink="/login">
+      → Login
+    </button>
+
+    <!-- PROFILE (when logged in) -->
+    <div class="profile" *ngIf="isLoggedIn()" (click)="toggleDropdown()">
+
+      <!-- AVATAR -->
+      <div class="avatar-circle">
+        {{ (userName || 'U')[0].toUpperCase() }}
+      </div>
+
+      <!-- NAME + ROLE -->
+      <div class="profile-text">
+        <span class="profile-name">{{ userName }}</span>
+        <span class="profile-role">{{ userRole | titlecase }}</span>
+      </div>
+
+      <!-- CHEVRON -->
+      <svg class="chevron-icon" [class.rotated]="showDropdown"
+        width="13" height="13" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+
+      <!-- DROPDOWN -->
+      <div class="dropdown" *ngIf="showDropdown">
+
+        <!-- HEADER -->
+        <div class="dropdown-header">
+          <div class="dh-avatar">{{ (userName || 'U')[0].toUpperCase() }}</div>
+          <div class="dh-info">
+            <span class="dh-name">{{ userName }}</span>
+            <span class="dh-role">{{ userRole | titlecase }}</span>
+          </div>
+        </div>
+
+        <div class="dropdown-divider"></div>
+
+        <!-- ADMIN PANEL -->
+        <div class="dropdown-item" *ngIf="userRole === 'admin'" (click)="goToAdmin()">
+          <span class="di-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </span>
+          <span>Admin Panel</span>
+        </div>
+
+        <!-- TEACHER PANEL -->
+        <div class="dropdown-item" *ngIf="userRole === 'teacher'" (click)="goToTeacher()">
+          <span class="di-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </span>
+          <span>Teacher Panel</span>
+        </div>
+
+        <!-- LOGOUT -->
+
         <div class="dropdown-item logout-item" (click)="logout()">
           <span class="di-icon">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
