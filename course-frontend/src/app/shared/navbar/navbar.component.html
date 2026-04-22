@@ -1,10 +1,10 @@
 <nav class="navbar">
   <div class="nav-wrapper">
 
-    <!-- LEFT LOGO -->
+    
     <div class="logo">&lt; CourseHub</div>
 
-    <!-- CENTER PILL -->
+    
     <div class="nav-pill">
       <a routerLink="/"
          routerLinkActive="active-link"
@@ -27,36 +27,35 @@
          [class.active-manual]="activeTab === 'hackathon'">Hackathon</a>
     </div>
 
-    <!-- RIGHT: LOGIN or PROFILE -->
+    
     <button class="login-btn" *ngIf="!isLoggedIn()" routerLink="/login">
       → Login
     </button>
 
-    <!-- PROFILE (when logged in) -->
+  
     <div class="profile" *ngIf="isLoggedIn()" (click)="toggleDropdown()">
 
-      <!-- AVATAR -->
+    
       <div class="avatar-circle">
         {{ (userName || 'U')[0].toUpperCase() }}
       </div>
 
-      <!-- NAME + ROLE -->
       <div class="profile-text">
         <span class="profile-name">{{ userName }}</span>
         <span class="profile-role">{{ userRole | titlecase }}</span>
       </div>
 
-      <!-- CHEVRON -->
+      
       <svg class="chevron-icon" [class.rotated]="showDropdown"
         width="13" height="13" viewBox="0 0 24 24"
         fill="none" stroke="currentColor" stroke-width="2.5">
         <polyline points="6 9 12 15 18 9"/>
       </svg>
 
-      <!-- DROPDOWN -->
+     
       <div class="dropdown" *ngIf="showDropdown">
 
-        <!-- HEADER -->
+      
         <div class="dropdown-header">
           <div class="dh-avatar">{{ (userName || 'U')[0].toUpperCase() }}</div>
           <div class="dh-info">
@@ -67,7 +66,7 @@
 
         <div class="dropdown-divider"></div>
 
-        <!-- ADMIN PANEL -->
+       
         <div class="dropdown-item" *ngIf="userRole === 'admin'" (click)="goToAdmin()">
           <span class="di-icon">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -81,7 +80,6 @@
           <span>Admin Panel</span>
         </div>
 
-        <!-- TEACHER PANEL -->
         <div class="dropdown-item" *ngIf="userRole === 'teacher'" (click)="goToTeacher()">
           <span class="di-icon">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -95,7 +93,19 @@
           <span>Teacher Panel</span>
         </div>
 
-        <!-- LOGOUT -->
+        <div class="dropdown-item" *ngIf="userRole === 'student'" (click)="goToStudent()">
+  <span class="di-icon">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2">
+      <path d="M3 4h18v14H3z"/>
+      <path d="M8 20h8"/>
+      <path d="M12 14v6"/>
+    </svg>
+  </span>
+  <span>Student Panel</span>
+</div>
+
+       
         <div class="dropdown-item logout-item" (click)="logout()">
           <span class="di-icon">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"

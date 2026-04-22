@@ -1,0 +1,173 @@
+ .student-dashboard-wrapper {
+  padding: 24px;
+  background: #0f172a;
+  min-height: 100vh;
+  color: #ffffff;
+    margin-top: 80px;
+}
+
+.dashboard-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-header h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 15px;
+}
+
+.dashboard-header span {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.stat-card h3 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  color: #38bdf8;
+}
+
+.stat-card p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.recent-section {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.section-head h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.section-head a {
+  color: #38bdf8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.empty-box {
+  text-align: center;
+  padding: 30px 20px;
+  background: #0f172a;
+  border-radius: 12px;
+  color: #cbd5e1;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.course-card {
+  background: #0f172a;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.course-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.course-info {
+  padding: 16px;
+}
+
+.course-info h4 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.course-info p {
+  margin: 0 0 8px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 10px;
+  background: #334155;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #38bdf8;
+  border-radius: 999px;
+}
+
+.course-info span {
+  font-size: 13px;
+  color: #e2e8f0;
+  min-width: 42px;
+}
+
+.course-info button {
+  width: 100%;
+  border: none;
+  background: #38bdf8;
+  color: #0f172a;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.course-info button:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 992px) {
+  .stats-grid,
+  .course-grid {
+    grid-template-columns: 1fr;
+  }
+} 
+
+
