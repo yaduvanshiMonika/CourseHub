@@ -1,11 +1,26 @@
-/* 🔥 FORCE FULL PAGE DARK */
+/* Global page theme (dark default; `html.theme-light` = light) */
+html {
+  --page-bg-a: #020617;
+  --page-bg-b: #0f172a;
+  --page-text: #ffffff;
+  --page-muted: #cbd5e1;
+  color-scheme: dark;
+}
+
+html.theme-light {
+  --page-bg-a: #f1f5f9;
+  --page-bg-b: #e2e8f0;
+  --page-text: #0f172a;
+  --page-muted: #475569;
+  color-scheme: light;
+}
+
 html, body {
   height: 100%;
   margin: 0;
-  background: linear-gradient(135deg, #020617, #0f172a);
-  color: white;
+  background: linear-gradient(135deg, var(--page-bg-a), var(--page-bg-b));
+  color: var(--page-text);
   scroll-behavior: smooth;
-
 }
 .swal-glass-popup {
   background: rgba(255, 255, 255, 0.08) !important;

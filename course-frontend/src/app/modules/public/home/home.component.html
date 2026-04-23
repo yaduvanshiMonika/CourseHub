@@ -244,7 +244,239 @@
 
   </div>
 </section>
+<!-- ═══════════════════════════════════════════════
+     🎓 WEBINAR SECTION — add before footer
+     ═══════════════════════════════════════════════ -->
+<section class="webinar-section" id="webinar">
 
+  <!-- HEADER -->
+  <div class="webinar-header">
+    <div class="webinar-tag">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.87v6.26a1 1 0 0 1-1.447.894L15 14"/>
+        <rect x="2" y="6" width="13" height="12" rx="2"/>
+      </svg>
+      Live Webinars
+    </div>
+    <h2>Book a <span>Webinar</span> for Your Institution</h2>
+    <p>Partner with CourseHub to bring expert-led live sessions to your college, university or organisation. Choose your topic and we'll handle the rest.</p>
+  </div>
+
+  <!-- TOPIC CARDS -->
+  <div class="webinar-topics">
+
+    <div class="topic-card" [class.selected]="webinarForm.topic === 'Artificial Intelligence & ML'"
+         (click)="selectTopic('Artificial Intelligence & ML')">
+      <div class="topic-icon ai">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 2a10 10 0 1 0 10 10"/>
+          <path d="M12 6v6l4 2"/>
+          <circle cx="18" cy="6" r="3"/>
+        </svg>
+      </div>
+      <h4>AI & Machine Learning</h4>
+      <p>Neural networks, deep learning, LLMs and real-world AI applications</p>
+      <span class="topic-duration">3–4 hrs</span>
+    </div>
+
+    <div class="topic-card" [class.selected]="webinarForm.topic === 'Data Science & Analytics'"
+         (click)="selectTopic('Data Science & Analytics')">
+      <div class="topic-icon data">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6"  y1="20" x2="6"  y2="14"/>
+        </svg>
+      </div>
+      <h4>Data Science & Analytics</h4>
+      <p>Data processing, visualisation, pandas, SQL and business insights</p>
+      <span class="topic-duration">2–3 hrs</span>
+    </div>
+
+    <div class="topic-card" [class.selected]="webinarForm.topic === 'Web Development'"
+         (click)="selectTopic('Web Development')">
+      <div class="topic-icon web">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <polyline points="16 18 22 12 16 6"/>
+          <polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <h4>Web Development</h4>
+      <p>Full stack, Angular, React, Node.js and modern deployment practices</p>
+      <span class="topic-duration">3–5 hrs</span>
+    </div>
+
+    <div class="topic-card" [class.selected]="webinarForm.topic === 'Cloud & DevOps'"
+         (click)="selectTopic('Cloud & DevOps')">
+      <div class="topic-icon cloud">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+        </svg>
+      </div>
+      <h4>Cloud & DevOps</h4>
+      <p>AWS, Docker, CI/CD pipelines and scalable infrastructure</p>
+      <span class="topic-duration">2–4 hrs</span>
+    </div>
+
+    <div class="topic-card" [class.selected]="webinarForm.topic === 'Cybersecurity'"
+         (click)="selectTopic('Cybersecurity')">
+      <div class="topic-icon security">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h4>Cybersecurity</h4>
+      <p>Ethical hacking, threat analysis, network security and best practices</p>
+      <span class="topic-duration">2–3 hrs</span>
+    </div>
+
+    <div class="topic-card" [class.selected]="webinarForm.topic === 'Custom Topic'"
+         (click)="selectTopic('Custom Topic')">
+      <div class="topic-icon custom">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+        </svg>
+      </div>
+      <h4>Custom Topic</h4>
+      <p>Have something specific in mind? We'll build a session around your needs</p>
+      <span class="topic-duration">Flexible</span>
+    </div>
+
+  </div>
+
+  <!-- BOOKING FORM -->
+  <div class="webinar-form-wrap">
+    <div class="webinar-form-left">
+      <h3>Request a Session</h3>
+      <p>Fill in your details and we'll get back within 24 hours to confirm your slot.</p>
+
+      <div class="wf-checklist">
+        <div class="wf-check">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Expert instructors from industry
+        </div>
+        <div class="wf-check">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Online, offline or hybrid modes
+        </div>
+        <div class="wf-check">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Certificate of participation
+        </div>
+        <div class="wf-check">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Customised content for your audience
+        </div>
+      </div>
+    </div>
+
+    <form class="webinar-form" (ngSubmit)="submitWebinar()">
+
+      <!-- Row 1 -->
+      <div class="wf-row">
+        <div class="wf-field">
+          <label>Organisation Name *</label>
+          <input type="text" [(ngModel)]="webinarForm.orgName" name="orgName"
+            placeholder="e.g. IIT Delhi, Infosys" required>
+        </div>
+        <div class="wf-field">
+          <label>Organisation Type *</label>
+          <select [(ngModel)]="webinarForm.orgType" name="orgType" required>
+            <option value="" disabled selected>Select type</option>
+            <option>College / University</option>
+            <option>Corporate / Company</option>
+            <option>School</option>
+            <option>NGO / Non-profit</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="wf-row">
+        <div class="wf-field">
+          <label>Contact Person *</label>
+          <input type="text" [(ngModel)]="webinarForm.contactName" name="contactName"
+            placeholder="Your full name" required>
+        </div>
+        <div class="wf-field">
+          <label>Email Address *</label>
+          <input type="email" [(ngModel)]="webinarForm.email" name="email"
+            placeholder="official@org.com" required>
+        </div>
+      </div>
+
+      <!-- Row 3 -->
+      <div class="wf-row">
+        <div class="wf-field">
+          <label>Phone Number *</label>
+          <input type="text" [(ngModel)]="webinarForm.phone" name="phone"
+            placeholder="+91 XXXXX XXXXX" required>
+        </div>
+        <div class="wf-field">
+          <label>Expected Attendees *</label>
+          <select [(ngModel)]="webinarForm.attendees" name="attendees" required>
+            <option value="" disabled selected>Select range</option>
+            <option>Less than 50</option>
+            <option>50 – 100</option>
+            <option>100 – 300</option>
+            <option>300 – 500</option>
+            <option>500+</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 4 -->
+      <div class="wf-row">
+        <div class="wf-field">
+          <label>Preferred Date *</label>
+          <input type="date" [(ngModel)]="webinarForm.date" name="date" required>
+        </div>
+        <div class="wf-field">
+          <label>Preferred Mode *</label>
+          <select [(ngModel)]="webinarForm.mode" name="mode" required>
+            <option value="" disabled selected>Select mode</option>
+            <option>Online (Zoom / Meet)</option>
+            <option>Offline (On-campus)</option>
+            <option>Hybrid</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Topic (pre-filled if selected above) -->
+      <div class="wf-field wf-full">
+        <label>Topic / Area of Interest *</label>
+        <input type="text" [(ngModel)]="webinarForm.topic" name="topic"
+          placeholder="Click a topic above or type your own" required>
+      </div>
+
+      <!-- Message -->
+      <div class="wf-field wf-full">
+        <label>Additional Requirements</label>
+        <textarea [(ngModel)]="webinarForm.message" name="message" rows="3"
+          placeholder="Any specific requirements, sub-topics or questions..."></textarea>
+      </div>
+
+      <button type="submit" class="wf-submit" [disabled]="isSubmittingWebinar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+        </svg>
+        {{ isSubmittingWebinar ? 'Sending...' : 'Send Booking Request' }}
+      </button>
+
+    </form>
+  </div>
+
+</section>
 <!-- 🔚 FOOTER -->
 <footer class="footer">
   <p>© 2026 CourseHub. All rights reserved.</p>

@@ -22,6 +22,9 @@ import { HomeComponent } from './home/home.component';
     CommonModule,
     FormsModule,
     RouterModule   // ✅ already correct
+  ],
+    exports: [
+    LoginComponent  // ← add this line
   ]
 })
 export class PublicModule { }

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'app-navbar',
@@ -8,52 +9,46 @@ import { Router } from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor(private router: Router) { }
-activeTab: string = 'home';
-userName: string = '';
-userRole: string = '';
-showDropdown: boolean = false;
-setActive(tab: string) {
-  this.activeTab = tab;
-}
+  // ✅ Receives openLogin function from app.component
+  @Input() showLoginFn!: () => void;
 
-scrollToContact() {
-  this.activeTab = 'contact';
+  constructor(private router: Router, public theme: ThemeService) {}
 
-  const section = document.getElementById('contact');
-  if (section) {
-    section.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-}
-isLoggedIn(): boolean {
-  return !!sessionStorage.getItem('token');
-}
-
-logout() {
-  sessionStorage.removeItem('token');
-  sessionStorage.removeItem('role');
-  sessionStorage.removeItem('name');
-  alert('Logged out successfully');
-  this.router.navigate(['/login']);
-}
+  activeTab: string = 'home';
+  userName: string = '';
+  userRole: string = '';
+  showDropdown: boolean = false;
 
   ngOnInit(): void {
-   this.userName = sessionStorage.getItem('name') || '';
-  this.userRole = sessionStorage.getItem('role') || '';
+    this.userName = sessionStorage.getItem('name') || '';
+    this.userRole = sessionStorage.getItem('role') || '';
   }
-  toggleDropdown() {
-  this.showDropdown = !this.showDropdown;
-}
 
-goToAdmin() {
-  this.router.navigate(['/admin-dashboard']);
-}
+  setActive(tab: string) { this.activeTab = tab; }
 
-goToTeacher() {
-  this.router.navigate(['/teacher']);
-}
+  scrollToContact() {
+    this.activeTab = 'contact';
+    const section = document.getElementById('contact');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
+  isLoggedIn(): boolean {
+    return !!sessionStorage.getItem('token');
+  }
+
+  // ✅ Opens the login drawer instead of navigating
+  openLogin() {
+    if (this.showLoginFn) this.showLoginFn();
+  }
+
+  logout() {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('name');
+    this.router.navigate(['/']);
+  }
+
+  toggleDropdown() { this.showDropdown = !this.showDropdown; }
+  goToAdmin()   { this.router.navigate(['/admin-dashboard']); }
+  goToTeacher() { this.router.navigate(['/teacher']); }
 }

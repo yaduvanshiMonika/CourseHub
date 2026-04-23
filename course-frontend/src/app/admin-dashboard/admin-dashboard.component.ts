@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AdminService } from '../services/admin.service';
+import { ThemeService } from '../services/theme.service';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 
 @Component({
@@ -17,7 +18,7 @@ export class AdminDashboardComponent implements OnInit {
   userRole: string = '';
   Math = Math;
 
-  activeTab: 'dashboard' | 'courses' | 'videos' | 'tutorials' | 'users' | 'deleted-students' | 'teachers' | 'payments' | 'contacts' = 'courses';
+  activeTab: 'dashboard' | 'courses' | 'videos' | 'tutorials' | 'users' | 'deleted-students' | 'teachers' | 'payments' | 'contacts' | 'webinars' = 'courses';
 
   allData: any[] = [];
   selectedFile: File | null = null;
@@ -35,43 +36,23 @@ export class AdminDashboardComponent implements OnInit {
   displayStats = { students: 0, teachers: 0, courses: 0 };
   targetStats  = { students: 0, teachers: 0, courses: 0 };
 
-  // ─────────────────────────────────────────
-  // GLASS SWAL HELPER — one place, used everywhere
-  // icons: ✅ ❌ ⚠️ 🗑️ ✉️ 🚪 ❓
-  // colors: green=rgba(68,221,136,0.95)  red=rgba(255,100,100,0.95)
-  //         orange=rgba(255,170,50,0.95)  blue=rgba(88,166,255,0.95)
-  // ─────────────────────────────────────────
   private glassSwal(opts: {
-    icon: string;
-    title: string;
-    text?: string;
-    color?: string;
-    timer?: number;
-    confirm?: string;
-    cancel?: string;
+    icon: string; title: string; text?: string; color?: string;
+    timer?: number; confirm?: string; cancel?: string;
   }): Promise<SweetAlertResult> {
     const color  = opts.color  || 'rgba(255,255,255,0.9)';
-    const timer  = opts.timer;
     const hasBtn = !!(opts.confirm);
-
     return Swal.fire({
-      showConfirmButton: hasBtn,
-      showCancelButton:  !!(opts.cancel),
-      confirmButtonText: opts.confirm || '',
-      cancelButtonText:  opts.cancel  || '',
-      timer:             hasBtn ? undefined : (timer || 2000),
-      timerProgressBar:  !hasBtn,
-      position:         'center',
-      background:       'transparent',
-    backdrop: 'rgba(0,0,0,0.75)',
-      customClass:      { popup: 'swal-naked' },
-      html: `
-        <div class="gs-card">
-          <div class="gs-icon">${opts.icon}</div>
-          <div class="gs-title" style="color:${color}">${opts.title}</div>
-          ${opts.text ? `<div class="gs-text">${opts.text}</div>` : ''}
-        </div>
-      `,
+      showConfirmButton: hasBtn, showCancelButton: !!(opts.cancel),
+      confirmButtonText: opts.confirm || '', cancelButtonText: opts.cancel || '',
+      timer: hasBtn ? undefined : (opts.timer || 2000), timerProgressBar: !hasBtn,
+      position: 'center', background: 'transparent', backdrop: 'rgba(0,0,0,0.75)',
+      customClass: { popup: 'swal-naked' },
+      html: `<div class="gs-card">
+        <div class="gs-icon">${opts.icon}</div>
+        <div class="gs-title" style="color:${color}">${opts.title}</div>
+        ${opts.text ? `<div class="gs-text">${opts.text}</div>` : ''}
+      </div>`,
     });
   }
 
@@ -82,12 +63,10 @@ export class AdminDashboardComponent implements OnInit {
   itemsPerPage: number = 8;
 
   get totalPages(): number { return Math.ceil(this.filteredData.length / this.itemsPerPage); }
-
   get paginatedData(): any[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     return this.filteredData.slice(start, start + this.itemsPerPage);
   }
-
   get pageNumbers(): number[] {
     const total = this.totalPages, current = this.currentPage, pages: number[] = [];
     if (total <= 5) { for (let i = 1; i <= total; i++) pages.push(i); }
@@ -101,15 +80,17 @@ export class AdminDashboardComponent implements OnInit {
     }
     return pages;
   }
-
   goToPage(page: number): void { if (page >= 1 && page <= this.totalPages) this.currentPage = page; }
   resetPage(): void { this.currentPage = 1; }
 
   // ─────────────────────────────────────────
-  // CONTACTS STATE
+  // API BASE
   // ─────────────────────────────────────────
   private apiBase = 'http://localhost:5000/api';
 
+  // ─────────────────────────────────────────
+  // CONTACTS STATE
+  // ─────────────────────────────────────────
   contactMessages: any[]  = [];
   selectedContact: any    = null;
   contactFilter: string   = 'all';
@@ -126,7 +107,27 @@ export class AdminDashboardComponent implements OnInit {
     { label: 'Corporate training',  text: `Thank you for your interest in corporate training! We offer bulk pricing for teams of 10+. Our team will reach out within 24 hours.` },
   ];
 
-  constructor(private router: Router, private adminService: AdminService, private http: HttpClient) {}
+  // ─────────────────────────────────────────
+  // WEBINARS STATE
+  // ─────────────────────────────────────────
+  webinarRequests: any[]   = [];
+  webinarStats: any        = { total: 0, pending: 0, confirmed: 0, rejected: 0, completed: 0 };
+  webinarFilter: string    = 'all';
+  selectedWebinar: any     = null;
+  webinarNotes: string     = '';
+  webinarStatusUpdate: string = '';
+  /** Agreed slot + join details (saved with status; included in confirmed/completed emails) */
+  webinarScheduledStart = '';
+  webinarScheduledEnd = '';
+  webinarMeetingLink = '';
+  webinarMeetingNotes = '';
+
+  constructor(
+    private router: Router,
+    private adminService: AdminService,
+    private http: HttpClient,
+    public theme: ThemeService
+  ) {}
 
   // ─────────────────────────────────────────
   // LIFECYCLE
@@ -143,9 +144,12 @@ export class AdminDashboardComponent implements OnInit {
   // ─────────────────────────────────────────
   setTab(tab: any): void {
     this.activeTab = tab;
-    this.selectedContact = null; this.replyText = ''; this.showTemplates = false;
+    this.selectedContact = null; this.selectedWebinar = null;
+    this.replyText = ''; this.showTemplates = false;
     this.resetPage();
-    tab === 'contacts' ? this.loadContacts() : this.loadData();
+    if (tab === 'contacts') this.loadContacts();
+    else if (tab === 'webinars') this.loadWebinars();
+    else this.loadData();
   }
 
   // ─────────────────────────────────────────
@@ -162,8 +166,14 @@ export class AdminDashboardComponent implements OnInit {
   // DATA
   // ─────────────────────────────────────────
   loadData(): void {
-    if (this.activeTab === 'contacts') return;
-
+    if (this.activeTab === 'contacts' || this.activeTab === 'webinars') return;
+    if (this.activeTab === 'dashboard') {
+      this.allData = [];
+      this.filteredData = [];
+      this.searchTerm = '';
+      this.resetPage();
+      return;
+    }
     if (this.activeTab === 'payments') {
       this.adminService.getPayments().subscribe({
         next: (data: any[]) => { this.allData = data; this.filteredData = [...data]; this.resetPage(); },
@@ -171,7 +181,6 @@ export class AdminDashboardComponent implements OnInit {
       });
       return;
     }
-
     this.adminService.getDataByTable(this.activeTab).subscribe({
       next: (data: any[]) => {
         this.allData = this.activeTab === 'courses'
@@ -215,9 +224,7 @@ export class AdminDashboardComponent implements OnInit {
       } else {
         this.adminService.saveTeacher(p).subscribe({ next: () => this.handleSuccess('Teacher Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
       }
-    }
-
-    else if (this.activeTab === 'users') {
+    } else if (this.activeTab === 'users') {
       if (!this.formData.fullName || !this.formData.email) {
         this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Name and Email are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
       }
@@ -227,9 +234,7 @@ export class AdminDashboardComponent implements OnInit {
       } else {
         this.adminService.saveStudent(p).subscribe({ next: () => this.handleSuccess('Student Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
       }
-    }
-
-    else if (this.activeTab === 'courses') {
+    } else if (this.activeTab === 'courses') {
       if (!this.formData.title || !this.formData.category || !this.formData.instructor) {
         this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'All course fields are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
       }
@@ -254,24 +259,18 @@ export class AdminDashboardComponent implements OnInit {
   async deleteItem(id: number): Promise<void> {
     const result = await this.glassSwal({ icon: '🗑️', title: 'Are you sure?', text: 'This record will be permanently deleted.', color: 'rgba(255,100,100,0.95)', confirm: 'Yes, Delete', cancel: 'Cancel' });
     if (!result.isConfirmed) return;
-
     let table = '';
     if (this.activeTab === 'users' || this.activeTab === 'deleted-students') table = 'users';
     else if (this.activeTab === 'teachers') table = 'teachers';
     else if (this.activeTab === 'courses')  table = 'courses';
     else if (this.activeTab === 'videos')   table = 'course-content';
-
     if (!table) { this.glassSwal({ icon: '❌', title: 'Error', text: 'Unknown table for deletion.', color: 'rgba(255,100,100,0.95)', confirm: 'OK' }); return; }
-
     this.adminService.deleteContent(table, id).subscribe({
       next: () => { this.glassSwal({ icon: '🗑️', title: 'Deleted!', text: 'Record removed successfully.', color: 'rgba(255,100,100,0.95)', timer: 1800 }); this.loadData(); this.loadStats(); },
       error: (err) => { const msg = err.status === 401 ? 'Unauthorized — please re-login' : 'Delete failed'; this.glassSwal({ icon: '❌', title: 'Delete Failed', text: msg, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }); }
     });
   }
 
-  // ─────────────────────────────────────────
-  // RESTORE
-  // ─────────────────────────────────────────
   async restoreStudent(id: number): Promise<void> {
     const result = await this.glassSwal({ icon: '♻️', title: 'Restore this record?', color: 'rgba(68,221,136,0.95)', confirm: 'Yes, Restore', cancel: 'Cancel' });
     if (result.isConfirmed) {
@@ -289,15 +288,12 @@ export class AdminDashboardComponent implements OnInit {
     this.formData = { id: item.id, fullName: item.name||'', email: item.email||'', expertise: item.expertise||'', title: item.title||'', category: item.category||'Development', instructor: item.instructor||'', user: item.user||'', course: item.course||'', amount: item.amount||'', status: item.status||'published' };
     this.showModal = true;
   }
-
   openAddModal() { this.resetForm(); this.showModal = true; }
   closeModal()   { this.showModal = false; this.resetForm(); }
-
   resetForm() {
     this.formData = { id: null, fullName: '', email: '', expertise: '', title: '', category: 'Development', instructor: '', user: '', course: '', amount: '', status: 'published' };
     this.selectedFile = null;
   }
-
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file && file.type === 'application/pdf') { this.selectedFile = file; }
@@ -308,9 +304,7 @@ export class AdminDashboardComponent implements OnInit {
   // COURSES / VIDEOS
   // ─────────────────────────────────────────
   coursesList: any[] = []; courseContents: any[] = []; selectedCourseId: number | null = null;
-
   loadCourses() { this.adminService.getDataByTable('courses').subscribe({ next: (data: any[]) => this.coursesList = data, error: err => console.error(err) }); }
-
   onCourseSelect(event: any) {
     const courseId = Number(event.target.value);
     this.selectedCourseId = courseId;
@@ -322,14 +316,13 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   // ─────────────────────────────────────────
-  // STATS + ANIMATION
+  // STATS
   // ─────────────────────────────────────────
   loadStats(): void {
     this.adminService.getDataByTable('users').subscribe(data => { this.targetStats.students = data.length; this.animateNumbers(); });
     this.adminService.getDataByTable('teachers').subscribe(data => { this.targetStats.teachers = data.length; this.animateNumbers(); });
     this.adminService.getDataByTable('courses').subscribe(data => { this.targetStats.courses = data.length; this.animateNumbers(); });
   }
-
   animateNumbers(): void {
     const steps = 50;
     const timer = setInterval(() => {
@@ -350,15 +343,12 @@ export class AdminDashboardComponent implements OnInit {
   viewReceipt(id: number) { window.open(`${this.apiBase}/payments/receipt/${id}`, '_blank'); }
 
   // ─────────────────────────────────────────
-  // DROPDOWN + NAVIGATION
+  // DROPDOWN
   // ─────────────────────────────────────────
   toggleDropdown() { this.showDropdown = !this.showDropdown; }
-
   @HostListener('document:click', ['$event'])
   onClickOutside(event: any) { if (!event.target.closest('.profile')) this.showDropdown = false; }
-
   goToWebsite() { this.showDropdown = false; this.router.navigate(['/']); }
-
   async logout(): Promise<void> {
     this.showDropdown = false;
     const result = await this.glassSwal({ icon: '🚪', title: 'Logging Out', text: 'Are you sure you want to logout?', color: 'rgba(255,120,120,0.95)', confirm: 'Yes, Logout', cancel: 'Cancel' });
@@ -372,7 +362,6 @@ export class AdminDashboardComponent implements OnInit {
     this.http.get<any[]>(`${this.apiBase}/contacts`).subscribe({ next: (data) => this.contactMessages = data, error: (err) => console.error('Failed to load contacts:', err) });
     this.http.get<any>(`${this.apiBase}/contacts/stats`).subscribe({ next: (stats) => this.contactStats = stats, error: (err) => console.error('Failed to load contact stats:', err) });
   }
-
   getFilteredContacts(): any[] {
     return this.contactMessages.filter(m => {
       if (this.contactFilter === 'pending') return m.status === 'pending';
@@ -380,30 +369,24 @@ export class AdminDashboardComponent implements OnInit {
       return true;
     });
   }
-
   selectContact(msg: any): void { this.selectedContact = msg; this.replyText = ''; this.showTemplates = false; }
   applyTemplate(text: string): void { this.replyText = text; this.showTemplates = false; }
-
   sendReply(): void {
     if (!this.replyText.trim() || !this.selectedContact || this.isSendingReply) return;
     this.isSendingReply = true;
     this.http.post(`${this.apiBase}/contacts/${this.selectedContact.id}/reply`, { reply: this.replyText.trim() }).subscribe({
       next: () => {
-        this.selectedContact.reply      = this.replyText.trim();
+        this.selectedContact.reply = this.replyText.trim();
         this.selectedContact.replied_at = new Date().toISOString();
-        this.selectedContact.status     = 'replied';
+        this.selectedContact.status = 'replied';
         this.contactStats.replied = (this.contactStats.replied||0) + 1;
         this.contactStats.pending = Math.max(0, (this.contactStats.pending||1) - 1);
         this.replyText = ''; this.isSendingReply = false;
         this.glassSwal({ icon: '✉️', title: 'Reply Sent!', text: `Email delivered to ${this.selectedContact.email}`, color: 'rgba(68,221,136,0.95)', timer: 2000 });
       },
-      error: (err) => {
-        console.error('Reply failed:', err); this.isSendingReply = false;
-        this.glassSwal({ icon: '❌', title: 'Reply Failed', text: 'Could not send email. Check your email config.', color: 'rgba(255,100,100,0.95)', confirm: 'OK' });
-      }
+      error: (err) => { console.error('Reply failed:', err); this.isSendingReply = false; this.glassSwal({ icon: '❌', title: 'Reply Failed', text: 'Could not send email.', color: 'rgba(255,100,100,0.95)', confirm: 'OK' }); }
     });
   }
-
   async deleteContact(id: number): Promise<void> {
     const result = await this.glassSwal({ icon: '🗑️', title: 'Delete message?', text: 'This cannot be undone.', color: 'rgba(255,100,100,0.95)', confirm: 'Yes, Delete', cancel: 'Cancel' });
     if (!result.isConfirmed) return;
@@ -411,5 +394,134 @@ export class AdminDashboardComponent implements OnInit {
       next: () => { this.contactMessages = this.contactMessages.filter(m => m.id !== id); this.selectedContact = null; this.contactStats.total = Math.max(0,(this.contactStats.total||1)-1); },
       error: (err) => console.error('Delete failed:', err)
     });
+  }
+
+  // ─────────────────────────────────────────
+  // ✅ WEBINARS
+  // ─────────────────────────────────────────
+  loadWebinars(): void {
+    const keepId = this.selectedWebinar?.id ?? null;
+    this.http.get<any[]>(`${this.apiBase}/webinar`).subscribe({
+      next: (data) => {
+        this.webinarRequests = data;
+        if (keepId != null) {
+          const row = data.find((x: any) => x.id === keepId);
+          if (row) this.selectWebinar(row);
+        }
+      },
+      error: (err) => console.error('Failed to load webinars:', err)
+    });
+    this.http.get<any>(`${this.apiBase}/webinar/stats`).subscribe({
+      next: (stats) => this.webinarStats = stats,
+      error: (err) => console.error('Failed to load webinar stats:', err)
+    });
+  }
+
+  getFilteredWebinars(): any[] {
+    return this.webinarRequests.filter(w => {
+      if (this.webinarFilter === 'all') return true;
+      return w.status === this.webinarFilter;
+    });
+  }
+
+  selectWebinar(w: any): void {
+    this.selectedWebinar = w;
+    this.webinarStatusUpdate = w.status;
+    this.webinarNotes = w.admin_notes || '';
+    this.webinarScheduledStart = this.toDatetimeLocalInput(w.scheduled_start);
+    this.webinarScheduledEnd = this.toDatetimeLocalInput(w.scheduled_end);
+    this.webinarMeetingLink = w.meeting_link || '';
+    this.webinarMeetingNotes = w.meeting_notes || '';
+  }
+
+  /** Bind MySQL / ISO datetime strings to `<input type="datetime-local">` */
+  private toDatetimeLocalInput(v: string | null | undefined): string {
+    if (v == null || v === '') return '';
+    const s = String(v).replace(' ', 'T');
+    const noZ = s.replace(/\.\d{3}Z?$/, '').replace(/Z$/, '');
+    return noZ.length >= 16 ? noZ.slice(0, 16) : noZ;
+  }
+
+  /** Send to API as `YYYY-MM-DD HH:mm:ss` (naive local wall time from picker) */
+  private fromDatetimeLocalForApi(s: string): string | null {
+    const t = (s || '').trim();
+    if (!t) return null;
+    if (t.length === 16) return `${t.replace('T', ' ')}:00`;
+    return t.replace('T', ' ');
+  }
+
+  async updateWebinarStatus(): Promise<void> {
+    if (!this.selectedWebinar || !this.webinarStatusUpdate) return;
+
+    const mode = String(this.selectedWebinar.mode || '').toLowerCase();
+    const expectsLink = mode.includes('online') || mode.includes('hybrid') || mode.includes('virtual');
+    if (this.webinarStatusUpdate === 'confirmed' && expectsLink && !this.webinarMeetingLink.trim()) {
+      const r = await this.glassSwal({
+        icon: '⚠️', title: 'No meeting link',
+        text: 'This request looks online/hybrid. Add a meeting link before confirming, or continue if you will send it separately.',
+        color: 'rgba(255,170,50,0.95)', confirm: 'Save anyway', cancel: 'Go back'
+      });
+      if (!r.isConfirmed) return;
+    }
+
+    const result = await this.glassSwal({
+      icon: '📋', title: 'Update Status?',
+      text: `Mark as "${this.webinarStatusUpdate}" and notify the organisation.`,
+      color: 'rgba(88,166,255,0.95)', confirm: 'Yes, Update', cancel: 'Cancel'
+    });
+    if (!result.isConfirmed) return;
+
+    this.http.patch<{ webinar?: any }>(`${this.apiBase}/webinar/${this.selectedWebinar.id}`, {
+      status: this.webinarStatusUpdate,
+      admin_notes: this.webinarNotes,
+      scheduled_start: this.fromDatetimeLocalForApi(this.webinarScheduledStart),
+      scheduled_end: this.fromDatetimeLocalForApi(this.webinarScheduledEnd),
+      meeting_link: this.webinarMeetingLink.trim() || null,
+      meeting_notes: this.webinarMeetingNotes.trim() || null
+    }).subscribe({
+      next: (res) => {
+        if (res.webinar) {
+          this.selectedWebinar = res.webinar;
+          this.selectWebinar(res.webinar);
+        }
+        this.loadWebinars();
+        this.glassSwal({ icon: '✅', title: 'Status Updated!', text: 'Organisation has been notified.', color: 'rgba(68,221,136,0.95)', timer: 2000 });
+      },
+      error: (err) => { console.error(err); this.glassSwal({ icon: '❌', title: 'Failed', text: 'Could not update status.', color: 'rgba(255,100,100,0.95)', confirm: 'OK' }); }
+    });
+  }
+
+  async deleteWebinar(id: number): Promise<void> {
+    const result = await this.glassSwal({ icon: '🗑️', title: 'Delete request?', text: 'This cannot be undone.', color: 'rgba(255,100,100,0.95)', confirm: 'Yes, Delete', cancel: 'Cancel' });
+    if (!result.isConfirmed) return;
+    this.http.delete(`${this.apiBase}/webinar/${id}`).subscribe({
+      next: () => {
+        this.webinarRequests = this.webinarRequests.filter(w => w.id !== id);
+        if (this.selectedWebinar?.id === id) this.selectedWebinar = null;
+        this.webinarStats.total = Math.max(0, (this.webinarStats.total||1) - 1);
+        this.glassSwal({ icon: '🗑️', title: 'Deleted!', text: 'Webinar request removed.', color: 'rgba(255,100,100,0.95)', timer: 1800 });
+      },
+      error: (err) => console.error('Delete failed:', err)
+    });
+  }
+
+  getStatusColor(status: string): string {
+    const colors: any = {
+      pending:   'rgba(255,170,50,0.15)',
+      confirmed: 'rgba(68,221,136,0.15)',
+      rejected:  'rgba(255,100,100,0.15)',
+      completed: 'rgba(88,166,255,0.15)'
+    };
+    return colors[status] || 'rgba(255,255,255,0.05)';
+  }
+
+  getStatusTextColor(status: string): string {
+    const colors: any = {
+      pending:   '#ffaa44',
+      confirmed: '#44dd88',
+      rejected:  '#ff6464',
+      completed: '#58a6ff'
+    };
+    return colors[status] || '#888';
   }
 }

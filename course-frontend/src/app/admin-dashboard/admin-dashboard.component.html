@@ -1,8 +1,8 @@
-<div class="admin-page-wrapper">
+<div class="admin-page-wrapper" [class.admin-theme-light]="theme.isLight">
 
 <div class="sidebar">
   <button class="tab-btn" [class.active]="activeTab === 'dashboard'" (click)="setTab('dashboard')">
-      📊 Dashboard
+      Dashboard
     </button>
             <button class="tab-btn" [class.active]="activeTab === 'courses'" (click)="setTab('courses')">Courses</button>
             <button class="tab-btn" [class.active]="activeTab === 'videos'" (click)="setTab('videos')">Videos</button>
@@ -10,6 +10,7 @@
             <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="setTab('users')">Students</button>
             <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setTab('payments')">Payments</button>
             <button class="tab-btn" [class.active]="activeTab === 'contacts'" (click)="setTab('contacts')">Contacts</button>
+            <button class="tab-btn" [class.active]="activeTab === 'webinars'" (click)="setTab('webinars')">Webinars</button>
             <button class="tab-btn" [class.active]="activeTab === 'deleted-students'" (click)="setTab('deleted-students')">Deleted</button>
           </div>
 
@@ -19,7 +20,22 @@
     <!-- LEFT LOGO -->
     <div class="logo">&lt; CourseHub</div>
 
-    <!-- RIGHT PROFILE -->
+    <div class="nav-trailing">
+      <button
+        type="button"
+        class="theme-toggle-btn"
+        (click)="theme.toggle(); $event.stopPropagation()"
+        [attr.aria-label]="theme.isLight ? 'Switch to dark mode' : 'Switch to light mode'"
+        [title]="theme.isLight ? 'Dark mode' : 'Light mode'">
+        <svg *ngIf="!theme.isLight" class="theme-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg *ngIf="theme.isLight" class="theme-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
     <div class="profile" (click)="toggleDropdown()">
 
       <!-- AVATAR CIRCLE -->
@@ -82,6 +98,7 @@
 
       </div>
     </div>
+    </div>
 
   </div>
 </nav>
@@ -90,10 +107,16 @@
 
   <main class="admin-content-area">
 
-    <!-- ACTION BAR -->
-    <div class="action-bar slide-up">
+    <!-- ACTION BAR (hidden on overview — search/add live on each entity tab) -->
+    <div class="action-bar slide-up" *ngIf="activeTab !== 'dashboard'">
       <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" 
+    stroke="#8b949e" stroke-width="2">
+    <circle cx="11" cy="11" r="8"/>
+    <path d="m21 21-4.35-4.35"/>
+  </svg>
+</span>
         <input
           type="text"
           [(ngModel)]="searchTerm"
@@ -102,50 +125,198 @@
         >
       </div>
 
-      <!-- ✅ FIX 1: Hide + Add button on contacts and deleted-students tabs -->
-      <button class="btn-primary"
+      <button
+        type="button"
+        class="btn-primary"
         (click)="openAddModal()"
-        *ngIf="activeTab !== 'deleted-students' && activeTab !== 'contacts'">
-        <span>+</span>
-        Add {{ activeTab === 'users' ? 'Student' : (activeTab | titlecase | slice:0:-1) }}
+        *ngIf="activeTab !== 'deleted-students' && activeTab !== 'contacts' && activeTab !== 'webinars'">
+        <span class="btn-primary-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </span>
+        <span class="btn-primary-label">Add {{ activeTab === 'users' ? 'Student' : (activeTab | titlecase | slice:0:-1) }}</span>
       </button>
     </div>
 
-    <!-- STATS -->
-    <div class="stats-grid">
-      <div class="stat-card blue-glow slide-up">
-        <div class="card-inner">
-          <div class="icon-box">👥</div>
-          <div class="data">
+    <!-- Overview: dedicated layout | Other tabs: classic stat cards -->
+    <ng-container *ngIf="activeTab === 'dashboard'; else statsGridOtherTabs">
+      <div class="dashboard-home slide-up">
+        <header class="dh-hero">
+          <div class="dh-hero-text">
+            <p class="dh-kicker">CourseHub admin</p>
+            <h1 class="dh-title">Welcome back, <span class="dh-accent">{{ userName || 'Admin' }}</span></h1>
+            <p class="dh-sub">Snapshot of your platform. Use the sidebar to open a section and manage records there.</p>
+          </div>
+          <div class="dh-hero-visual" aria-hidden="true">
+            <div class="dh-orbit"></div>
+          </div>
+        </header>
+
+        <div class="dh-stats-row">
+          <div class="dh-stat dh-stat-blue">
+            <div class="dh-stat-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div class="dh-stat-body">
+              <span class="dh-stat-value">{{ displayStats.students }}</span>
+              <span class="dh-stat-label">Students</span>
+            </div>
+          </div>
+          <div class="dh-stat dh-stat-green">
+            <div class="dh-stat-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/><path d="M16 11l2 2 4-4"/>
+              </svg>
+            </div>
+            <div class="dh-stat-body">
+              <span class="dh-stat-value">{{ displayStats.teachers }}</span>
+              <span class="dh-stat-label">Teachers</span>
+            </div>
+          </div>
+          <div class="dh-stat dh-stat-purple">
+            <div class="dh-stat-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+            </div>
+            <div class="dh-stat-body">
+              <span class="dh-stat-value">{{ displayStats.courses }}</span>
+              <span class="dh-stat-label">Courses</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dh-main-grid">
+          <section class="dh-panel dh-quick">
+            <h2 class="dh-section-title">Quick access</h2>
+            <p class="dh-panel-lead">Jump straight to a workspace — search, add, and edit live on each tab.</p>
+            <div class="dh-quick-grid">
+              <button type="button" class="dh-qcard" (click)="setTab('courses')">
+                <span class="dh-qicon dh-q-purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+                <span class="dh-qtext"><strong>Courses</strong><small>Catalog &amp; status</small></span>
+                <span class="dh-qarrow" aria-hidden="true">→</span>
+              </button>
+              <button type="button" class="dh-qcard" (click)="setTab('videos')">
+                <span class="dh-qicon dh-q-blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="15" height="10" rx="2"/><path d="M17 12l5-3v14l-5-3"/></svg></span>
+                <span class="dh-qtext"><strong>Videos</strong><small>Content by course</small></span>
+                <span class="dh-qarrow" aria-hidden="true">→</span>
+              </button>
+              <button type="button" class="dh-qcard" (click)="setTab('teachers')">
+                <span class="dh-qicon dh-q-green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg></span>
+                <span class="dh-qtext"><strong>Teachers</strong><small>Profiles &amp; expertise</small></span>
+                <span class="dh-qarrow" aria-hidden="true">→</span>
+              </button>
+              <button type="button" class="dh-qcard" (click)="setTab('users')">
+                <span class="dh-qicon dh-q-blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+                <span class="dh-qtext"><strong>Students</strong><small>Enrolments</small></span>
+                <span class="dh-qarrow" aria-hidden="true">→</span>
+              </button>
+              <button type="button" class="dh-qcard" (click)="setTab('payments')">
+                <span class="dh-qicon dh-q-amber"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+                <span class="dh-qtext"><strong>Payments</strong><small>Receipts &amp; status</small></span>
+                <span class="dh-qarrow" aria-hidden="true">→</span>
+              </button>
+              <button type="button" class="dh-qcard" (click)="setTab('contacts')">
+                <span class="dh-qicon dh-q-teal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v12H5l-3 3V4z"/></svg></span>
+                <span class="dh-qtext"><strong>Contacts</strong><small>Inbox &amp; replies</small></span>
+                <span class="dh-qarrow" aria-hidden="true">→</span>
+              </button>
+              <button type="button" class="dh-qcard" (click)="setTab('webinars')">
+                <span class="dh-qicon dh-q-violet"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.87v6.26a1 1 0 0 1-1.447.894L15 14"/><rect x="2" y="6" width="13" height="12" rx="2"/></svg></span>
+                <span class="dh-qtext"><strong>Webinars</strong><small>Requests &amp; scheduling</small></span>
+                <span class="dh-qarrow" aria-hidden="true">→</span>
+              </button>
+              <button type="button" class="dh-qcard" (click)="setTab('deleted-students')">
+                <span class="dh-qicon dh-q-rose"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></span>
+                <span class="dh-qtext"><strong>Deleted</strong><small>Restore students</small></span>
+                <span class="dh-qarrow" aria-hidden="true">→</span>
+              </button>
+            </div>
+          </section>
+
+          <aside class="dh-panel dh-aside">
+            <h2 class="dh-section-title">Totals at a glance</h2>
+            <p class="dh-panel-lead">Relative share of the three headline counts.</p>
+            <ng-container *ngIf="Math.max(displayStats.students, displayStats.teachers, displayStats.courses) > 0; else dhBarsEmpty">
+              <div class="dh-bar-list">
+                <div class="dh-bar-row">
+                  <span class="dh-bar-name">Students</span>
+                  <div class="dh-bar-track"><div class="dh-bar-fill dh-fill-blue"
+                    [style.width.%]="(100 * displayStats.students) / Math.max(displayStats.students, displayStats.teachers, displayStats.courses, 1)"></div></div>
+                  <span class="dh-bar-num">{{ displayStats.students }}</span>
+                </div>
+                <div class="dh-bar-row">
+                  <span class="dh-bar-name">Teachers</span>
+                  <div class="dh-bar-track"><div class="dh-bar-fill dh-fill-green"
+                    [style.width.%]="(100 * displayStats.teachers) / Math.max(displayStats.students, displayStats.teachers, displayStats.courses, 1)"></div></div>
+                  <span class="dh-bar-num">{{ displayStats.teachers }}</span>
+                </div>
+                <div class="dh-bar-row">
+                  <span class="dh-bar-name">Courses</span>
+                  <div class="dh-bar-track"><div class="dh-bar-fill dh-fill-purple"
+                    [style.width.%]="(100 * displayStats.courses) / Math.max(displayStats.students, displayStats.teachers, displayStats.courses, 1)"></div></div>
+                  <span class="dh-bar-num">{{ displayStats.courses }}</span>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #dhBarsEmpty>
+              <p class="dh-empty-hint">Once you add courses, teachers, or students, this chart will reflect your mix.</p>
+            </ng-template>
+          </aside>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #statsGridOtherTabs>
+      <div class="stats-grid">
+        <div class="stat-card slide-up">
+          <div class="stat-icon-wrap blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="stat-data">
             <h3>{{ displayStats.students }}</h3>
             <p>Total Students</p>
           </div>
         </div>
-      </div>
-
-      <div class="stat-card green-glow slide-up">
-        <div class="card-inner">
-          <div class="icon-box">👨‍🏫</div>
-          <div class="data">
+        <div class="stat-card slide-up">
+          <div class="stat-icon-wrap green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M20 21a8 8 0 1 0-16 0"/>
+              <path d="M16 11l2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="stat-data">
             <h3>{{ displayStats.teachers }}</h3>
             <p>Active Teachers</p>
           </div>
         </div>
-      </div>
-
-      <div class="stat-card purple-glow slide-up">
-        <div class="card-inner">
-          <div class="icon-box">📚</div>
-          <div class="data">
+        <div class="stat-card slide-up">
+          <div class="stat-icon-wrap purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </div>
+          <div class="stat-data">
             <h3>{{ displayStats.courses }}</h3>
             <p>Total Courses</p>
           </div>
         </div>
       </div>
-    </div>
+    </ng-template>
 
-    <!-- MANAGEMENT -->
-    <section class="management-section slide-up">
+    <!-- MANAGEMENT (not shown on overview tab) -->
+    <section class="management-section slide-up" *ngIf="activeTab !== 'dashboard'">
       <div class="table-card">
 
         <div class="table-header">
@@ -207,7 +378,7 @@
           <!-- ===================== -->
           <!-- 📊 NORMAL TABLE (courses, teachers, users, payments, deleted-students) -->
           <!-- ===================== -->
-          <table *ngIf="filteredData.length > 0 && activeTab !== 'videos' && activeTab !== 'contacts'">
+          <table *ngIf="filteredData.length > 0 && activeTab !== 'videos' && activeTab !== 'contacts' && activeTab !== 'webinars'">
 
             <thead>
               <tr *ngIf="activeTab === 'courses'">
@@ -301,24 +472,47 @@
                 </ng-container>
 
                 <!-- ACTIONS -->
-                <td>
-                  <!-- Payments: view receipt only -->
-                  <ng-container *ngIf="activeTab === 'payments'">
-                    <button class="view-btn" (click)="viewReceipt(item.id)">👁</button>
-                  </ng-container>
+               <!-- ACTIONS -->
+<td>
 
-                  <!-- ✅ Edit + Delete for courses, teachers, users -->
-                  <ng-container *ngIf="activeTab !== 'payments' && activeTab !== 'deleted-students'">
-                    <button (click)="editItem(item)">✏️</button>
-                    <button (click)="deleteItem(item.id)">🗑️</button>
-                  </ng-container>
+  <!-- Payments ONLY: view receipt -->
+  <ng-container *ngIf="activeTab === 'payments'">
+    <button class="action-btn view-btn" (click)="viewReceipt(item.id)" title="View Receipt">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+    </button>
+  </ng-container>
 
-                  <!-- ✅ FIX 2: Restore only on deleted-students tab -->
-                  <button *ngIf="activeTab === 'deleted-students'"
-                    (click)="restoreStudent(item.id)">
-                    Restore
-                  </button>
-                </td>
+  <!-- Courses, Teachers, Users ONLY: edit + delete -->
+  <ng-container *ngIf="activeTab !== 'payments' && activeTab !== 'deleted-students'">
+    <button class="action-btn edit-btn" (click)="editItem(item)" title="Edit">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+    </button>
+    <button class="action-btn delete-btn" (click)="deleteItem(item.id)" title="Delete">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        <path d="M10 11v6M14 11v6"/>
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+      </svg>
+    </button>
+  </ng-container>
+
+  <!-- Deleted Students ONLY: restore -->
+  <button *ngIf="activeTab === 'deleted-students'" class="action-btn restore-btn"
+    (click)="restoreStudent(item.id)" title="Restore">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+      <path d="M3 3v5h5"/>
+    </svg>
+  </button>
+
+</td>
 
               </tr>
             </tbody>
@@ -327,7 +521,7 @@
 
           <!-- ✅ PAGINATION -->
           <div class="pagination-bar"
-            *ngIf="filteredData.length > itemsPerPage && activeTab !== 'videos' && activeTab !== 'contacts'">
+            *ngIf="filteredData.length > itemsPerPage && activeTab !== 'videos' && activeTab !== 'contacts' && activeTab !== 'webinars'">
 
             <span class="pagination-info">
               Showing {{ (currentPage - 1) * itemsPerPage + 1 }}–{{ Math.min(currentPage * itemsPerPage, filteredData.length) }}
@@ -365,7 +559,7 @@
           </div>
 
           <!-- ✅ FIX 3: No data message hidden on contacts and videos tabs -->
-          <div *ngIf="allData.length === 0 && activeTab !== 'videos' && activeTab !== 'contacts'">
+          <div *ngIf="allData.length === 0 && activeTab !== 'videos' && activeTab !== 'contacts' && activeTab !== 'webinars'">
             No data found
           </div>
 
@@ -525,6 +719,211 @@
           </div>
         </div>
         <!-- END CONTACTS TAB -->
+
+        <!-- ===================== WEBINARS TAB ===================== -->
+<div *ngIf="activeTab === 'webinars'" class="webinar-admin-panel">
+
+  <!-- STATS -->
+  <div class="wa-stats">
+    <div class="wa-stat">
+      <h3>{{ webinarStats.total || 0 }}</h3>
+      <p>Total</p>
+    </div>
+    <div class="wa-stat pending">
+      <h3>{{ webinarStats.pending || 0 }}</h3>
+      <p>Pending</p>
+    </div>
+    <div class="wa-stat confirmed">
+      <h3>{{ webinarStats.confirmed || 0 }}</h3>
+      <p>Confirmed</p>
+    </div>
+    <div class="wa-stat completed">
+      <h3>{{ webinarStats.completed || 0 }}</h3>
+      <p>Completed</p>
+    </div>
+    <div class="wa-stat rejected">
+      <h3>{{ webinarStats.rejected || 0 }}</h3>
+      <p>Rejected</p>
+    </div>
+  </div>
+
+  <!-- FILTER TABS -->
+  <div class="wa-filter-bar">
+    <button [class.wf-active]="webinarFilter === 'all'"       (click)="webinarFilter='all'">All</button>
+    <button [class.wf-active]="webinarFilter === 'pending'"   (click)="webinarFilter='pending'">Pending</button>
+    <button [class.wf-active]="webinarFilter === 'confirmed'" (click)="webinarFilter='confirmed'">Confirmed</button>
+    <button [class.wf-active]="webinarFilter === 'completed'" (click)="webinarFilter='completed'">Completed</button>
+    <button [class.wf-active]="webinarFilter === 'rejected'"  (click)="webinarFilter='rejected'">Rejected</button>
+  </div>
+
+  <!-- TWO COLUMN -->
+  <div class="wa-layout">
+
+    <!-- LIST -->
+    <div class="wa-list">
+      <div *ngIf="getFilteredWebinars().length === 0" class="wa-empty">
+        No webinar requests found
+      </div>
+
+      <div *ngFor="let w of getFilteredWebinars()"
+        class="wa-item"
+        [class.wa-selected]="selectedWebinar?.id === w.id"
+        (click)="selectWebinar(w)">
+
+        <div class="wa-item-top">
+          <span class="wa-org">{{ w.org_name }}</span>
+          <span class="wa-badge"
+            [style.background]="getStatusColor(w.status)"
+            [style.color]="getStatusTextColor(w.status)">
+            {{ w.status | titlecase }}
+          </span>
+        </div>
+        <div class="wa-topic">{{ w.topic }}</div>
+        <div class="wa-meta">
+          <span>{{ w.org_type }}</span>
+          <span *ngIf="w.scheduled_start">{{ w.scheduled_start | date:'d MMM yyyy, h:mm a' }}</span>
+          <span *ngIf="!w.scheduled_start">{{ w.preferred_date | date:'d MMM yyyy' }}</span>
+        </div>
+        <div class="wa-attendees">{{ w.attendees }} attendees · {{ w.mode }}</div>
+      </div>
+    </div>
+
+    <!-- DETAIL -->
+    <div class="wa-detail" *ngIf="selectedWebinar">
+
+      <div class="wa-detail-header">
+        <div>
+          <h3>{{ selectedWebinar.topic }}</h3>
+          <p>{{ selectedWebinar.org_name }} · {{ selectedWebinar.org_type }}</p>
+        </div>
+        <button class="action-btn delete-btn" (click)="deleteWebinar(selectedWebinar.id)" title="Delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- REQUEST DETAILS -->
+      <div class="wa-info-grid">
+        <div class="wa-info-item">
+          <span class="wa-label">Contact Person</span>
+          <span class="wa-value">{{ selectedWebinar.contact_name }}</span>
+        </div>
+        <div class="wa-info-item">
+          <span class="wa-label">Email</span>
+          <span class="wa-value">{{ selectedWebinar.email }}</span>
+        </div>
+        <div class="wa-info-item">
+          <span class="wa-label">Phone</span>
+          <span class="wa-value">{{ selectedWebinar.phone }}</span>
+        </div>
+        <div class="wa-info-item">
+          <span class="wa-label">Attendees</span>
+          <span class="wa-value">{{ selectedWebinar.attendees }}</span>
+        </div>
+        <div class="wa-info-item">
+          <span class="wa-label">Preferred Date</span>
+          <span class="wa-value">{{ selectedWebinar.preferred_date | date:'d MMMM yyyy' }}</span>
+        </div>
+        <div class="wa-info-item" *ngIf="selectedWebinar.scheduled_start">
+          <span class="wa-label">Scheduled start</span>
+          <span class="wa-value">{{ selectedWebinar.scheduled_start | date:'medium' }}</span>
+        </div>
+        <div class="wa-info-item" *ngIf="selectedWebinar.scheduled_end">
+          <span class="wa-label">Scheduled end</span>
+          <span class="wa-value">{{ selectedWebinar.scheduled_end | date:'medium' }}</span>
+        </div>
+        <div class="wa-info-item wa-full" *ngIf="selectedWebinar.meeting_link">
+          <span class="wa-label">Meeting link</span>
+          <span class="wa-value"><a [href]="selectedWebinar.meeting_link" target="_blank" rel="noopener noreferrer">{{ selectedWebinar.meeting_link }}</a></span>
+        </div>
+        <div class="wa-info-item wa-full" *ngIf="selectedWebinar.meeting_notes">
+          <span class="wa-label">Join instructions</span>
+          <span class="wa-value wa-pre">{{ selectedWebinar.meeting_notes }}</span>
+        </div>
+        <div class="wa-info-item">
+          <span class="wa-label">Mode</span>
+          <span class="wa-value">{{ selectedWebinar.mode }}</span>
+        </div>
+        <div class="wa-info-item wa-full">
+          <span class="wa-label">Submitted</span>
+          <span class="wa-value">{{ selectedWebinar.created_at | date:'medium' }}</span>
+        </div>
+        <div class="wa-info-item wa-full" *ngIf="selectedWebinar.message">
+          <span class="wa-label">Message</span>
+          <span class="wa-value">{{ selectedWebinar.message }}</span>
+        </div>
+      </div>
+
+      <!-- STATUS UPDATE -->
+      <div class="wa-update-box">
+        <div class="wa-update-title">Session &amp; join details</div>
+        <p class="wa-session-hint">Saved with the button below. Included in emails when status is <strong>Confirmed</strong> or <strong>Completed</strong>.</p>
+        <div class="wa-session-grid">
+          <label class="wa-field">
+            <span>Start (date &amp; time)</span>
+            <input type="datetime-local" [(ngModel)]="webinarScheduledStart" name="webinarScheduledStart" class="wa-input">
+          </label>
+          <label class="wa-field">
+            <span>End (optional)</span>
+            <input type="datetime-local" [(ngModel)]="webinarScheduledEnd" name="webinarScheduledEnd" class="wa-input">
+          </label>
+          <label class="wa-field wa-field-full">
+            <span>Meeting link (https://…)</span>
+            <input type="text" [(ngModel)]="webinarMeetingLink" name="webinarMeetingLink" class="wa-input" placeholder="https://meet… or Zoom link">
+          </label>
+          <label class="wa-field wa-field-full">
+            <span>Join instructions (optional)</span>
+            <textarea [(ngModel)]="webinarMeetingNotes" name="webinarMeetingNotes" class="wa-notes wa-notes-tight" rows="2" placeholder="Passcode, dial-in, materials…"></textarea>
+          </label>
+        </div>
+
+        <div class="wa-update-title">Update Status</div>
+
+        <div class="wa-status-btns">
+          <button *ngFor="let s of ['pending','confirmed','rejected','completed']"
+            class="wa-status-btn"
+            [class.ws-active]="webinarStatusUpdate === s"
+            [style.borderColor]="webinarStatusUpdate === s ? getStatusTextColor(s) : ''"
+            [style.color]="webinarStatusUpdate === s ? getStatusTextColor(s) : ''"
+            (click)="webinarStatusUpdate = s">
+            {{ s | titlecase }}
+          </button>
+        </div>
+
+        <textarea
+          [(ngModel)]="webinarNotes"
+          name="webinarNotes"
+          class="wa-notes"
+          rows="3"
+          placeholder="Add internal notes or message for the organisation (optional)...">
+        </textarea>
+
+        <button class="wa-submit-btn" (click)="updateWebinarStatus()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Save & Notify Organisation
+        </button>
+      </div>
+
+    </div>
+
+    <!-- EMPTY DETAIL -->
+    <div class="wa-detail-empty" *ngIf="!selectedWebinar">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".3">
+        <path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.87v6.26a1 1 0 0 1-1.447.894L15 14"/>
+        <rect x="2" y="6" width="13" height="12" rx="2"/>
+      </svg>
+      <p>Select a request to review</p>
+    </div>
+
+  </div>
+</div>
+<!-- END WEBINARS TAB -->
 
       </div>
     </section>

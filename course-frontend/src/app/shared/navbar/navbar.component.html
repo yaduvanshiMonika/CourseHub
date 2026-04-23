@@ -20,19 +20,35 @@
          (click)="setActive('contact')"
          [class.active-manual]="activeTab === 'contact'">Contact Us</a>
 
-      <a href="#" (click)="setActive('article')"
-         [class.active-manual]="activeTab === 'article'">Article</a>
+  
+ <a routerLink="/"
+   fragment="webinar"
+   (click)="setActive('webinar')"
+   [class.active-manual]="activeTab === 'webinar'">Webinar</a>
 
       <a href="#" (click)="setActive('hackathon')"
          [class.active-manual]="activeTab === 'hackathon'">Hackathon</a>
     </div>
 
-    <!-- RIGHT: LOGIN or PROFILE -->
-    <button class="login-btn" *ngIf="!isLoggedIn()" routerLink="/login">
-      → Login
-    </button>
+    <div class="nav-pub-trailing">
+        <button
+          type="button"
+          class="pub-theme-btn"
+          (click)="theme.toggle(); $event.stopPropagation()"
+          [attr.aria-label]="theme.isLight ? 'Switch to dark mode' : 'Switch to light mode'"
+          [title]="theme.isLight ? 'Dark mode' : 'Light mode'">
+          <svg *ngIf="!theme.isLight" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg *ngIf="theme.isLight" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
 
-    <!-- PROFILE (when logged in) -->
+    <button class="login-btn" *ngIf="!isLoggedIn()" (click)="openLogin()">
+  → Login
+</button>
     <div class="profile" *ngIf="isLoggedIn()" (click)="toggleDropdown()">
 
       <!-- AVATAR -->
@@ -109,6 +125,7 @@
         </div>
 
       </div>
+    </div>
     </div>
 
   </div>

@@ -1,43 +1,119 @@
 <div class="auth-container">
 
-  <div class="auth-card">
+  <!-- LEFT PANEL — branding -->
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="brand-logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </div>
+      <span class="brand-name">CourseHub</span>
+    </div>
 
-    <h2>{{ isLogin ? 'Welcome Back 👋' : 'Create Account 🚀' }}</h2>
-    <p>{{ isLogin ? 'Login to continue learning' : 'Start your journey today' }}</p>
+    <div class="auth-left-content">
+      <h1>Learn without<br><span>limits.</span></h1>
+      <p>Join thousands of learners building real skills with expert-led courses.</p>
 
-    <!-- FORM -->
-    <form (ngSubmit)="handleSubmit()">
+      <div class="auth-stats">
+        <div class="auth-stat">
+          <strong>10K+</strong>
+          <span>Students</span>
+        </div>
+        <div class="auth-stat-divider"></div>
+        <div class="auth-stat">
+          <strong>200+</strong>
+          <span>Courses</span>
+        </div>
+        <div class="auth-stat-divider"></div>
+        <div class="auth-stat">
+          <strong>50+</strong>
+          <span>Instructors</span>
+        </div>
+      </div>
+    </div>
 
-      <!-- NAME (ONLY REGISTER) -->
-      <div *ngIf="!isLogin" class="input-group">
-        <input type="text" [(ngModel)]="name" name="name" placeholder="Full Name" required>
+    <!-- Decorative circles -->
+    <div class="deco-circle deco-1"></div>
+    <div class="deco-circle deco-2"></div>
+  </div>
+
+  <!-- RIGHT PANEL — form -->
+  <div class="auth-right">
+    <div class="auth-card">
+
+      <!-- HEADER -->
+      <div class="auth-header">
+        <h2>{{ isLogin ? 'Sign in' : 'Create account' }}</h2>
+        <p>{{ isLogin ? 'Welcome back — enter your details below.' : 'Start your learning journey today.' }}</p>
       </div>
 
-      <!-- EMAIL -->
-      <div class="input-group">
-        <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required>
+      <!-- FORM -->
+      <form (ngSubmit)="handleSubmit()" class="auth-form">
+
+        <!-- NAME (register only) -->
+        <div *ngIf="!isLogin" class="field-group">
+          <label>Full Name</label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input type="text" [(ngModel)]="name" name="name" placeholder="John Doe">
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="field-group">
+          <label>Email address</label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="m22 7-10 7L2 7"/>
+            </svg>
+            <input type="email" [(ngModel)]="email" name="email" placeholder="you@example.com">
+          </div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="field-group">
+          <div class="field-label-row">
+            <label>Password</label>
+          </div>
+          <div class="field-wrap">
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input type="password" [(ngModel)]="password" name="password"
+              [placeholder]="isLogin ? 'Your password' : 'Min. 6 characters'">
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="auth-btn">
+          <span>{{ isLogin ? 'Sign in' : 'Create account' }}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+      </form>
+
+      <!-- DIVIDER -->
+      <div class="auth-divider">
+        <span></span>
+        <p>{{ isLogin ? "New to CourseHub?" : "Already have an account?" }}</p>
+        <span></span>
       </div>
 
-      <!-- PASSWORD -->
-      <div class="input-group">
-        <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required>
-      </div>
-
-      <!-- BUTTON -->
-      <button type="submit" class="auth-btn">
-        {{ isLogin ? 'Login' : 'Register' }}
+      <!-- SWITCH -->
+      <button class="auth-switch-btn" (click)="toggleMode()">
+        {{ isLogin ? 'Create a free account' : 'Sign in instead' }}
       </button>
 
-    </form>
-
-    <!-- SWITCH -->
-    <p class="switch-text">
-      {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
-      <span (click)="toggleMode()">
-        {{ isLogin ? 'Register' : 'Login' }}
-      </span>
-    </p>
-
+    </div>
   </div>
 
 </div>

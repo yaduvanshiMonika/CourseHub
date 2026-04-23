@@ -218,4 +218,61 @@ submitContact() {
       };
     });
 }
+// ─────────────────────────────────────────────────────────
+//  ADD these properties and methods to HomeComponent class
+//  (home.component.ts)
+// ─────────────────────────────────────────────────────────
+
+// ── WEBINAR FORM STATE ────────────────────────────────────
+webinarForm = {
+  orgName:     '',
+  orgType:     '',
+  contactName: '',
+  email:       '',
+  phone:       '',
+  attendees:   '',
+  date:        '',
+  mode:        '',
+  topic:       '',
+  message:     ''
+};
+
+isSubmittingWebinar = false;
+
+// ── SELECT TOPIC FROM CARD ────────────────────────────────
+selectTopic(topic: string) {
+  this.webinarForm.topic = topic;
+  // Scroll to form smoothly
+  setTimeout(() => {
+    const form = document.querySelector('.webinar-form-wrap');
+    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ── SUBMIT WEBINAR REQUEST ────────────────────────────────
+
+submitWebinar() {
+  const payload = {
+    org_name:       this.webinarForm.orgName,
+    org_type:       this.webinarForm.orgType,
+    contact_name:   this.webinarForm.contactName,
+    email:          this.webinarForm.email,
+    phone:          this.webinarForm.phone,
+    attendees:      this.webinarForm.attendees,
+    preferred_date: this.webinarForm.date,
+    mode:           this.webinarForm.mode,
+    topic:          this.webinarForm.topic,
+    message:        this.webinarForm.message
+  };
+
+  this.isSubmittingWebinar = true;
+  this.http.post('http://localhost:5000/api/webinar', payload).subscribe({
+    next: () => {
+      this.isSubmittingWebinar = false;
+      alert('✅ Request sent! We will contact you within 24 hours.');
+      this.webinarForm = { orgName:'', orgType:'', contactName:'', email:'', phone:'', attendees:'', date:'', mode:'', topic:'', message:'' };
+    },
+    error: () => { this.isSubmittingWebinar = false; alert('❌ Failed. Please try again.'); }
+  });
+}
 }

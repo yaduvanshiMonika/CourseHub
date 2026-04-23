@@ -31,7 +31,7 @@ import { ReceiptComponent } from './receipt/receipt.component';
     HttpClientModule,
     PublicModule, // <--- ADD THIS HERE
         RouterModule,
-
+        BrowserModule,
         ReactiveFormsModule
   ],
   providers: [],
