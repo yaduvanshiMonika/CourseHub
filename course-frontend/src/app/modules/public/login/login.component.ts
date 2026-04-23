@@ -136,7 +136,11 @@ export class LoginComponent {
             .then(() => {
               if (res.role === 'admin')        this.router.navigate(['/admin-dashboard']);
               else if (res.role === 'teacher') this.router.navigate(['/teacher']);
-              else                             this.router.navigate(['/']);
+              else if (res.role === 'student') {
+                    this.router.navigate(['/student/student-dashboard']);  // 👈 FIX
+                  } 
+              else 
+                 this.router.navigate(['/']);
             });
         },
         error: (err: any) => {

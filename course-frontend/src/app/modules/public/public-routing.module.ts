@@ -13,12 +13,12 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },    // login page
   { path: 'courses', component: CourseListComponent },  // course list
   { path: 'courses/:id', component: CourseDetailComponent },// course detail
-  { 
-  path: 'teacher', 
-  component: DashboardComponent, 
-  canActivate: [RoleGuard], 
-  data: { expectedRoles: ['teacher'] } 
-}
+//   { 
+//   path: 'teacher', 
+//   component: DashboardComponent, 
+//   canActivate: [RoleGuard], 
+//   data: { expectedRoles: ['teacher'] } 
+// }
 ];
 
 @NgModule({

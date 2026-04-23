@@ -1,0 +1,266 @@
+.learning-wrapper {
+  min-height: 100vh;
+  padding: 24px;
+  background: linear-gradient(180deg, #03112b 0%, #051736 100%);
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+.learning-header {
+  margin-bottom: 22px;
+}
+
+.learning-header h2 {
+  margin: 0 0 14px;
+  font-size: 38px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.progress-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #36bfff 0%, #4fd6ff 100%);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.progress-box span {
+  min-width: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.learning-body {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.lesson-list {
+  width: 320px;
+  min-width: 320px;
+  background: rgba(34, 47, 73, 0.92);
+  border-radius: 18px;
+  padding: 20px 16px;
+  box-sizing: border-box;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+}
+
+.lesson-list h3 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.lesson-item {
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.lesson-item:last-child {
+  margin-bottom: 0;
+}
+
+.lesson-item p {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 500;
+  color: #e7eefc;
+}
+
+.lesson-item:hover {
+  background: rgba(67, 191, 255, 0.14);
+  border-color: rgba(67, 191, 255, 0.28);
+}
+
+.lesson-item.active {
+  background: linear-gradient(90deg, #43bfff 0%, #46c4ff 100%);
+  border-color: transparent;
+}
+
+.lesson-item.active p {
+  color: #061529;
+  font-weight: 700;
+}
+
+.lesson-content {
+  flex: 1;
+  min-height: 520px;
+  background: rgba(34, 47, 73, 0.96);
+  border-radius: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+}
+
+.lesson-content h3 {
+  margin: 0 0 18px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.empty-box {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #d7e5ff;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.video-box {
+  width: 100%;
+  background: #07142e;
+  border-radius: 16px;
+  padding: 14px;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.video-box iframe {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  display: block;
+}
+
+.pdf-box {
+  background: #07142e;
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pdf-info {
+  font-size: 18px;
+  font-weight: 500;
+  color: #ffffff;
+  word-break: break-word;
+}
+
+.pdf-btn {
+  border: none;
+  outline: none;
+  padding: 11px 20px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #43bfff 0%, #46c4ff 100%);
+  color: #061529;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.pdf-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(67, 191, 255, 0.28);
+}
+
+.pdf-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 992px) {
+  .learning-body {
+    flex-direction: column;
+  }
+
+  .lesson-list {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .lesson-content {
+    width: 100%;
+  }
+
+  .learning-header h2 {
+    font-size: 30px;
+  }
+
+  .lesson-content h3 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .learning-wrapper {
+    padding: 16px;
+  }
+
+  .lesson-list,
+  .lesson-content {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .learning-header h2 {
+    font-size: 26px;
+  }
+
+  .progress-box {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .progress-bar {
+    width: 100%;
+  }
+
+  .lesson-item p,
+  .pdf-info {
+    font-size: 16px;
+  }
+
+  .lesson-content h3 {
+    font-size: 22px;
+  }
+
+  .video-box {
+    padding: 10px;
+  }
+
+  .video-box iframe {
+    height: 240px;
+  }
+
+  .pdf-box {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pdf-btn {
+    width: 100%;
+  }
+}

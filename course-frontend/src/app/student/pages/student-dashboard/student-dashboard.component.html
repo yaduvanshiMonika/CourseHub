@@ -1,0 +1,69 @@
+ <div class="student-dashboard-wrapper">
+  <div class="dashboard-header">
+    <h2>Student Dashboard</h2>
+    <p>Welcome back, <span>{{ studentName }}</span></p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>{{ stats.enrolledCourses }}</h3>
+      <p>Enrolled Courses</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>{{ stats.completedCourses }}</h3>
+      <p>Completed Courses</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>{{ stats.inProgressCourses }}</h3>
+      <p>In Progress</p>
+    </div>
+  </div>
+
+  <div class="recent-section">
+    <div class="section-head">
+      <h3>Recent Student Courses</h3>
+      <a routerLink="/student/student-courses">View All</a>
+    </div>
+
+    <div *ngIf="loading" class="empty-box">
+      Loading...
+    </div>
+
+    <div *ngIf="!loading && recentCourses.length === 0" class="empty-box">
+      No enrolled courses found.
+    </div>
+
+    <div class="course-grid" *ngIf="!loading && recentCourses.length > 0">
+      <div class="course-card" *ngFor="let course of recentCourses">
+        <img
+          [src]="course.image || 'https://via.placeholder.com/300x180?text=Course'"
+          alt="course"
+        />
+
+        <div class="course-info">
+          <h4>{{ course.title }}</h4>
+          <p>{{ course.category }}</p>
+          <p>Instructor: {{ course.instructor }}</p>
+
+          <div class="progress-row">
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                [style.width.%]="course.progress_percent || 0"
+              ></div>
+            </div>
+            <span>{{ course.progress_percent || 0 }}%</span>
+          </div>
+
+          <button [routerLink]="['/student/course', course.course_id, 'learn']">
+            {{ course.actionLabel || 'Start' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>  
+
+

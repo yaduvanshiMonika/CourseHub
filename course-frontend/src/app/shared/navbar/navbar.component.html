@@ -5,6 +5,7 @@
     <div class="logo">&lt; CourseHub</div>
 
     <!-- CENTER PILL -->
+
     <div class="nav-pill">
       <a routerLink="/"
          routerLinkActive="active-link"
@@ -14,6 +15,18 @@
       <a routerLink="/courses"
          routerLinkActive="active-link"
          (click)="setActive('courses')">Tutorials</a>
+
+        <div class="dropdown-item" *ngIf="userRole === 'student'" (click)="goToStudent()">
+  <span class="di-icon">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2">
+      <path d="M3 4h18v14H3z"/>
+      <path d="M8 20h8"/>
+      <path d="M12 14v6"/>
+    </svg>
+  </span>
+  <span>Student Panel</span>
+</div>
 
       <a routerLink="/"
          fragment="contact"
@@ -96,6 +109,7 @@
         </div>
 
         <!-- LOGOUT -->
+
         <div class="dropdown-item logout-item" (click)="logout()">
           <span class="di-icon">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
