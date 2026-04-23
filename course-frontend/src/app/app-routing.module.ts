@@ -52,17 +52,21 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
 import { RoleGuard } from './guards/role.guard';
 import { CourseListComponent } from './modules/public/course-list/course-list.component';
 import { CourseDetailComponent } from './modules/public/course-detail/course-detail.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { HomeComponent } from './modules/public/home/home.component';
 
+import { ReceiptComponent } from './receipt/receipt.component';
+
 const routes: Routes = [
   { path: '',         component: HomeComponent },
   { path: 'home',     component: HomeComponent },
   { path: 'courses',  component: CourseListComponent },
   { path: 'course/:id', component: CourseDetailComponent },
+
   {
     path: 'admin-dashboard',
     component: AdminDashboardComponent,
@@ -76,7 +80,28 @@ const routes: Routes = [
     data: { expectedRoles: ['teacher'] }
   },
   { path: '**', redirectTo: '' }
+  ,
+  
+  {
+    path: 'student',
+    loadChildren: () =>
+      import('./student/student.module').then(m => m.StudentModule)
+  },
+  {
+  path: 'receipt/:id',
+  component: ReceiptComponent
+},
+  {
+    path: '',
+    loadChildren: () =>
+      import('./modules/public/public.module').then(m => m.PublicModule)
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  }
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {

@@ -1,0 +1,38 @@
+<div class="student-layout">
+  <aside class="sidebar">
+    <div class="logo-box">
+      <p>Welcome, {{ studentName }}</p>
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/student/student-dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/student/student-courses" routerLinkActive="active">My Courses</a>
+      <a routerLink="/student/profile" routerLinkActive="active">Profile</a>
+      <a routerLink="/student/certificates" routerLinkActive="active">Certificates</a>
+    </nav>
+  </aside>
+
+  <main class="content-area">
+    <div class="topbar-full">
+      <div class="brand">&lt; CourseHub</div>
+
+      <div class="profile-menu" (click)="toggleMenu(); $event.stopPropagation()">
+        <div class="avatar">{{ studentInitial }}</div>
+        <span class="role-text">Student</span>
+
+        <div class="dropdown" *ngIf="menuOpen" (click)="$event.stopPropagation()">
+          <button class="dropdown-item" (click)="goToSite()">
+            🌐 Back to Site
+          </button>
+          <button class="dropdown-item" (click)="logout()">
+            🚪 Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

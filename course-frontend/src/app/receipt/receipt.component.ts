@@ -10,12 +10,14 @@ export class ReceiptComponent implements OnInit {
   enrollmentId!: number;
   receiptUrl!: string;
 
-  ngOnInit() {
-    this.enrollmentId = Number(location.pathname.split('/').pop());
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.enrollmentId = Number(this.route.snapshot.paramMap.get('id'));
     this.receiptUrl = `http://localhost:5000/api/payments/receipt/${this.enrollmentId}`;
   }
 
-  downloadReceipt() {
+  downloadReceipt(): void {
     window.open(this.receiptUrl, '_blank');
   }
 }

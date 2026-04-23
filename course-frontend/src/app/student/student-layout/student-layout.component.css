@@ -1,0 +1,139 @@
+.student-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #020b21;
+  color: #fff;
+}
+
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #111c33 0%, #0b1430 100%);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  padding: 26px 16px;
+}
+
+.logo-box {
+  margin-bottom: 26px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #d8e4ff;
+  padding: 12px 14px;
+  border-radius: 12px;
+  transition: 0.25s ease;
+}
+
+.menu a:hover {
+  background: rgba(92, 201, 255, 0.12);
+}
+
+.menu a.active {
+  background: #45c1f5;
+  color: #071325;
+  font-weight: 700;
+}
+
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar-full {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgba(14, 24, 48, 0.95);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.brand {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.profile-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 28px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.03);
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #7c5cff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.role-text {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.dropdown {
+  position: absolute;
+  top: 62px;
+  right: 0;
+  min-width: 200px;
+  background: #111a31;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+  z-index: 50;
+}
+
+.dropdown-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #fff;
+  text-align: left;
+  padding: 12px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.dropdown-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.page-body {
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .student-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .topbar-full {
+    padding: 0 14px;
+  }
+}

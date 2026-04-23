@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ 1. CORS FIRST
+// ✅ CORS
 app.use(cors({
   origin: 'http://localhost:4200',
   credentials: true,
@@ -13,16 +13,18 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// ✅ 2. JSON PARSER
+
+// ✅ JSON parser
 app.use(express.json());
 
-// ✅ 3. GLOBAL LOGGER
+// ✅ Global logger
+
 app.use((req, res, next) => {
   console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// ✅ 4. IMPORT ROUTES
+
 const authRoutes       = require('./routes/authRoutes');
 const adminRoutes      = require('./routes/adminRoutes');
 const teacherRoutes    = require('./routes/teacherRoutes');
@@ -31,8 +33,8 @@ const enrollmentRoutes = require('./routes/enrollmentRoutes');
 const paymentRoutes    = require('./routes/paymentRoutes');
 const contactRoutes    = require('./routes/contactRoutes');
 const webinarRoutes    = require('./routes/webinarRoutes');
+const studentRoutes = require('./routes/studentRoutes');
 
-// ✅ 5. USE ROUTES
 app.use('/api/enroll',   enrollmentRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/auth',     authRoutes);
@@ -41,9 +43,14 @@ app.use('/api/admin',    adminRoutes);
 app.use('/api/teacher',  teacherRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/webinar',  webinarRoutes);
+app.use('/api/student', studentRoutes);
 
+
+
+// ✅ Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// ✅ Root route
 app.get('/', (req, res) => {
   res.send('API Running 🚀');
 });
@@ -51,3 +58,11 @@ app.get('/', (req, res) => {
 app.listen(5000, () => {
   console.log('Server running on port 5000');
 });
+
+// ✅ Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
