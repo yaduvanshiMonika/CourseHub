@@ -449,6 +449,21 @@ tr:hover td {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   animation: modalSlideUp 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  max-height: min(90vh, 860px);
+}
+
+.modal-content.modal-wide {
+  max-width: 820px;
+}
+
+/* Ensure body can scroll and footer stays visible */
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 @keyframes modalSlideUp {
@@ -482,11 +497,43 @@ tr:hover td {
   display: flex;
   flex-direction: column;
   gap: 15px; /* Sahi gap inputs ke beech */
+  overflow: auto;
+  flex: 1 1 auto;
+  min-height: 0; /* critical so body can scroll and footer stays visible */
+}
+
+/* Courses modal: 2-column grid */
+.modal-body.modal-body-courses {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+
+.adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  position: relative;
+  z-index: 0;
+}
+
+.adm-field > label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--adm-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.adm-span-2 {
+  grid-column: 1 / -1;
 }
 
 /* Modal Inputs & Selects */
 .modal-body input,
-.modal-body select {
+.modal-body select,
+.modal-body textarea {
   background: var(--adm-input-bg) !important;
   border: 1px solid var(--adm-border) !important;
   padding: 14px 16px !important;
@@ -496,12 +543,23 @@ tr:hover td {
   font-size: 14px;
   transition: 0.2s;
   box-sizing: border-box; /* Padding box ke andar rahegi */
+  pointer-events: auto !important;
+  user-select: text;
+  position: relative;
+  z-index: 1;
 }
 
-.modal-body input:focus {
+.modal-body input:focus,
+.modal-body select:focus,
+.modal-body textarea:focus {
   border-color: #58a6ff !important;
   outline: none;
   box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+.modal-body textarea {
+  resize: vertical;
+  min-height: 120px;
 }
 
 .modal-footer {
@@ -511,6 +569,7 @@ tr:hover td {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .btn-cancel {
@@ -1511,6 +1570,14 @@ tr:hover td {
 }
 .edit-btn:hover svg { stroke: #58a6ff; }
 
+/* Lessons (video/PDF) — violet on hover */
+.lessons-btn:hover {
+  background: rgba(187, 128, 255, 0.12) !important;
+  border-color: rgba(187, 128, 255, 0.45) !important;
+  color: #bc8cff !important;
+}
+.lessons-btn:hover svg { stroke: #bc8cff; }
+
 /* Delete — red on hover */
 .delete-btn:hover {
   background: rgba(248,81,73,0.1) !important;
@@ -2183,4 +2250,204 @@ tr:hover td {
   font-size: 13px;
   line-height: 1.5;
   color: #6e7681;
+}
+
+/* ─── Videos tab: course contents (aligned with teacher panel) ─── */
+.adm-videos-panel {
+  padding: 8px 0 24px;
+  max-width: 1100px;
+}
+
+.adm-videos-inline {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--adm-border);
+}
+
+.adm-cc-inline-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-bottom: 6px;
+}
+
+.adm-cc-inline-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--adm-bright);
+}
+
+.adm-cc-inline-lead {
+  margin-top: 0;
+}
+
+.adm-cc-hint {
+  margin: 12px 0;
+  font-size: 14px;
+  color: var(--adm-muted);
+}
+
+.adm-cc-field {
+  margin-bottom: 14px;
+}
+
+.adm-cc-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--adm-body);
+}
+
+.adm-cc-field input[type="text"],
+.adm-cc-field input[type="number"],
+.adm-cc-select {
+  width: 100%;
+  max-width: 640px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--adm-border);
+  background: var(--adm-input-bg);
+  color: var(--adm-text);
+  box-sizing: border-box;
+}
+
+.adm-cc-form-card {
+  margin: 16px 0 20px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--adm-border);
+  background: var(--adm-surface);
+  box-shadow: 0 8px 24px var(--adm-shadow);
+}
+
+.adm-cc-form-title {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--adm-bright);
+}
+
+.adm-cc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.adm-cc-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--adm-border);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--adm-up);
+  color: var(--adm-text);
+}
+
+.adm-cc-btn-primary {
+  background: linear-gradient(135deg, #238636, #2ea043);
+  border-color: rgba(46, 160, 67, 0.6);
+  color: #fff;
+}
+
+.adm-cc-btn-secondary {
+  background: var(--adm-up);
+}
+
+.adm-cc-btn-warn {
+  background: rgba(210, 153, 34, 0.2);
+  border-color: rgba(210, 153, 34, 0.45);
+  color: #d29922;
+}
+
+.adm-cc-btn-danger {
+  background: rgba(248, 81, 73, 0.15);
+  border-color: rgba(248, 81, 73, 0.45);
+  color: #f85149;
+}
+
+.adm-cc-scroll {
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.adm-cc-card {
+  margin-bottom: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--adm-border);
+  background: var(--adm-surface);
+  overflow: hidden;
+}
+
+.adm-cc-card-inner {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 1.2fr);
+  gap: 16px;
+  padding: 16px;
+}
+
+@media (max-width: 900px) {
+  .adm-cc-card-inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adm-cc-info h4 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: var(--adm-bright);
+}
+
+.adm-cc-info p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: var(--adm-body);
+}
+
+.adm-cc-muted {
+  color: var(--adm-muted);
+  font-weight: 500;
+}
+
+.adm-cc-video {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+
+.adm-cc-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.adm-cc-pdf {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px dashed var(--adm-border);
+}
+
+.adm-cc-pdf-name {
+  margin: 0 0 10px;
+  font-size: 13px;
+  word-break: break-word;
+}
+
+.adm-cc-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
 }

@@ -28,8 +28,15 @@
         <p><strong>Category:</strong> {{ course.category }}</p>
         <p><strong>Instructor:</strong> {{ course.instructor }}</p>
         <p><strong>Price:</strong> ₹{{ course.price }}</p>
+        <p><strong>Validity:</strong> {{ course.validity_days || 90 }} days</p>
         <p><strong>Status:</strong> {{ course.status }}</p>
-        
+        <p class="enrollment-stat">
+          <strong>Enrollments:</strong>
+          {{ course.active_enrollments ?? 0 }} active
+          <span *ngIf="(course.total_enrollments ?? 0) > (course.active_enrollments ?? 0)" class="enrollment-pending">
+            ({{ (course.total_enrollments ?? 0) - (course.active_enrollments ?? 0) }} pending)
+          </span>
+        </p>
 
         <div class="course-actions">
           <button class="btn btn-primary" (click)="goToContents(course.id)">

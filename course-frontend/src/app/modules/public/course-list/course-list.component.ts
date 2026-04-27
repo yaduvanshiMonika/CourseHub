@@ -111,6 +111,11 @@ export class CourseListComponent implements OnInit {
     });
   }
 
+  onCardImageError(ev: Event): void {
+    const el = ev.target as HTMLImageElement | null;
+    if (el) el.style.visibility = 'hidden';
+  }
+
   verifyAndComplete(enrollmentId: number, razorResponse: any): void {
     const verifyData = {
       enrollment_id: enrollmentId,

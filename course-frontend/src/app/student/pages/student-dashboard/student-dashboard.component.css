@@ -78,6 +78,52 @@
   font-weight: 600;
 }
 
+.progress-hint {
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #94a3b8;
+}
+
+.dash-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.dash-tabs button {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.6);
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.dash-tabs button:hover {
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #e2e8f0;
+}
+
+.dash-tabs button.active {
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+  border-color: transparent;
+  color: #0f172a;
+}
+
+.video-count {
+  margin: 8px 0 10px !important;
+  font-size: 13px !important;
+  color: #cbd5e1 !important;
+}
+
+.video-count strong {
+  color: #38bdf8;
+}
+
 .empty-box {
   text-align: center;
   padding: 30px 20px;

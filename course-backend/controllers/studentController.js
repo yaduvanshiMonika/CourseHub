@@ -10,6 +10,62 @@ const calculateProgress = (completedLectures, totalLectures) => {
   return percent > 100 ? 100 : percent;
 };
 
+/** Total video content rows (each counts toward 100% progress). */
+const countCourseVideos = async (courseId) => {
+  const [rows] = await db.query(
+    `SELECT COUNT(*) AS n FROM course_contents WHERE course_id = ? AND type = 'video'`,
+    [courseId]
+  );
+  return Number(rows[0]?.n || 0);
+};
+
+/** How many distinct video contents the student marked complete. */
+const countCompletedVideos = async (userId, courseId) => {
+  const [rows] = await db.query(
+    `
+    SELECT COUNT(*) AS n
+    FROM student_lesson_completions slc
+    INNER JOIN course_contents cc ON cc.id = slc.content_id AND cc.type = 'video'
+    WHERE slc.user_id = ? AND slc.course_id = ?
+    `,
+    [userId, courseId]
+  );
+  return Number(rows[0]?.n || 0);
+};
+
+/** Keeps course_progress in sync with student_lesson_completions (cache for reports). */
+const syncCourseProgressFromCompletions = async (userId, courseId) => {
+  const total = await countCourseVideos(courseId);
+  const completed = await countCompletedVideos(userId, courseId);
+  const progressPercent = calculateProgress(completed, total);
+
+  const [existing] = await db.query(
+    `SELECT id FROM course_progress WHERE user_id = ? AND course_id = ? LIMIT 1`,
+    [userId, courseId]
+  );
+
+  if (existing.length === 0) {
+    await db.query(
+      `
+      INSERT INTO course_progress (user_id, course_id, completed_items, progress_percentage)
+      VALUES (?, ?, ?, ?)
+      `,
+      [userId, courseId, completed, progressPercent]
+    );
+  } else {
+    await db.query(
+      `
+      UPDATE course_progress
+      SET completed_items = ?, progress_percentage = ?
+      WHERE id = ?
+      `,
+      [completed, progressPercent, existing[0].id]
+    );
+  }
+
+  return { total, completed, progressPercent };
+};
+
 const groupLessons = (lessonsRaw) => {
   const lessonsMap = {};
 
@@ -318,20 +374,37 @@ const getStudentCourses = async (req, res) => {
         c.thumbnail_url AS image,
         c.price,
         c.description,
-        COUNT(cc.id) AS total_lessons,
-        COALESCE(cp.completed_items, 0) AS completed_lessons,
-        COALESCE(cp.progress_percentage, 0) AS progress_percent
+        (
+          SELECT COUNT(*)
+          FROM course_contents ccv
+          WHERE ccv.course_id = c.id AND ccv.type = 'video'
+        ) AS total_lessons,
+        (
+          SELECT COUNT(*)
+          FROM student_lesson_completions slc
+          INNER JOIN course_contents cc2
+            ON cc2.id = slc.content_id AND cc2.type = 'video'
+          WHERE slc.user_id = e.user_id AND slc.course_id = c.id
+        ) AS completed_lessons,
+        COALESCE(
+          LEAST(100, ROUND(
+            100 * (
+              SELECT COUNT(*)
+              FROM student_lesson_completions slc
+              INNER JOIN course_contents cc2
+                ON cc2.id = slc.content_id AND cc2.type = 'video'
+              WHERE slc.user_id = e.user_id AND slc.course_id = c.id
+            ) / NULLIF(
+              (SELECT COUNT(*) FROM course_contents ccv WHERE ccv.course_id = c.id AND ccv.type = 'video'),
+              0
+            )
+          )),
+          0
+        ) AS progress_percent
       FROM enrollments e
       INNER JOIN courses c ON c.id = e.course_id
-      LEFT JOIN course_contents cc ON cc.course_id = c.id
-      LEFT JOIN course_progress cp
-        ON cp.user_id = e.user_id AND cp.course_id = e.course_id
       WHERE e.user_id = ?
-        AND e.status = 'active'
-      GROUP BY
-        e.id, e.status, e.enrolled_at,
-        c.id, c.title, c.category, c.instructor, c.thumbnail_url, c.price, c.description,
-        cp.completed_items, cp.progress_percentage
+        AND e.status IN ('active', 'completed', 'in_progress', 'enrolled')
       ORDER BY e.enrolled_at DESC
       `,
       [studentId]
@@ -388,6 +461,7 @@ const getLearningPage = async (req, res) => {
       SELECT id, user_id, course_id, status, enrolled_at
       FROM enrollments
       WHERE user_id = ? AND course_id = ?
+        AND status IN ('active', 'completed', 'in_progress', 'enrolled')
       LIMIT 1
       `,
       [studentId, courseId]
@@ -447,21 +521,27 @@ const getLearningPage = async (req, res) => {
       [courseId]
     );
 
-    const lessons = groupLessons(lessonsRaw);
+    let lessons = groupLessons(lessonsRaw);
 
-    const [progressRows] = await db.query(
+    const totalVideos = await countCourseVideos(courseId);
+    const completedVideos = await countCompletedVideos(studentId, courseId);
+    const progressPercent = calculateProgress(completedVideos, totalVideos);
+
+    await syncCourseProgressFromCompletions(studentId, courseId);
+
+    const [doneRows] = await db.query(
       `
-      SELECT id, user_id, course_id, completed_items, progress_percentage
-      FROM course_progress
+      SELECT content_id
+      FROM student_lesson_completions
       WHERE user_id = ? AND course_id = ?
-      LIMIT 1
       `,
       [studentId, courseId]
     );
-
-    const progressData = progressRows.length > 0
-      ? progressRows[0]
-      : { completed_items: 0, progress_percentage: 0 };
+    const doneSet = new Set((doneRows || []).map((r) => Number(r.content_id)));
+    lessons = lessons.map((lesson) => ({
+      ...lesson,
+      video_completed: lesson.video_id ? doneSet.has(Number(lesson.video_id)) : false
+    }));
 
     return res.status(200).json({
       success: true,
@@ -469,9 +549,9 @@ const getLearningPage = async (req, res) => {
       data: {
         course: courseRows[0],
         lessons,
-        total_lessons: lessons.length,
-        completed_lessons: Number(progressData.completed_items || 0),
-        progress_percent: Number(progressData.progress_percentage || 0)
+        total_lessons: totalVideos,
+        completed_lessons: completedVideos,
+        progress_percent: progressPercent
       }
     });
   } catch (error) {
@@ -498,7 +578,7 @@ const markLessonComplete = async (req, res) => {
 
     const [lessonRows] = await db.query(
       `
-      SELECT id, course_id, title
+      SELECT id, course_id, title, type
       FROM course_contents
       WHERE id = ?
       LIMIT 1
@@ -520,6 +600,7 @@ const markLessonComplete = async (req, res) => {
       SELECT id, status
       FROM enrollments
       WHERE user_id = ? AND course_id = ?
+        AND status IN ('active', 'completed', 'in_progress', 'enrolled')
       LIMIT 1
       `,
       [studentId, lesson.course_id]
@@ -532,102 +613,40 @@ const markLessonComplete = async (req, res) => {
       });
     }
 
-    const [totalRows] = await db.query(
-      `
-      SELECT COUNT(*) AS totalLessons
-      FROM course_contents
-      WHERE course_id = ?
-      `,
-      [lesson.course_id]
-    );
-
-    const totalLessons = Number(totalRows[0]?.totalLessons || 0);
-
-    const [progressRows] = await db.query(
-      `
-      SELECT id, completed_items, progress_percentage
-      FROM course_progress
-      WHERE user_id = ? AND course_id = ?
-      LIMIT 1
-      `,
-      [studentId, lesson.course_id]
-    );
-
-    let completedLectures = 0;
-
-    if (progressRows.length === 0) {
-      completedLectures = totalLessons > 0 ? 1 : 0;
-      const progressPercent = calculateProgress(completedLectures, totalLessons);
-
-      await db.query(
-        `
-        INSERT INTO course_progress (user_id, course_id, completed_items, progress_percentage)
-        VALUES (?, ?, ?, ?)
-        `,
-        [studentId, lesson.course_id, completedLectures, progressPercent]
-      );
-
-      await db.query(
-        `
-        UPDATE enrollments
-        SET status = ?
-        WHERE user_id = ? AND course_id = ?
-        `,
-        [progressPercent >= 100 ? 'completed' : 'in_progress', studentId, lesson.course_id]
-      );
-
+    if (lesson.type !== 'video') {
       return res.status(200).json({
         success: true,
-        message: 'Lecture marked as complete.',
+        message: 'Course progress is tracked for videos only.',
         data: {
           course_id: lesson.course_id,
           content_id: Number(contentId),
-          completed_lessons: completedLectures,
-          total_lessons: totalLessons,
-          progress_percent: progressPercent,
-          enrollment_status: progressPercent >= 100 ? 'completed' : 'in_progress'
+          skipped: true
         }
       });
     }
 
-    completedLectures = Number(progressRows[0].completed_items || 0);
-
-    if (completedLectures < totalLessons) {
-      completedLectures += 1;
-    }
-
-    const progressPercent = calculateProgress(completedLectures, totalLessons);
-
     await db.query(
       `
-      UPDATE course_progress
-      SET completed_items = ?, progress_percentage = ?
-      WHERE id = ?
+      INSERT IGNORE INTO student_lesson_completions (user_id, course_id, content_id)
+      VALUES (?, ?, ?)
       `,
-      [completedLectures, progressPercent, progressRows[0].id]
+      [studentId, lesson.course_id, Number(contentId)]
     );
 
-    const enrollmentStatus = progressPercent >= 100 ? 'completed' : 'in_progress';
-
-    await db.query(
-      `
-      UPDATE enrollments
-      SET status = ?
-      WHERE user_id = ? AND course_id = ?
-      `,
-      [enrollmentStatus, studentId, lesson.course_id]
+    const { total, completed, progressPercent } = await syncCourseProgressFromCompletions(
+      studentId,
+      lesson.course_id
     );
 
     return res.status(200).json({
       success: true,
-      message: 'Lecture marked as complete.',
+      message: 'Video marked as complete.',
       data: {
         course_id: lesson.course_id,
         content_id: Number(contentId),
-        completed_lessons: completedLectures,
-        total_lessons: totalLessons,
-        progress_percent: progressPercent,
-        enrollment_status: enrollmentStatus
+        completed_lessons: completed,
+        total_lessons: total,
+        progress_percent: progressPercent
       }
     });
   } catch (error) {
@@ -652,33 +671,9 @@ const getCourseProgress = async (req, res) => {
       });
     }
 
-    const [totalRows] = await db.query(
-      `
-      SELECT COUNT(*) AS totalLessons
-      FROM course_contents
-      WHERE course_id = ?
-      `,
-      [courseId]
-    );
-
-    const [progressRows] = await db.query(
-      `
-      SELECT completed_items, progress_percentage
-      FROM course_progress
-      WHERE user_id = ? AND course_id = ?
-      LIMIT 1
-      `,
-      [studentId, courseId]
-    );
-
-    const totalLessons = Number(totalRows[0]?.totalLessons || 0);
-    const completedLessons = progressRows.length > 0
-      ? Number(progressRows[0].completed_items || 0)
-      : 0;
-
-    const progressPercent = progressRows.length > 0
-      ? Number(progressRows[0].progress_percentage || 0)
-      : 0;
+    const totalLessons = await countCourseVideos(courseId);
+    const completedLessons = await countCompletedVideos(studentId, courseId);
+    const progressPercent = calculateProgress(completedLessons, totalLessons);
 
     return res.status(200).json({
       success: true,
@@ -742,7 +737,7 @@ const getStudentProfile = async (req, res) => {
       SELECT COUNT(*) AS enrolledCourses
       FROM enrollments
       WHERE user_id = ?
-        AND status = 'active'
+        AND status IN ('active', 'completed', 'in_progress', 'enrolled')
       `,
       [studentId]
     );
@@ -1004,6 +999,7 @@ const downloadLessonPdf = async (req, res) => {
       WHERE cc.id = ?
         AND cc.type = 'pdf'
         AND e.user_id = ?
+        AND e.status IN ('active', 'completed', 'in_progress', 'enrolled')
       LIMIT 1
       `,
       [contentId, studentId]
@@ -1042,6 +1038,67 @@ const downloadLessonPdf = async (req, res) => {
   }
 };
 
+/**
+ * List Contact Us messages sent with the same email as this student account
+ * (admin inbox in /api/contacts; this returns reply + status when the admin has replied).
+ */
+const getMyContactMessages = async (req, res) => {
+  try {
+    const studentId = getStudentIdFromRequest(req);
+    if (!studentId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized student.' });
+    }
+
+    const [userRows] = await db.query(
+      `SELECT email FROM users WHERE id = ? AND role = 'student' LIMIT 1`,
+      [studentId]
+    );
+    if (!userRows.length) {
+      return res.status(404).json({ success: false, message: 'Student not found.' });
+    }
+    const userEmail = String(userRows[0].email || '').trim();
+    if (!userEmail) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
+    const norm = userEmail.toLowerCase();
+
+    let rows;
+    try {
+      // user_id: rows created while logged in as this student. Email: legacy + guests.
+      [rows] = await db.query(
+        `SELECT * FROM contacts
+         WHERE user_id = ? OR LOWER(TRIM(COALESCE(email, ''))) = ?
+         ORDER BY id DESC`,
+        [studentId, norm]
+      );
+    } catch (e) {
+      if (e.code === 'ER_BAD_FIELD_ERROR' || (e.message && String(e.message).includes('user_id'))) {
+        [rows] = await db.query(
+          `SELECT * FROM contacts
+           WHERE LOWER(TRIM(COALESCE(email, ''))) = ?
+           ORDER BY id DESC`,
+          [norm]
+        );
+      } else {
+        throw e;
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: rows
+    });
+  } catch (error) {
+    console.error('getMyContactMessages error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to load messages.',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getAllCourses,
   getCourseDetails,
@@ -1055,6 +1112,7 @@ module.exports = {
   updateStudentPhoto,
   getStudentCertificates,
   downloadCertificate,
-   downloadLessonPdf
+  downloadLessonPdf,
+  getMyContactMessages
 };
 

@@ -58,13 +58,16 @@ import { CourseListComponent } from './modules/public/course-list/course-list.co
 import { CourseDetailComponent } from './modules/public/course-detail/course-detail.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { HomeComponent } from './modules/public/home/home.component';
+import { LoginComponent } from './modules/public/login/login.component';
 
 import { ReceiptComponent } from './receipt/receipt.component';
 
 const routes: Routes = [
-  { path: '',         component: HomeComponent },
-  { path: 'home',     component: HomeComponent },
-  { path: 'courses',  component: CourseListComponent },
+  // Public top-level routes
+  { path: '', component: HomeComponent },
+  { path: 'home', component: HomeComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'courses', component: CourseListComponent },
   { path: 'course/:id', component: CourseDetailComponent },
 
   {
@@ -79,9 +82,6 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: { expectedRoles: ['teacher'] }
   },
-  { path: '**', redirectTo: '' }
-  ,
-  
   {
     path: 'student',
     loadChildren: () =>
@@ -91,15 +91,8 @@ const routes: Routes = [
   path: 'receipt/:id',
   component: ReceiptComponent
 },
-  {
-    path: '',
-    loadChildren: () =>
-      import('./modules/public/public.module').then(m => m.PublicModule)
-  },
-  {
-    path: '**',
-    redirectTo: ''
-  }
+  // Keep wildcard last so feature modules can match first
+  { path: '**', redirectTo: '' }
 ];
 
 

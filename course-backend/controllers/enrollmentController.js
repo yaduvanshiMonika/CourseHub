@@ -142,7 +142,7 @@ exports.checkAccess = async (req, res) => {
         const courseId = req.params.courseId;
 
         const [result] = await db.query(
-            `SELECT * FROM enrollments WHERE user_id=? AND course_id=? AND status='active'`,
+            `SELECT * FROM enrollments WHERE user_id=? AND course_id=? AND status IN ('active', 'completed', 'in_progress', 'enrolled')`,
             [userId, courseId]
         );
 

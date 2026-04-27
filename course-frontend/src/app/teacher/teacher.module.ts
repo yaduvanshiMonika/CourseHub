@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { TeacherRoutingModule } from './teacher-routing.module';
+import { SharedModule } from '../shared/shared.module';
 
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AddCourseComponent } from './pages/add-course/add-course.component';
@@ -23,7 +24,8 @@ import { EnrollmentsComponent } from './pages/enrollments/enrollments.component'
     CommonModule,
     FormsModule,
     RouterModule,
-    TeacherRoutingModule
+    TeacherRoutingModule,
+    SharedModule
   ]
 })
 export class TeacherModule { }

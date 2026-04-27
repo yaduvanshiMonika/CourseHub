@@ -70,13 +70,15 @@ exports.login = async (req, res) => {
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      // Was 1h: admins hit 401 on dashboard after the hour while the UI still looked "logged in".
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
     res.json({
       token,
       role: user.role,
-      name: user.name
+      name: user.name,
+      email: user.email
     });
 
   } catch (err) {

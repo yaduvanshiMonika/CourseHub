@@ -42,6 +42,14 @@
 </div>
 
       <div class="form-group">
+        <label>Course Validity (days)</label>
+        <select [(ngModel)]="courseData.validity_days" name="validity_days" required>
+          <option [ngValue]="90">90 days</option>
+          <option [ngValue]="180">180 days</option>
+        </select>
+      </div>
+
+      <div class="form-group">
         <label>Video Link</label>
         <input type="text" [(ngModel)]="courseData.video_link" name="video_link" />
       </div>

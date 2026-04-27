@@ -19,6 +19,7 @@ export class LearningPageComponent implements OnInit {
   totalLessons: number = 0;
 
   loading: boolean = false;
+  markingSaving = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,7 +44,8 @@ export class LearningPageComponent implements OnInit {
           this.lessons = (res.data.lessons || []).map((lesson: any) => ({
             ...lesson,
             video_url: this.convertToEmbedUrl(lesson.video_url),
-            pdf_url: this.getPdfUrl(lesson.pdf_url)
+            pdf_url: this.getPdfUrl(lesson.pdf_url),
+            video_completed: !!lesson.video_completed
           }));
 
           this.totalLessons = Number(res.data.total_lessons || 0);
@@ -66,6 +68,27 @@ export class LearningPageComponent implements OnInit {
 
   selectLesson(lesson: any): void {
     this.selectedLesson = lesson;
+  }
+
+  markVideoComplete(): void {
+    const lesson = this.selectedLesson;
+    if (!lesson?.video_url || lesson.video_completed || this.markingSaving) return;
+
+    const contentId = Number(lesson.video_id || lesson.id);
+    if (!Number.isFinite(contentId)) return;
+
+    this.markingSaving = true;
+    this.studentService.markLessonComplete(contentId).subscribe({
+      next: () => {
+        this.markingSaving = false;
+        this.loadLearningData();
+      },
+      error: (err) => {
+        this.markingSaving = false;
+        console.error(err);
+        alert(err?.error?.message || 'Could not save progress.');
+      }
+    });
   }
 
   openPdf(url: string): void {

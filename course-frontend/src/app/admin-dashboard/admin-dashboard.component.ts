@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AdminService } from '../services/admin.service';
 import { ThemeService } from '../services/theme.service';
 import Swal, { SweetAlertResult } from 'sweetalert2';
@@ -18,7 +19,7 @@ export class AdminDashboardComponent implements OnInit {
   userRole: string = '';
   Math = Math;
 
-  activeTab: 'dashboard' | 'courses' | 'videos' | 'tutorials' | 'users' | 'deleted-students' | 'teachers' | 'payments' | 'contacts' | 'webinars' = 'courses';
+  activeTab: 'dashboard' | 'courses' | 'tutorials' | 'users' | 'deleted-students' | 'teachers' | 'payments' | 'contacts' | 'webinars' = 'courses';
 
   allData: any[] = [];
   selectedFile: File | null = null;
@@ -30,7 +31,15 @@ export class AdminDashboardComponent implements OnInit {
   formData = {
     id: null, fullName: '', email: '', expertise: '',
     title: '', category: 'Development', instructor: '',
-    user: '', course: '', amount: '', status: 'published'
+    user: '', course: '', amount: '', status: 'published',
+    validity_days: 90,
+    teacher_id: null as number | null,
+    price: 0,
+    level: 'beginner',
+    description: '',
+    video_link: '',
+    pdf_link: '',
+    thumbnailUrl: ''
   };
 
   displayStats = { students: 0, teachers: 0, courses: 0 };
@@ -126,7 +135,8 @@ export class AdminDashboardComponent implements OnInit {
     private router: Router,
     private adminService: AdminService,
     private http: HttpClient,
-    public theme: ThemeService
+    public theme: ThemeService,
+    private sanitizer: DomSanitizer
   ) {}
 
   // ─────────────────────────────────────────
@@ -147,9 +157,42 @@ export class AdminDashboardComponent implements OnInit {
     this.selectedContact = null; this.selectedWebinar = null;
     this.replyText = ''; this.showTemplates = false;
     this.resetPage();
+    if (tab === 'courses') {
+      this.selectedCourseId = null;
+      this.resetVideoContentForm();
+      this.courseContents = [];
+      this.groupedVideoContents = [];
+    }
     if (tab === 'contacts') this.loadContacts();
     else if (tab === 'webinars') this.loadWebinars();
     else this.loadData();
+  }
+
+  /** Open lesson content (video/PDF) for a course from the Courses tab. */
+  openCourseContent(item: { id: number }): void {
+    this.selectedCourseId = Number(item.id);
+    this.resetVideoContentForm();
+    this.loadVideoCourseContents(this.selectedCourseId);
+    setTimeout(() => {
+      const el = document.querySelector('.adm-videos-inline');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+
+  closeCourseContentPanel(): void {
+    this.selectedCourseId = null;
+    this.resetVideoContentForm();
+    this.courseContents = [];
+    this.groupedVideoContents = [];
+  }
+
+  getSelectedCourseTitle(): string {
+    const id = this.selectedCourseId;
+    if (id == null) return '';
+    const row =
+      this.allData.find((c: any) => Number(c.id) === Number(id)) ||
+      this.coursesList.find((c: any) => Number(c.id) === Number(id));
+    return row?.title || `Course #${id}`;
   }
 
   // ─────────────────────────────────────────
@@ -235,14 +278,46 @@ export class AdminDashboardComponent implements OnInit {
         this.adminService.saveStudent(p).subscribe({ next: () => this.handleSuccess('Student Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
       }
     } else if (this.activeTab === 'courses') {
-      if (!this.formData.title || !this.formData.category || !this.formData.instructor) {
-        this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'All course fields are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+      if (!this.formData.title || !this.formData.category || !this.formData.teacher_id) {
+        this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Title, Category and Teacher are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
       }
+
+      const teacher = this.teachersList.find(t => Number(t.id) === Number(this.formData.teacher_id));
+      const instructorName = teacher?.name || this.formData.instructor || '';
+
       if (this.formData.id) {
-        this.adminService.updateCourse({ id: this.formData.id, title: this.formData.title, category: this.formData.category, instructor: this.formData.instructor, status: this.formData.status })
+        this.adminService.updateCourse({
+          id: this.formData.id,
+          title: this.formData.title,
+          category: this.formData.category,
+          instructor: instructorName,
+          teacher_id: Number(this.formData.teacher_id),
+          price: Number(this.formData.price || 0),
+          status: this.formData.status,
+          validity_days: this.formData.validity_days,
+          level: this.formData.level,
+          description: this.formData.description,
+          video_link: this.formData.video_link,
+          pdf_link: this.formData.pdf_link,
+          thumbnailUrl: this.formData.thumbnailUrl
+        })
           .subscribe({ next: () => this.handleSuccess('Course Updated ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
       } else {
-        this.adminService.uploadCourse(this.formData.title, this.formData.category, this.formData.instructor, this.selectedFile, this.formData.status)
+        this.adminService.uploadCourse(
+          this.formData.title,
+          this.formData.category,
+          instructorName,
+          this.selectedFile,
+          this.formData.status,
+          this.formData.validity_days,
+          Number(this.formData.teacher_id),
+          Number(this.formData.price || 0),
+          this.formData.level,
+          this.formData.description,
+          this.formData.video_link,
+          this.formData.pdf_link,
+          this.formData.thumbnailUrl
+        )
           .subscribe({ next: () => this.handleSuccess('Course Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
       }
     }
@@ -263,7 +338,6 @@ export class AdminDashboardComponent implements OnInit {
     if (this.activeTab === 'users' || this.activeTab === 'deleted-students') table = 'users';
     else if (this.activeTab === 'teachers') table = 'teachers';
     else if (this.activeTab === 'courses')  table = 'courses';
-    else if (this.activeTab === 'videos')   table = 'course-content';
     if (!table) { this.glassSwal({ icon: '❌', title: 'Error', text: 'Unknown table for deletion.', color: 'rgba(255,100,100,0.95)', confirm: 'OK' }); return; }
     this.adminService.deleteContent(table, id).subscribe({
       next: () => { this.glassSwal({ icon: '🗑️', title: 'Deleted!', text: 'Record removed successfully.', color: 'rgba(255,100,100,0.95)', timer: 1800 }); this.loadData(); this.loadStats(); },
@@ -285,13 +359,53 @@ export class AdminDashboardComponent implements OnInit {
   // MODAL
   // ─────────────────────────────────────────
   editItem(item: any): void {
-    this.formData = { id: item.id, fullName: item.name||'', email: item.email||'', expertise: item.expertise||'', title: item.title||'', category: item.category||'Development', instructor: item.instructor||'', user: item.user||'', course: item.course||'', amount: item.amount||'', status: item.status||'published' };
+    this.formData = {
+      id: item.id,
+      fullName: item.name || '',
+      email: item.email || '',
+      expertise: item.expertise || '',
+      title: item.title || '',
+      category: item.category || 'Development',
+      instructor: item.instructor || '',
+      teacher_id: item.teacher_id ?? null,
+      user: item.user || '',
+      course: item.course || '',
+      amount: item.amount || '',
+      status: item.status || 'published',
+      validity_days: item.validity_days || 90,
+      price: item.price || 0,
+      level: item.level || 'beginner',
+      description: item.description || '',
+      video_link: item.video_link || '',
+      pdf_link: item.pdf_link || '',
+      thumbnailUrl: item.thumbnail_url || item.thumbnailUrl || ''
+    };
     this.showModal = true;
   }
   openAddModal() { this.resetForm(); this.showModal = true; }
   closeModal()   { this.showModal = false; this.resetForm(); }
   resetForm() {
-    this.formData = { id: null, fullName: '', email: '', expertise: '', title: '', category: 'Development', instructor: '', user: '', course: '', amount: '', status: 'published' };
+    this.formData = {
+      id: null,
+      fullName: '',
+      email: '',
+      expertise: '',
+      title: '',
+      category: 'Development',
+      instructor: '',
+      teacher_id: null,
+      user: '',
+      course: '',
+      amount: '',
+      status: 'published',
+      validity_days: 90,
+      price: 0,
+      level: 'beginner',
+      description: '',
+      video_link: '',
+      pdf_link: '',
+      thumbnailUrl: ''
+    };
     this.selectedFile = null;
   }
   onFileSelected(event: any): void {
@@ -301,18 +415,262 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   // ─────────────────────────────────────────
-  // COURSES / VIDEOS
+  // COURSES / VIDEOS (same add/edit/delete/PDF/embed flow as teacher course contents)
   // ─────────────────────────────────────────
-  coursesList: any[] = []; courseContents: any[] = []; selectedCourseId: number | null = null;
-  loadCourses() { this.adminService.getDataByTable('courses').subscribe({ next: (data: any[]) => this.coursesList = data, error: err => console.error(err) }); }
-  onCourseSelect(event: any) {
-    const courseId = Number(event.target.value);
-    this.selectedCourseId = courseId;
-    if (!courseId) return;
-    this.adminService.getCourseContent(courseId).subscribe({
-      next: (res: any[]) => this.courseContents = res,
-      error: (err) => { console.error(err); this.glassSwal({ icon: '❌', title: 'Failed', text: 'Could not load course content.', color: 'rgba(255,100,100,0.95)', confirm: 'OK' }); }
+  coursesList: any[] = [];
+  courseContents: any[] = [];
+  selectedCourseId: number | null = null;
+  groupedVideoContents: any[] = [];
+  videoContentLoading = false;
+  videoContentData: { title: string; url: string; position: number } = {
+    title: '',
+    url: '',
+    position: 1
+  };
+  videoEditMode = false;
+  videoEditContentId: number | null = null;
+  videoSelectedPdf: File | null = null;
+
+  loadCourses() {
+    this.adminService.getDataByTable('courses').subscribe({
+      next: (data: any[]) => (this.coursesList = data),
+      error: (err) => console.error(err)
     });
+  }
+
+  loadVideoCourseContents(courseId: number): void {
+    this.videoContentLoading = true;
+    this.adminService.getCourseContent(courseId).subscribe({
+      next: (res: any[]) => {
+        this.courseContents = res;
+        this.groupedVideoContents = this.groupVideoContents(res);
+        this.videoContentLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.videoContentLoading = false;
+        this.glassSwal({
+          icon: '❌',
+          title: 'Failed',
+          text: 'Could not load course content.',
+          color: 'rgba(255,100,100,0.95)',
+          confirm: 'OK'
+        });
+      }
+    });
+  }
+
+  private groupVideoContents(contents: any[]): any[] {
+    const groupedMap = new Map<string, any>();
+    for (const item of contents || []) {
+      const key = `${item.position || 0}`;
+      if (!groupedMap.has(key)) {
+        groupedMap.set(key, {
+          id: item.id,
+          title: '',
+          pdfName: '',
+          position: item.position || 1,
+          duration: item.duration || 0,
+          typeLabel: '',
+          videoUrl: null,
+          videoId: null,
+          pdfId: null
+        });
+      }
+      const existing = groupedMap.get(key);
+      if (item.type === 'video') {
+        existing.videoUrl = item.url;
+        existing.videoId = item.id;
+        if (!existing.title) existing.title = item.title || '';
+      }
+      if (item.type === 'pdf') {
+        existing.pdfId = item.id;
+        existing.pdfName = item.pdf_name || '';
+      }
+      if (existing.videoUrl && existing.pdfName) existing.typeLabel = 'video + pdf';
+      else if (existing.videoUrl) existing.typeLabel = 'video';
+      else if (existing.pdfName) existing.typeLabel = 'pdf';
+    }
+    return Array.from(groupedMap.values()).sort(
+      (a, b) => Number(a.position) - Number(b.position)
+    );
+  }
+
+  onVideoPdfFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.videoSelectedPdf = input.files?.[0] || null;
+  }
+
+  getVideoSafeUrl(url: string): SafeResourceUrl | string {
+    if (!url) return '';
+    const match =
+      url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/) ||
+      url.match(/youtube\.com\/embed\/([^&?/]+)/);
+    const videoId = match ? match[1] : null;
+    if (videoId) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl(
+        `https://www.youtube.com/embed/${videoId}`
+      );
+    }
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  formatVideoDuration(totalSeconds: number): string {
+    const seconds = Number(totalSeconds) || 0;
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    const hh = String(hours).padStart(2, '0');
+    const mm = String(minutes).padStart(2, '0');
+    const ss = String(remainingSeconds).padStart(2, '0');
+    return `${hh}:${mm}:${ss}`;
+  }
+
+  submitVideoContent(): void {
+    if (!this.selectedCourseId) return;
+
+    const formData = new FormData();
+    const title = (this.videoContentData.title || '').trim();
+    const videoUrl = (this.videoContentData.url || '').trim();
+    const position = String(Number(this.videoContentData.position) || 1);
+    const hasVideoUrl = !!videoUrl;
+    const hasPdfFile = !!this.videoSelectedPdf;
+
+    if (!title) {
+      this.glassSwal({ icon: '⚠️', title: 'Title required', color: 'rgba(255,170,50,0.95)', confirm: 'OK' });
+      return;
+    }
+    if (!hasVideoUrl && !hasPdfFile) {
+      this.glassSwal({
+        icon: '⚠️',
+        title: 'Video or PDF',
+        text: 'Add a video URL or choose a PDF file.',
+        color: 'rgba(255,170,50,0.95)',
+        confirm: 'OK'
+      });
+      return;
+    }
+
+    formData.append('title', title);
+    formData.append('position', position);
+    if (hasVideoUrl) formData.append('url', videoUrl);
+    if (hasPdfFile && this.videoSelectedPdf) formData.append('pdf', this.videoSelectedPdf);
+
+    const existingAtPos = this.groupedVideoContents.find(
+      (c) => Number(c.position) === Number(position)
+    );
+    if (existingAtPos && !this.videoEditMode) {
+      this.glassSwal({
+        icon: '⚠️',
+        title: 'Position taken',
+        text: 'This position is already used.',
+        color: 'rgba(255,170,50,0.95)',
+        confirm: 'OK'
+      });
+      return;
+    }
+
+    if (this.videoEditMode && this.videoEditContentId !== null) {
+      this.adminService.updateCourseContent(this.videoEditContentId, formData).subscribe({
+        next: () => {
+          this.glassSwal({ icon: '✅', title: 'Updated', timer: 1800 });
+          this.resetVideoContentForm();
+          this.loadVideoCourseContents(this.selectedCourseId!);
+        },
+        error: () =>
+          this.glassSwal({ icon: '❌', title: 'Update failed', color: 'rgba(255,100,100,0.95)', confirm: 'OK' })
+      });
+      return;
+    }
+
+    this.adminService.addCourseContents(this.selectedCourseId, formData).subscribe({
+      next: () => {
+        this.glassSwal({ icon: '✅', title: 'Added', timer: 1800 });
+        this.resetVideoContentForm();
+        this.loadVideoCourseContents(this.selectedCourseId!);
+      },
+      error: () =>
+        this.glassSwal({ icon: '❌', title: 'Add failed', color: 'rgba(255,100,100,0.95)', confirm: 'OK' })
+    });
+  }
+
+  editVideoContent(content: any): void {
+    this.videoEditMode = true;
+    this.videoSelectedPdf = null;
+    if (content.videoId) this.videoEditContentId = content.videoId;
+    else if (content.pdfId) this.videoEditContentId = content.pdfId;
+    this.videoContentData = {
+      title: content.title || '',
+      url: content.videoUrl || '',
+      position: content.position || 1
+    };
+  }
+
+  cancelVideoEdit(): void {
+    this.resetVideoContentForm();
+  }
+
+  resetVideoContentForm(): void {
+    this.videoEditMode = false;
+    this.videoEditContentId = null;
+    this.videoContentData = { title: '', url: '', position: 1 };
+    this.videoSelectedPdf = null;
+  }
+
+  deleteVideoGrouped(content: any): void {
+    const ids: number[] = [];
+    if (content.videoId) ids.push(content.videoId);
+    if (content.pdfId) ids.push(content.pdfId);
+    if (!ids.length) {
+      this.glassSwal({ icon: '⚠️', title: 'Nothing to delete', color: 'rgba(255,170,50,0.95)', confirm: 'OK' });
+      return;
+    }
+    this.glassSwal({
+      icon: '🗑️',
+      title: 'Delete this content?',
+      text: 'Video and/or PDF at this position will be removed.',
+      color: 'rgba(255,100,100,0.95)',
+      confirm: 'Delete',
+      cancel: 'Cancel'
+    }).then((r) => {
+      if (!r.isConfirmed) return;
+      let done = 0;
+      let failed = false;
+      ids.forEach((id) => {
+        this.adminService.deleteCourseContent(id).subscribe({
+          next: () => {
+            done++;
+            if (done === ids.length && !failed && this.selectedCourseId) {
+              this.glassSwal({ icon: '✅', title: 'Deleted', timer: 1600 });
+              this.loadVideoCourseContents(this.selectedCourseId);
+            }
+          },
+          error: () => {
+            if (!failed) {
+              failed = true;
+              this.glassSwal({ icon: '❌', title: 'Delete failed', color: 'rgba(255,100,100,0.95)', confirm: 'OK' });
+            }
+          }
+        });
+      });
+    });
+  }
+
+  downloadAdminContentPdf(pdfId: number): void {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    fetch(`http://localhost:5000/api/admin/content/pdf/${pdfId}`, {
+      headers: { Authorization: `Bearer ${token || ''}` }
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error('pdf');
+        const blob = await res.blob();
+        const blobUrl = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+        window.open(blobUrl, '_blank');
+        setTimeout(() => window.URL.revokeObjectURL(blobUrl), 60000);
+      })
+      .catch(() =>
+        this.glassSwal({ icon: '❌', title: 'PDF open failed', color: 'rgba(255,100,100,0.95)', confirm: 'OK' })
+      );
   }
 
   // ─────────────────────────────────────────

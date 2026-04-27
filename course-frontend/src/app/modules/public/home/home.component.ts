@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { CourseService } from 'src/app/services/course.service';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html', 
@@ -65,6 +65,12 @@ student.startLearning();`;
 ) {}
 
   ngOnInit() {
+
+    // Prefill contact email when logged in (must match account for "Messages" in student panel)
+    const accEmail = this.authService.getEmail();
+    if (accEmail) {
+      this.contact.email = accEmail;
+    }
 
     // ✅ FIX: Handle Observable properly
     this.courseService.getCourses().subscribe({
@@ -204,18 +210,32 @@ contact = {
 };
 
 submitContact() {
-  this.http.post('http://localhost:5000/api/contact', this.contact)
-    .subscribe(() => {
-      alert("Message sent successfully ✅");
+  const accEmail = this.authService.getEmail();
+  if (this.authService.getToken() && accEmail) {
+    this.contact.email = accEmail;
+  }
+  const token = this.authService.getToken();
+  const headers = token
+    ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+    : undefined;
 
-      // reset form
-      this.contact = {
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      };
+  this.http
+    .post('http://localhost:5000/api/contacts', this.contact, { headers })
+    .subscribe({
+      next: () => {
+        alert("Message sent successfully ✅");
+        this.contact = {
+          name: '',
+          email: accEmail || '',
+          phone: '',
+          subject: '',
+          message: ''
+        };
+      },
+      error: (err) => {
+        const msg = err?.error?.message || err?.message || "Could not send message. Please try again.";
+        alert(msg);
+      }
     });
 }
 // ─────────────────────────────────────────────────────────

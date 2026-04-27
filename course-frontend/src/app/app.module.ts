@@ -43,7 +43,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -54,6 +54,7 @@ import { AppComponent } from './app.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { ReceiptComponent } from './receipt/receipt.component';
+import { AuthExpiredInterceptor } from './interceptors/auth-expired.interceptor';
 
 @NgModule({
   declarations: [
@@ -74,7 +75,9 @@ import { ReceiptComponent } from './receipt/receipt.component';
          SharedModule
 
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthExpiredInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

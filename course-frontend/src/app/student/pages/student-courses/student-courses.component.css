@@ -21,6 +21,16 @@
   font-size: 14px;
 }
 
+.course-count-line {
+  margin-top: 10px !important;
+  font-size: 15px !important;
+  color: #e2e8f0 !important;
+}
+
+.course-count-line strong {
+  color: #45c1f5;
+}
+
 .empty-state {
   background: #1e293b;
   color: #cbd5e1;

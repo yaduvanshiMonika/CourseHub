@@ -1,4 +1,4 @@
- <div class="student-dashboard-wrapper">
+<div class="student-dashboard-wrapper">
   <div class="dashboard-header">
     <h2>Student Dashboard</h2>
     <p>Welcome back, <span>{{ studentName }}</span></p>
@@ -7,36 +7,58 @@
   <div class="stats-grid">
     <div class="stat-card">
       <h3>{{ stats.enrolledCourses }}</h3>
-      <p>Enrolled Courses</p>
+      <p>Enrolled courses</p>
     </div>
 
     <div class="stat-card">
       <h3>{{ stats.completedCourses }}</h3>
-      <p>Completed Courses</p>
+      <p>Fully completed (100%)</p>
     </div>
 
     <div class="stat-card">
       <h3>{{ stats.inProgressCourses }}</h3>
-      <p>In Progress</p>
+      <p>In progress (1–99%)</p>
     </div>
   </div>
 
   <div class="recent-section">
     <div class="section-head">
-      <h3>Recent Student Courses</h3>
-      <a routerLink="/student/student-courses">View All</a>
+      <h3>Your courses</h3>
+      <a routerLink="/student/student-courses">View all</a>
     </div>
 
-    <div *ngIf="loading" class="empty-box">
-      Loading...
+    <p class="progress-hint">
+      Progress is based on <strong>videos completed</strong> vs total videos in each course (e.g. 4 of 5 = 80%).
+    </p>
+
+    <div class="dash-tabs" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="courseTab === 'in_progress'"
+        [class.active]="courseTab === 'in_progress'"
+        (click)="courseTab = 'in_progress'">
+        In progress
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="courseTab === 'completed'"
+        [class.active]="courseTab === 'completed'"
+        (click)="courseTab = 'completed'">
+        Completed
+      </button>
     </div>
 
-    <div *ngIf="!loading && recentCourses.length === 0" class="empty-box">
-      No enrolled courses found.
+    <div *ngIf="loading" class="empty-box">Loading…</div>
+
+    <div *ngIf="!loading && filteredCourses.length === 0" class="empty-box">
+      <ng-container *ngIf="courseTab === 'completed'">No fully completed courses yet. Mark all lesson videos complete from the learning page.</ng-container>
+      <ng-container *ngIf="courseTab === 'in_progress'">No courses here — either nothing enrolled or everything is already completed. Switch to <strong>Completed</strong>.</ng-container>
     </div>
 
-    <div class="course-grid" *ngIf="!loading && recentCourses.length > 0">
-      <div class="course-card" *ngFor="let course of recentCourses">
+    <div class="course-grid" *ngIf="!loading && filteredCourses.length > 0">
+      <div class="course-card" *ngFor="let course of filteredCourses">
         <img
           [src]="course.image || 'https://via.placeholder.com/300x180?text=Course'"
           alt="course"
@@ -46,6 +68,11 @@
           <h4>{{ course.title }}</h4>
           <p>{{ course.category }}</p>
           <p>Instructor: {{ course.instructor }}</p>
+
+          <p class="video-count">
+            Videos: <strong>{{ course.completed_lessons || 0 }}</strong> / <strong>{{ course.total_lessons || 0 }}</strong>
+            completed
+          </p>
 
           <div class="progress-row">
             <div class="progress-bar">
@@ -64,6 +91,4 @@
       </div>
     </div>
   </div>
-</div>  
-
-
+</div>

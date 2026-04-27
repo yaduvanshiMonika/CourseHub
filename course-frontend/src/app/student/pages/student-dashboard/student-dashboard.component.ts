@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StudentService } from 'src/app/services/student.service';
-import { Router } from '@angular/router';
+
+export type DashboardCourseTab = 'in_progress' | 'completed';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -8,8 +9,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./student-dashboard.component.css']
 })
 export class StudentDashboardComponent implements OnInit {
-  studentName: string = 'Student';
-  loading: boolean = false;
+  studentName = 'Student';
+  loading = false;
 
   stats = {
     enrolledCourses: 0,
@@ -17,7 +18,9 @@ export class StudentDashboardComponent implements OnInit {
     inProgressCourses: 0
   };
 
-  recentCourses: any[] = [];
+  /** All enrolled courses (progress from completed videos / total videos). */
+  allCourses: any[] = [];
+  courseTab: DashboardCourseTab = 'in_progress';
 
   constructor(private studentService: StudentService) {}
 
@@ -25,50 +28,56 @@ export class StudentDashboardComponent implements OnInit {
     this.loadDashboardData();
   }
 
-loadDashboardData(): void {
-  this.loading = true;
-
-  this.studentService.getStudentProfile().subscribe({
-    next: (res) => {
-      if (res?.success && res?.data) {
-        this.studentName = res.data.name || 'Student';
-        this.stats.enrolledCourses = res.data.enrolledCourses || 0;
-      }
-    },
-    error: (err) => {
-      console.error('Profile load error:', err);
+  get filteredCourses(): any[] {
+    const list = this.allCourses || [];
+    if (this.courseTab === 'completed') {
+      return list.filter((c) => Number(c.progress_percent || 0) >= 100);
     }
-  });
+    return list.filter((c) => Number(c.progress_percent || 0) < 100);
+  }
 
-  this.studentService.getStudentCourses().subscribe({
-    next: (res) => {
-      this.loading = false;
+  loadDashboardData(): void {
+    this.loading = true;
 
-      if (res?.success && Array.isArray(res.data)) {
-        const courses = res.data || [];
+    this.studentService.getStudentProfile().subscribe({
+      next: (res) => {
+        if (res?.success && res?.data) {
+          this.studentName = res.data.name || 'Student';
+        }
+      },
+      error: (err) => console.error('Profile load error:', err)
+    });
 
-        this.recentCourses = courses.slice(0, 4);
+    this.studentService.getStudentCourses().subscribe({
+      next: (res) => {
+        this.loading = false;
 
-        this.stats.completedCourses = courses.filter(
-          (course: any) => Number(course.progress_percent) >= 100
-        ).length;
+        if (res?.success && Array.isArray(res.data)) {
+          const courses = res.data || [];
+          this.allCourses = courses;
+          this.stats.enrolledCourses = courses.length;
 
-        this.stats.inProgressCourses = courses.filter(
-          (course: any) =>
-            Number(course.progress_percent) > 0 &&
-            Number(course.progress_percent) < 100
-        ).length;
-      } else {
-        this.recentCourses = [];
+          this.stats.completedCourses = courses.filter(
+            (c: any) => Number(c.progress_percent || 0) >= 100
+          ).length;
+
+          this.stats.inProgressCourses = courses.filter(
+            (c: any) =>
+              Number(c.progress_percent || 0) > 0 &&
+              Number(c.progress_percent || 0) < 100
+          ).length;
+        } else {
+          this.allCourses = [];
+          this.stats.enrolledCourses = 0;
+          this.stats.completedCourses = 0;
+          this.stats.inProgressCourses = 0;
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.allCourses = [];
+        console.error('Student courses load error:', err);
       }
-    },
-    error: (err) => {
-      this.loading = false;
-      this.recentCourses = [];
-      console.error('Student courses load error:', err);
-    }
-  });
+    });
+  }
 }
-}
-
-

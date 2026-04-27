@@ -101,8 +101,11 @@ const verifyPayment = async (req, res) => {
     req.user.id // 🔥 CRITICAL FIX
   ]
 );
-        // 3. Activate Enrollment
-        await db.query(`UPDATE enrollments SET status='active' WHERE id=?`, [enrollment_id]);
+        // 3. Activate enrollment (set enrolled_at when missing so teacher reports show a date)
+        await db.query(
+            `UPDATE enrollments SET status='active', enrolled_at = IFNULL(enrolled_at, NOW()) WHERE id=?`,
+            [enrollment_id]
+        );
 
         res.json({ message: "Payment verified and amount updated successfully ✅",enrollment_id  });
         

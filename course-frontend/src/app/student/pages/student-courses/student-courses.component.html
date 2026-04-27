@@ -2,6 +2,9 @@
   <div class="page-header">
     <h2>Student Courses</h2>
     <p>Your enrolled courses with progress tracking</p>
+    <p class="course-count-line" *ngIf="!loading">
+      <strong>{{ studentCourses.length }}</strong> course{{ studentCourses.length === 1 ? '' : 's' }} enrolled
+    </p>
   </div>
 
   <div *ngIf="loading" class="empty-state">
@@ -40,8 +43,8 @@
         <p class="desc">{{ course.description || 'No description available.' }}</p>
 
         <div class="lesson-info">
-          <span>Total Lessons: {{ course.total_lessons || 0 }}</span>
-          <span>Completed: {{ course.completed_lessons || 0 }}</span>
+          <span>Total videos: {{ course.total_lessons || 0 }}</span>
+          <span>Videos done: {{ course.completed_lessons || 0 }}</span>
         </div>
 
         <div class="progress-section">

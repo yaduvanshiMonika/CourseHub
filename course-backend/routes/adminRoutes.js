@@ -3,6 +3,9 @@ const router = express.Router();
 const db = require('../config/db');
 const authorize = require('../middleware/authMiddleware');
 const multer = require('multer');
+const { getYouTubeThumbnail } = require('../utils/thumbnailHelper');
+const uploadPdfMemory = require('../middleware/uploadMiddleware');
+const adminContent = require('../controllers/adminContentController');
 // ✅ FIXED IMPORTS
 // 1. Get the actual function from your middleware file
 const authFile = require('../middleware/authMiddleware');
@@ -31,17 +34,64 @@ router.get('/courses', async (req, res) => {
 
 // --- ADD COURSE (Maps to 'image' column) ---
 router.post('/courses/add', upload.single('file'), async (req, res) => {
-    const { title, category, instructor, status } = req.body; // ✅ ADD STATUS
+    const {
+      title,
+      category,
+      instructor,
+      teacher_id,
+      status,
+      validity_days,
+      price,
+      level,
+      description,
+      video_link,
+      pdf_link,
+      thumbnailUrl
+    } = req.body;
     
     const filePath = req.file ? `/uploads/${req.file.filename}` : null;
 
     const sql = `
-    INSERT INTO courses (title, category, instructor, image, status)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO courses
+      (title, category, instructor, teacher_id, image, status, validity_days, price, level, description, video_link, pdf_link, thumbnail_url)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     try {
-        await db.query(sql, [title, category, instructor, filePath, status || 'draft']); // ✅ USE STATUS
+        const vd = Number(validity_days) === 180 ? 180 : 90;
+        const allowedLevels = ['beginner', 'intermediate', 'advanced'];
+        const finalLevel = allowedLevels.includes(level) ? level : 'beginner';
+        const finalPrice = price ? Number(price) : 0;
+        let finalThumb = (thumbnailUrl && String(thumbnailUrl).trim()) ? String(thumbnailUrl).trim() : null;
+        if (!finalThumb && video_link && String(video_link).trim()) {
+          finalThumb = getYouTubeThumbnail(String(video_link).trim());
+        }
+
+        // If teacher_id is provided, prefer teacher name as instructor
+        let finalTeacherId = teacher_id ? Number(teacher_id) : null;
+        let finalInstructor = instructor;
+        if (finalTeacherId) {
+          const [trows] = await db.query("SELECT id, name FROM users WHERE id = ? AND role = 'teacher' LIMIT 1", [finalTeacherId]);
+          if (trows.length) finalInstructor = trows[0].name;
+          else finalTeacherId = null;
+        }
+
+        await db.query(sql, [
+          title,
+          category,
+          finalInstructor,
+          finalTeacherId,
+          filePath,
+          status || 'draft',
+          vd,
+          finalPrice,
+          finalLevel,
+          description || null,
+          video_link || null,
+          pdf_link || null,
+          // Priority: explicit thumbnailUrl > YouTube derived thumbnail > uploaded file path
+          finalThumb || filePath
+        ]);
         res.json({ message: "Course saved successfully! ✅" });
         console.log("BODY:", req.body);
 
@@ -52,23 +102,35 @@ router.post('/courses/add', upload.single('file'), async (req, res) => {
     
 });
 // ==============================
-// 🎬 GET COURSE CONTENT BY COURSE ID
+// 🎬 COURSE CONTENT (same capabilities as teacher panel)
 // ==============================
-router.get('/course-content/:courseId', authorize(['admin']), async (req, res) => {
-    const { courseId } = req.params;
-
-    try {
-        const [results] = await db.query(
-            "SELECT * FROM course_contents WHERE course_id = ? ORDER BY position ASC",
-            [courseId]
-        );
-
-        res.json(results);
-    } catch (err) {
-        console.error("Fetch content error:", err);
-        res.status(500).json({ message: "Error fetching course contents" });
-    }
-});
+router.get(
+    '/course-content/:courseId',
+    authorize(['admin']),
+    adminContent.listCourseContents
+);
+router.post(
+    '/courses/:courseId/contents',
+    authorize(['admin']),
+    uploadPdfMemory.single('pdf'),
+    adminContent.addCourseContents
+);
+router.put(
+    '/contents/:contentId',
+    authorize(['admin']),
+    uploadPdfMemory.single('pdf'),
+    adminContent.updateCourseContent
+);
+router.delete(
+    '/course-content/:id',
+    authorize(['admin']),
+    adminContent.deleteCourseContent
+);
+router.get(
+    '/content/pdf/:contentId',
+    authorize(['admin']),
+    adminContent.getContentPdf
+);
 // ==============================
 // 🗑️ DELETE COURSE CONTENT
 // ==============================
@@ -107,12 +169,67 @@ router.get('/teachers', authorize(['admin']), async (req, res) => {
 // ✏️ UPDATE COURSE
 // ==============================
 router.put('/courses/:id', authorize(['admin']), async (req, res) => {
-    const { title, category, instructor, status } = req.body; // ✅ FIX
+    const {
+      title,
+      category,
+      instructor,
+      teacher_id,
+      status,
+      validity_days,
+      price,
+      level,
+      description,
+      video_link,
+      pdf_link,
+      thumbnailUrl
+    } = req.body;
 
     try {
+        const vd = Number(validity_days) === 180 ? 180 : 90;
+        const allowedLevels = ['beginner', 'intermediate', 'advanced'];
+        const finalLevel = allowedLevels.includes(level) ? level : 'beginner';
+        const finalPrice = price !== undefined ? Number(price) : 0;
+        let finalThumb = (thumbnailUrl && String(thumbnailUrl).trim()) ? String(thumbnailUrl).trim() : null;
+
+        // keep existing values when optional fields omitted
+        const [existingRows] = await db.query("SELECT teacher_id, instructor, thumbnail_url FROM courses WHERE id=? LIMIT 1", [req.params.id]);
+        if (!existingRows.length) return res.status(404).json({ message: "Course not found ❌" });
+        const existing = existingRows[0];
+
+        // If thumbnail not explicitly provided, try derive from video link, else keep existing.
+        if (!finalThumb && video_link && String(video_link).trim()) {
+          finalThumb = getYouTubeThumbnail(String(video_link).trim());
+        }
+
+        let finalTeacherId = teacher_id !== undefined && teacher_id !== null && teacher_id !== ''
+          ? Number(teacher_id)
+          : existing.teacher_id;
+        let finalInstructor = instructor || existing.instructor;
+        if (finalTeacherId) {
+          const [trows] = await db.query("SELECT id, name FROM users WHERE id = ? AND role = 'teacher' LIMIT 1", [finalTeacherId]);
+          if (trows.length) finalInstructor = trows[0].name;
+        }
+
         await db.query(
-            "UPDATE courses SET title=?, category=?, instructor=?, status=? WHERE id=?",
-            [title, category, instructor, status || 'draft', req.params.id]
+            `UPDATE courses
+             SET title=?, category=?, instructor=?, teacher_id=?, status=?, validity_days=?,
+                 price=?, level=?, description=?, video_link=?, pdf_link=?, thumbnail_url=?
+             WHERE id=?`,
+            [
+              title,
+              category,
+              finalInstructor,
+              finalTeacherId,
+              status || 'draft',
+              vd,
+              finalPrice,
+              finalLevel,
+              description || null,
+              video_link || null,
+              pdf_link || null,
+              finalThumb || existing.thumbnail_url,
+              req.params.id
+            ]
         );
 
         res.json({ message: "Course updated successfully ✅" });

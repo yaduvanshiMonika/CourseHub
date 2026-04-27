@@ -18,6 +18,18 @@
   font-weight: 600;
 }
 
+.enrollment-badge {
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #071325;
+  background: linear-gradient(135deg, #45c1f5, #7dd3fc);
+  padding: 8px 12px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
 .menu {
   display: flex;
   flex-direction: column;

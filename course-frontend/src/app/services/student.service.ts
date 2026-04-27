@@ -11,10 +11,13 @@ export class StudentService {
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
-    const token = sessionStorage.getItem('token');
-    return new HttpHeaders({
-      Authorization: `Bearer ${token || ''}`
-    });
+    // Some flows still store token in localStorage; support both.
+    const token =
+      sessionStorage.getItem('token') ||
+      localStorage.getItem('token') ||
+      '';
+
+    return new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
   }
 
   getAllCourses(): Observable<any> {
@@ -85,6 +88,13 @@ export class StudentService {
 
   getStudentCertificates(): Observable<any> {
     return this.http.get(`${this.baseUrl}/certificates`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /** Contact Us threads for this account email (includes admin `reply` when set) */
+  getMyContactMessages(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/contacts`, {
       headers: this.getAuthHeaders()
     });
   }

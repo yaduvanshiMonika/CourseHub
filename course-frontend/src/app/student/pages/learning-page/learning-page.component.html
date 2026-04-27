@@ -4,6 +4,10 @@
     <h2>{{ course?.title }}</h2>
 
     <div class="progress-box">
+      <p class="progress-caption" *ngIf="totalLessons > 0">
+        Videos completed: <strong>{{ completedLessons }}</strong> / <strong>{{ totalLessons }}</strong>
+        ({{ progressPercent }}%)
+      </p>
       <div class="progress-bar">
         <div class="progress-fill" [style.width.%]="progressPercent"></div>
       </div>
@@ -22,7 +26,10 @@
         [class.active]="selectedLesson?.position === lesson.position"
         (click)="selectLesson(lesson)"
       >
-        <p>{{ lesson.title }}</p>
+        <p>
+          {{ lesson.title }}
+          <span class="lesson-done" *ngIf="lesson.video_completed" title="Video completed">✓</span>
+        </p>
       </div>
     </div>
 
@@ -43,6 +50,15 @@
             frameborder="0"
             allowfullscreen>
           </iframe>
+          <div class="video-actions">
+            <button
+              type="button"
+              class="mark-complete-btn"
+              [disabled]="selectedLesson.video_completed || markingSaving"
+              (click)="markVideoComplete()">
+              {{ selectedLesson.video_completed ? 'Video completed ✓' : (markingSaving ? 'Saving…' : 'Mark video as complete') }}
+            </button>
+          </div>
         </div>
 
         <div *ngIf="selectedLesson.pdf_name" class="pdf-box">

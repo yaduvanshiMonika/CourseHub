@@ -47,6 +47,17 @@
   color: #fff;
 }
 
+.enrollment-stat {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+.enrollment-pending {
+  color: #fbbf24;
+  font-weight: 500;
+}
+
 .course-body p {
   margin: 0 0 12px;
   color: #e5e7eb;

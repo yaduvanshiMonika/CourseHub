@@ -1,0 +1,74 @@
+<div class="sm-wrap">
+  <div class="page-header">
+    <h2>Support messages</h2>
+    <p>
+      Messages you sent with <strong>Contact us</strong> on the site. Only requests sent with
+      <span class="mono" *ngIf="accountEmail">{{ accountEmail }}</span>
+      <span *ngIf="!accountEmail">your account email</span>
+      appear here. When the team replies, you will see it below (and you may get an email too).
+    </p>
+  </div>
+
+  <div *ngIf="loading" class="empty-state">Loading messages…</div>
+
+  <div *ngIf="!loading && error" class="err-box">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && messages.length === 0" class="empty-state">
+    <p class="empty-title">No messages yet</p>
+    <p class="empty-sub">
+      Use the <strong>Contact us</strong> section on the home page to reach support. Replies from admin will show
+      in this list when they are saved.
+    </p>
+  </div>
+
+  <div class="sm-layout" *ngIf="!loading && !error && messages.length > 0">
+    <aside class="sm-list" role="list">
+      <button
+        type="button"
+        class="sm-item"
+        *ngFor="let m of messages"
+        [class.active]="selected?.id === m.id"
+        (click)="select(m)"
+        role="listitem"
+      >
+        <span class="sm-item-subj">{{ m.subject || 'Message' }}</span>
+        <span class="sm-item-meta">
+          <span
+            class="sm-pill"
+            [class.sm-pill-replied]="hasReply(m)"
+            [class.sm-pill-pending]="!hasReply(m)"
+            >{{ hasReply(m) ? 'Replied' : 'Pending' }}</span
+          >
+          <span *ngIf="m.created_at">{{ m.created_at | date: 'd MMM yyyy' }}</span>
+        </span>
+      </button>
+    </aside>
+
+    <section class="sm-detail" *ngIf="selected">
+      <div class="sm-card">
+        <h3 class="sm-detail-title">{{ selected.subject || 'Message' }}</h3>
+        <p class="sm-dates" *ngIf="selected.created_at">
+          Submitted: {{ selected.created_at | date: 'medium' }}
+        </p>
+        <p class="sm-dates" *ngIf="hasReply(selected) && selected.replied_at">
+          Replied: {{ selected.replied_at | date: 'medium' }}
+        </p>
+
+        <div class="sm-bubble sm-you">
+          <div class="sm-bubble-label">You</div>
+          <p class="sm-bubble-text">{{ selected.message || '—' }}</p>
+        </div>
+
+        <div class="sm-bubble sm-admin" *ngIf="hasReply(selected)">
+          <div class="sm-bubble-label">CourseHub</div>
+          <p class="sm-bubble-text">{{ selected.reply }}</p>
+        </div>
+
+        <div class="sm-wait" *ngIf="!hasReply(selected)">
+          <span class="sm-wait-ico" aria-hidden="true">⏳</span>
+          <p>No admin reply yet. We will update this when support responds.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

@@ -46,6 +46,7 @@ const addCourse = async (req, res) => {
       price,
       status,
       level,
+      validity_days,
       video_link,
       pdf_link,
       description,
@@ -82,6 +83,8 @@ const addCourse = async (req, res) => {
 
     const finalPrice = price ? Number(price) : 0;
 
+    const finalValidityDays = Number(validity_days) === 180 ? 180 : 90;
+
     const { finalThumbnailUrl, finalThumbnailFile } = resolveThumbnail({
       thumbnailUrl,
       thumbnailFile,
@@ -99,12 +102,13 @@ const addCourse = async (req, res) => {
         teacher_id,
         price,
         status,
+        validity_days,
         level,
         description,
         video_link,
         pdf_link
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`,
       [
         title.trim(),
         category.trim(),
@@ -114,6 +118,7 @@ const addCourse = async (req, res) => {
         teacherId,
         finalPrice,
         finalStatus,
+        finalValidityDays,
         finalLevel,
         description || null,
         video_link || null,
@@ -188,12 +193,14 @@ const getMyCourses = async (req, res) => {
         c.teacher_id,
         c.created_at,
         c.price,
+        c.validity_days,
         c.status,
         c.level,
         c.description,
         c.video_link,
         c.pdf_link,
         COUNT(DISTINCT e.id) AS total_enrollments,
+        COUNT(DISTINCT CASE WHEN e.status = 'active' THEN e.id END) AS active_enrollments,
         COUNT(DISTINCT cc.position) AS lectureCount
       FROM courses c
       LEFT JOIN enrollments e ON e.course_id = c.id
@@ -201,7 +208,7 @@ const getMyCourses = async (req, res) => {
       WHERE c.teacher_id = ?
       GROUP BY
         c.id, c.title, c.category, c.instructor, c.thumbnail_url, c.thumbnail_file,
-        c.teacher_id, c.created_at, c.price, c.status, c.level, c.description,
+        c.teacher_id, c.created_at, c.price, c.validity_days, c.status, c.level, c.description,
         c.video_link, c.pdf_link
       ORDER BY c.created_at DESC`,
       [teacherId]
@@ -282,6 +289,7 @@ const updateCourse = async (req, res) => {
       price,
       status,
       level,
+      validity_days,
       video_link,
       pdf_link,
       description,
@@ -294,6 +302,8 @@ const updateCourse = async (req, res) => {
     const finalInstructor = instructor !== undefined ? instructor.trim() : course.instructor;
     const finalPrice = price !== undefined ? Number(price) : course.price;
     const finalStatus = status !== undefined ? status : course.status;
+    const finalValidityDays =
+      validity_days !== undefined ? (Number(validity_days) === 180 ? 180 : 90) : course.validity_days;
     const finalVideoLink = video_link !== undefined ? video_link : course.video_link;
     const finalPdfLink = pdf_link !== undefined ? pdf_link : course.pdf_link;
     const finalDescription = description !== undefined ? description : course.description;
@@ -332,7 +342,7 @@ const updateCourse = async (req, res) => {
     await db.query(
       `UPDATE courses
        SET title = ?, category = ?, instructor = ?, thumbnail_url = ?, thumbnail_file = ?,
-           price = ?, status = ?, level = ?, description = ?, video_link = ?, pdf_link = ?
+           price = ?, status = ?, validity_days = ?, level = ?, description = ?, video_link = ?, pdf_link = ?
        WHERE id = ? AND teacher_id = ?`,
       [
         finalTitle,
@@ -342,6 +352,7 @@ const updateCourse = async (req, res) => {
         finalThumbnailFile,
         finalPrice,
         finalStatus,
+        finalValidityDays,
         finalLevel,
         finalDescription,
         finalVideoLink,
@@ -769,9 +780,17 @@ const getCourseEnrollments = async (req, res) => {
         e.id AS enrollment_id,
         e.course_id,
         e.user_id,
-        e.created_at AS enrolled_at,
+        e.status AS enrollment_status,
+        e.enrolled_at AS enrolled_at,
         u.name AS student_name,
-        u.email AS student_email
+        u.email AS student_email,
+        (
+          SELECT p2.status
+          FROM payments p2
+          WHERE p2.enrollment_id = e.id
+          ORDER BY p2.id DESC
+          LIMIT 1
+        ) AS payment_status
       FROM enrollments e
       LEFT JOIN users u ON u.id = e.user_id
       WHERE e.course_id = ?
@@ -911,5 +930,6 @@ module.exports = {
   deleteCourseContent,
   reorderCourseContents,
   getCourseEnrollments,
-  getContentPdf   // add this line
+  getContentPdf,
+  getVideoDuration
 };

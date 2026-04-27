@@ -1,16 +1,41 @@
 <div class="page-box">
-  <h2>Course Enrollments</h2>
-
-  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-
-  <div *ngIf="enrollments.length > 0; else noData" class="enrollment-list">
-    <div class="enrollment-card" *ngFor="let student of enrollments">
-      <h4>{{ student.student_name }}</h4>
-      <p>{{ student.student_email }}</p>
-      <small>Enrolled At: {{ student.enrolled_at }}</small>
-    </div>
+  <div class="enroll-head">
+    <button type="button" class="btn-back" (click)="backToMyCourses()">← My courses</button>
+    <h2>Course enrollments</h2>
+    <p class="sub">Students linked to this course (only courses you own).</p>
   </div>
 
-  <ng-template #noData>
-    <div class="empty-box">enrollments Not found.</div>
-  </ng-template>
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="muted" *ngIf="loading">Loading…</p>
+
+  <div class="table-wrap" *ngIf="!loading && enrollments.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Email</th>
+          <th>Enrollment</th>
+          <th>Payment</th>
+          <th>Enrolled</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of enrollments">
+          <td>{{ row.student_name || '—' }}</td>
+          <td>{{ row.student_email || '—' }}</td>
+          <td>
+            <span class="pill" [class.pill-active]="row.enrollment_status === 'active'">
+              {{ row.enrollment_status || '—' }}
+            </span>
+          </td>
+          <td>{{ row.payment_status || '—' }}</td>
+          <td>{{ row.enrolled_at ? (row.enrolled_at | date: 'medium') : '—' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!loading && enrollments.length === 0 && !errorMessage" class="empty-box">
+    No enrollments yet for this course.
+  </div>
+</div>

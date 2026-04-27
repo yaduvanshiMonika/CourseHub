@@ -18,10 +18,12 @@ export class TeacherService {
   //   });
   // }
 private getHeaders(): HttpHeaders {
-  const token = sessionStorage.getItem('token') || localStorage.getItem('token') || '';
-  return new HttpHeaders({
-    Authorization: `Bearer ${token}`
-  });
+  const token =
+    sessionStorage.getItem('token') ||
+    localStorage.getItem('token') ||
+    '';
+
+  return new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
 }
 
 //add new 

@@ -1,29 +1,133 @@
-<div class="course-card" *ngIf="course">
+<div class="pub-detail-page" *ngIf="!loadError && course">
 
-  <!-- IMAGE -->
-  <div class="image-box">
-    <img [src]="'http://localhost:5000' + course.image" alt="course">
-  </div>
+  <div class="pub-detail-inner">
+    <button type="button" class="pub-back" (click)="backToTutorials()">
+      ← Tutorials
+    </button>
 
-  <!-- CONTENT -->
-  <div class="card-body">
+    <header class="pub-hero">
+      <div class="pub-hero-media" [class.pub-hero-media--empty]="!(course | tutorialCardImage)">
+        <img
+          *ngIf="(course | tutorialCardImage) as heroImg"
+          [src]="heroImg"
+          alt=""
+          (error)="onCardImageError($event)"
+        >
+      </div>
+      <div class="pub-hero-copy">
+        <p class="pub-kicker">{{ course.category }}</p>
+        <h1 class="pub-title">{{ course.title }}</h1>
+        <p class="pub-instructor">Instructor: <strong>{{ course.instructor }}</strong></p>
+        <p class="pub-price-tag">₹{{ course.price }}</p>
+        <div class="pub-hero-actions">
+          <button
+            *ngIf="hasFullAccess"
+            type="button"
+            class="pub-btn pub-btn-primary"
+            (click)="goToLearning()">
+            Continue to lessons
+          </button>
+          <ng-container *ngIf="!hasFullAccess">
+            <a *ngIf="!isLoggedIn" routerLink="/login" class="pub-btn pub-btn-primary">Log in to enroll</a>
+            <button
+              *ngIf="isLoggedIn && role === 'student'"
+              type="button"
+              class="pub-btn pub-btn-primary"
+              (click)="enroll()">
+              Enroll &amp; unlock content
+            </button>
+            <p *ngIf="isLoggedIn && role !== 'student'" class="pub-account-hint">Use a student account to enroll and access paid lessons.</p>
+          </ng-container>
+        </div>
+      </div>
+    </header>
 
-    <h3>{{ course.title }}</h3>
+    <section class="pub-stats" aria-label="Course summary">
+      <div class="pub-stat">
+        <span class="pub-stat-value">{{ lessonCount }}</span>
+        <span class="pub-stat-label">Lessons</span>
+      </div>
+      <div class="pub-stat">
+        <span class="pub-stat-value">{{ course.level || '—' }}</span>
+        <span class="pub-stat-label">Level</span>
+      </div>
+      <div class="pub-stat">
+        <span class="pub-stat-value">{{ course.validity_days || 90 }} days</span>
+        <span class="pub-stat-label">Access after purchase</span>
+      </div>
+    </section>
 
-    <p class="meta">{{ course.category }}</p>
+    <section class="pub-section" *ngIf="course.description">
+      <h2>About this course</h2>
+      <p class="pub-desc">{{ course.description }}</p>
+    </section>
 
-    <p class="meta">
-      👨‍🏫 {{ course.instructor }}
-    </p>
+    <section class="pub-section pub-curriculum">
+      <div class="pub-section-head">
+        <h2>Course content</h2>
+        <p class="pub-section-lead">
+          See what is included. Videos and PDFs open only after you enroll and complete payment.
+        </p>
+      </div>
 
-    <div class="card-footer">
-      <span class="price">₹{{ course.price }}</span>
+      <div class="pub-lock-banner" *ngIf="!hasFullAccess">
+        <span class="pub-lock-icon" aria-hidden="true">🔒</span>
+        <div>
+          <strong>Locked until purchase</strong>
+          <p class="pub-lock-text">Lesson previews below show titles and length only. Playback and downloads are available in your student area once this course is paid and active.</p>
+        </div>
+      </div>
 
-      <a [routerLink]="['/course', course.id]" class="btn-view">
-        View Details
+      <ul class="pub-lesson-list" *ngIf="curriculum.length > 0">
+        <li class="pub-lesson" *ngFor="let item of curriculum">
+          <div class="pub-lesson-main">
+            <span class="pub-lesson-lock" *ngIf="!hasFullAccess" title="Unlock after payment">🔒</span>
+            <span class="pub-lesson-num">{{ item.position }}</span>
+            <div class="pub-lesson-body">
+              <span class="pub-lesson-title">{{ item.title }}</span>
+              <span class="pub-lesson-meta">
+                <span *ngIf="item.has_video">Video</span>
+                <span *ngIf="item.has_video && item.has_pdf"> · </span>
+                <span *ngIf="item.has_pdf">PDF</span>
+                <span *ngIf="item.duration_seconds"> · {{ formatDuration(item.duration_seconds) }}</span>
+              </span>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <p class="pub-empty-curriculum" *ngIf="curriculum.length === 0">
+        The instructor has not published a lesson list yet. Check back soon — you can still enroll when the course is ready.
+      </p>
+    </section>
+
+    <footer class="pub-detail-footer">
+      <button type="button" class="pub-btn pub-btn-ghost" (click)="backToTutorials()">Browse more tutorials</button>
+      <a
+        *ngIf="!hasFullAccess && !isLoggedIn"
+        routerLink="/login"
+        class="pub-btn pub-btn-primary">
+        Enroll for ₹{{ course.price }}
       </a>
-    </div>
-
+      <button
+        type="button"
+        class="pub-btn pub-btn-primary"
+        (click)="enroll()"
+        *ngIf="!hasFullAccess && isLoggedIn && role === 'student'">
+        Enroll for ₹{{ course.price }}
+      </button>
+      <button
+        type="button"
+        class="pub-btn pub-btn-primary"
+        (click)="goToLearning()"
+        *ngIf="hasFullAccess">
+        Open lessons
+      </button>
+    </footer>
   </div>
+</div>
 
+<div class="pub-detail-page pub-detail-error" *ngIf="loadError">
+  <p>We could not load this course.</p>
+  <button type="button" class="pub-btn pub-btn-primary" (click)="backToTutorials()">Back to tutorials</button>
 </div>

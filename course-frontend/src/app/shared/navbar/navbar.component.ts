@@ -155,7 +155,7 @@ export class NavbarComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  // toggleDropdown() { this.showDropdown = !this.showDropdown; }
+  toggleDropdown() { this.showDropdown = !this.showDropdown; }
   // goToAdmin()   { this.router.navigate(['/admin-dashboard']); }
   // goToTeacher() { this.router.navigate(['/teacher']); }
 

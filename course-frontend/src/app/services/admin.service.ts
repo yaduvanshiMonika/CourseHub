@@ -178,12 +178,9 @@ export class AdminService {
    * ✅ Attach Bearer Token
    */
   private getOptions() {
-    const token = sessionStorage.getItem('token');
-    return {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      })
-    };
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (!token) return { headers: new HttpHeaders() };
+    return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) };
   }
 
   // ============================
@@ -237,7 +234,15 @@ export class AdminService {
     category: string,
     instructor: string,
     file: File | null,
-    status: string
+    status: string,
+    validityDays: number,
+    teacherId: number,
+    price: number,
+    level: string,
+    description: string,
+    videoLink: string,
+    pdfLink: string,
+    thumbnailUrl: string
   ): Observable<any> {
 
     const formData = new FormData();
@@ -246,6 +251,14 @@ export class AdminService {
     formData.append('category', category);
     formData.append('instructor', instructor);
     formData.append('status', status);
+    formData.append('validity_days', String(validityDays ?? 90));
+    formData.append('teacher_id', String(teacherId ?? ''));
+    formData.append('price', String(price ?? 0));
+    formData.append('level', level ?? 'beginner');
+    formData.append('description', description ?? '');
+    formData.append('video_link', videoLink ?? '');
+    formData.append('pdf_link', pdfLink ?? '');
+    formData.append('thumbnailUrl', thumbnailUrl ?? '');
 
     if (file) {
       formData.append('file', file);
@@ -331,6 +344,24 @@ export class AdminService {
   deleteCourseContent(id: number): Observable<any> {
     return this.http.delete(
       `${this.apiUrl}/course-content/${id}`,
+      this.getOptions()
+    );
+  }
+
+  /** Add video/PDF content to a course (same contract as teacher API). */
+  addCourseContents(courseId: number, formData: FormData): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/courses/${courseId}/contents`,
+      formData,
+      this.getOptions()
+    );
+  }
+
+  /** Update a single content row (video or PDF). */
+  updateCourseContent(contentId: number, formData: FormData): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/contents/${contentId}`,
+      formData,
       this.getOptions()
     );
   }

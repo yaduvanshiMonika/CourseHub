@@ -23,4 +23,7 @@ router.put('/profile/photo', authMiddleware(['student']), studentController.upda
 router.get('/certificates', authMiddleware(['student']), studentController.getStudentCertificates);
 router.get('/certificate/:courseId/download', authMiddleware(['student']), studentController.downloadCertificate);
 
+/** Contact Us — messages for the logged-in student (same email as account) + admin replies */
+router.get('/contacts', authMiddleware(['student']), studentController.getMyContactMessages);
+
 module.exports = router;

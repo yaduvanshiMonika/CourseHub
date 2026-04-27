@@ -12,6 +12,7 @@ import { LearningPageComponent } from './pages/learning-page/learning-page.compo
 import { StudentProfileComponent } from './pages/student-profile/student-profile.component';
 import { StudentCertificatesComponent } from './pages/student-certificates/student-certificates.component';
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
+import { StudentMessagesComponent } from './pages/student-messages/student-messages.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { StudentLayoutComponent } from './student-layout/student-layout.componen
     LearningPageComponent,
     StudentProfileComponent,
     StudentCertificatesComponent,
-    StudentLayoutComponent
+    StudentLayoutComponent,
+    StudentMessagesComponent
   ],
   imports: [
     CommonModule,

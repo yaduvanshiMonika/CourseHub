@@ -8,6 +8,7 @@
       <a routerLink="/teacher/add-course" routerLinkActive="active">Add Course</a>
       <a routerLink="/teacher/my-courses" routerLinkActive="active">My Courses</a>
     </nav>
+    <p class="sidebar-hint">Student enrollments: open <strong>My Courses</strong>, then <strong>Enrollments</strong> on a course.</p>
   </aside>
 
   <main class="content-area">
@@ -16,19 +17,7 @@
     <div class="topbar-full">
       <div class="brand">&lt; CourseHub</div>
 
-      <div class="profile-menu" (click)="toggleMenu(); $event.stopPropagation()">
-        <div class="avatar">{{ teacherInitial }}</div>
-        <span class="role-text">Teacher</span>
-
-        <div class="dropdown" *ngIf="menuOpen" (click)="$event.stopPropagation()">
-          <button class="dropdown-item" (click)="goToSite()">
-            🌐 Back to Site
-          </button>
-          <button class="dropdown-item" (click)="logout()">
-            🚪 Logout
-          </button>
-        </div>
-      </div>
+      <app-user-menu roleLabel="Teacher" [showBackToSite]="true" [showPanelLinks]="false"></app-user-menu>
     </div>
 
     <!-- PAGE -->

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { TeacherService } from 'src/app/services/teacher.service';
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-my-courses',
@@ -15,7 +16,8 @@ export class MyCoursesComponent implements OnInit {
 
   constructor(
     private teacherService: TeacherService,
-    private router: Router
+    private router: Router,
+    private auth: AuthService
   ) {}
 
   
@@ -48,6 +50,14 @@ export class MyCoursesComponent implements OnInit {
         console.error('Get my courses error:', err);
         this.courses = [];
         this.isLoading = false;
+
+        // If token is missing/invalid or user is not a teacher, redirect safely.
+        if (err?.status === 401 || err?.status === 403) {
+          const role = this.auth.getRole();
+          if (role === 'admin') this.router.navigate(['/admin-dashboard']);
+          else if (role === 'student') this.router.navigate(['/student/student-dashboard']);
+          else this.router.navigate(['/login']);
+        }
       }
     });
   }

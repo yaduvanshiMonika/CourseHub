@@ -70,6 +70,7 @@ import { StudentCoursesComponent } from './pages/student-courses/student-courses
 import { LearningPageComponent } from './pages/learning-page/learning-page.component';
 import { StudentProfileComponent } from './pages/student-profile/student-profile.component';
 import { StudentCertificatesComponent } from './pages/student-certificates/student-certificates.component';
+import { StudentMessagesComponent } from './pages/student-messages/student-messages.component';
 
 import { RoleGuard } from '../guards/role.guard';
 
@@ -86,7 +87,8 @@ const routes: Routes = [
       { path: 'student-courses', component: StudentCoursesComponent },
       { path: 'course/:id/learn', component: LearningPageComponent },
       { path: 'profile', component: StudentProfileComponent },
-      { path: 'certificates', component: StudentCertificatesComponent }
+      { path: 'certificates', component: StudentCertificatesComponent },
+      { path: 'messages', component: StudentMessagesComponent }
     ]
   }
 ];

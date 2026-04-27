@@ -3,16 +3,14 @@
     <div class="course-grid">
       <div class="course-card" *ngFor="let course of courses">
 
-        <!-- IMAGE -->
-        <div class="image-box">
-          <img 
-            [src]="course.thumbnail_file 
-              ? 'http://localhost:5000' + course.thumbnail_file 
-              : (course.thumbnail_url 
-                ? course.thumbnail_url 
-                : 'assets/default.jpg')" 
-            alt="course"
+        <!-- IMAGE: thumbnail URL/file if set, else YouTube poster only — no default placeholder -->
+        <div class="image-box" [class.image-box--empty]="!(course | tutorialCardImage)">
+          <img
+            *ngIf="(course | tutorialCardImage) as cardImg"
+            [src]="cardImg"
+            alt=""
             loading="lazy"
+            (error)="onCardImageError($event)"
           >
         </div>
 

@@ -255,6 +255,11 @@ export class LoginComponent {
           sessionStorage.setItem('token', res.token);
           sessionStorage.setItem('role',  res.role);
           sessionStorage.setItem('name',  res.name);
+          if (res.email) {
+            sessionStorage.setItem('email', res.email);
+          } else {
+            sessionStorage.removeItem('email');
+          }
           this.closeOverlay.emit(); // ✅ close drawer
           this.popup('success', `Welcome, ${res.name || 'User'}! 👋`, 'Logged in successfully.', 1800)
             .then(() => {
