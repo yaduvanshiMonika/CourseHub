@@ -10,14 +10,18 @@
             <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setTab('payments')">Payments</button>
             <button class="tab-btn" [class.active]="activeTab === 'contacts'" (click)="setTab('contacts')">Contacts</button>
             <button class="tab-btn" [class.active]="activeTab === 'webinars'" (click)="setTab('webinars')">Webinars</button>
-            <button class="tab-btn" [class.active]="activeTab === 'deleted-students'" (click)="setTab('deleted-students')">Deleted</button>
+            <!-- <button class="tab-btn" [class.active]="activeTab === 'deleted-students'" (click)="setTab('deleted-students')">Deleted</button> -->
           </div>
 
 <nav class="navbar">
   <div class="nav-wrapper">
 
     <!-- LEFT LOGO -->
-    <div class="logo">&lt; CourseHub</div>
+    <!-- <div class="logo">&lt; CourseHub</div>
+      -->
+    <div class="logo">
+  <img src="assets/svayamtech_logo.png" alt="CourseHub Logo" class="logo-img">
+</div>
 
     <div class="nav-trailing">
       <button

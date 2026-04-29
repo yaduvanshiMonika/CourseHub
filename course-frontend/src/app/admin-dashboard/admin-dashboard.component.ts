@@ -816,7 +816,8 @@ onSave(): void {
   toggleDropdown() { this.showDropdown = !this.showDropdown; }
   @HostListener('document:click', ['$event'])
   onClickOutside(event: any) { if (!event.target.closest('.profile')) this.showDropdown = false; }
-  goToWebsite() { this.showDropdown = false; this.router.navigate(['/']); }
+  // goToWebsite() { this.showDropdown = false; this.router.navigate(['/']); }
+  goToWebsite() { this.showDropdown = false; window.location.href='/'; }
   async logout(): Promise<void> {
     this.showDropdown = false;
     const result = await this.glassSwal({ icon: '🚪', title: 'Logging Out', text: 'Are you sure you want to logout?', color: 'rgba(255,120,120,0.95)', confirm: 'Yes, Logout', cancel: 'Cancel' });

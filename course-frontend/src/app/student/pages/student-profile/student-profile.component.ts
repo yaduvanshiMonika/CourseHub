@@ -27,11 +27,9 @@ export class StudentProfileComponent implements OnInit {
 
   loadProfile(): void {
     this.loading = true;
-
     this.studentService.getStudentProfile().subscribe({
       next: (res) => {
         this.loading = false;
-
         if (res?.success && res.data) {
           this.profile = {
             name: res.data.name || '',
@@ -52,22 +50,25 @@ export class StudentProfileComponent implements OnInit {
 
   updateProfile(): void {
     this.saving = true;
-
     const payload = {
       name: this.profile.name,
       phone: this.profile.phone,
       bio: this.profile.bio
     };
-
     this.studentService.updateStudentProfile(payload).subscribe({
       next: (res) => {
         this.saving = false;
-        alert(res?.message || 'Profile updated successfully');
+        if (res?.data) {
+          this.profile.name = res.data.name || this.profile.name;
+          this.profile.phone = res.data.phone || this.profile.phone;
+          this.profile.bio = res.data.bio || this.profile.bio;
+        }
+        alert(res?.message || 'Profile updated successfully ✅');
       },
       error: (err) => {
         this.saving = false;
         console.error('Update profile error:', err);
-        alert('Failed to update profile');
+        alert('Failed to update profile ❌');
       }
     });
   }
@@ -77,14 +78,13 @@ export class StudentProfileComponent implements OnInit {
       alert('Please enter photo URL first');
       return;
     }
-
     this.studentService.updateStudentPhoto(this.profile.photo).subscribe({
       next: (res) => {
-        alert(res?.message || 'Photo updated successfully');
+        alert(res?.message || 'Photo updated successfully ✅');
       },
       error: (err) => {
         console.error('Update photo error:', err);
-        alert('Failed to update photo');
+        alert('Failed to update photo ❌');
       }
     });
   }

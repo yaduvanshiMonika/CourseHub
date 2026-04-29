@@ -345,6 +345,18 @@
   color: #334155;
 }
 
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+.logo-img {
+  height: 48px;
+  width: 48px;
+  object-fit: contain;
+  border-radius: 6px;
+  cursor: pointer;
+}
 /* ── RESPONSIVE ──────────────────────────────── */
 @media (max-width: 768px) {
   .nav-pill  { display: none; }
