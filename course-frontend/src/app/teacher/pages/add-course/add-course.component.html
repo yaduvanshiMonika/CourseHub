@@ -28,7 +28,7 @@
         <select [(ngModel)]="courseData.status" name="status">
           <option value="draft">Draft</option>
           <option value="published">Published</option>
-          <option value="archived">Archived</option>
+          <!-- <option value="archived">Archived</option> -->
         </select>
       </div>
 
@@ -68,5 +68,32 @@
         {{ isEditMode ? 'Update Course' : 'Add Course' }}
       </button>
     </form>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="swirl-overlay" *ngIf="showSuccessModal" (click)="closeModal()">
+  <div class="swirl-modal" (click)="$event.stopPropagation()">
+    <div class="swirl-icon-ring success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h3 class="swirl-title">{{ swirlMessage }}</h3>
+    <button type="button" class="swirl-btn" (click)="closeModal()">OK</button>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="swirl-overlay" *ngIf="showErrorModal" (click)="closeErrorModal()">
+  <div class="swirl-modal" (click)="$event.stopPropagation()">
+    <div class="swirl-icon-ring error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </div>
+    <h3 class="swirl-title">{{ swirlMessage }}</h3>
+    <button type="button" class="swirl-btn" (click)="closeErrorModal()">OK</button>
   </div>
 </div>

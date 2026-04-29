@@ -20,6 +20,11 @@ export class CourseContentsComponent implements OnInit {
 
   selectedFile: File | null = null;
 
+   // NEW
+  showSuccessModal = false;
+  showErrorModal = false;
+  swirlMessage = '';
+
   // contentData: any = {
   //   title: '',
   //   type: 'video',
@@ -28,7 +33,7 @@ export class CourseContentsComponent implements OnInit {
   //   position: 1
   // };
 
-  // add new today
+
  contentData: any = {
     title: '',
     type: 'video',
@@ -47,6 +52,28 @@ export class CourseContentsComponent implements OnInit {
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadContents();
   }
+
+
+  // NEW
+  showSwirl(message: string, isError = false) {
+    this.swirlMessage = message;
+    if (isError) {
+      this.showErrorModal = true;
+    } else {
+      this.showSuccessModal = true;
+    }
+  }
+
+  // NEW
+  closeModal() {
+    this.showSuccessModal = false;
+  }
+
+  // NEW
+  closeErrorModal() {
+    this.showErrorModal = false;
+  }
+
 
   // ================= LOAD =================
   loadContents(): void {
@@ -157,12 +184,14 @@ export class CourseContentsComponent implements OnInit {
     const hasPdfFile = !!this.selectedFile;
 
     if (!title) {
-      alert('Title is required');
+      // alert('Title is required');
+       this.showSwirl('Title is required', true);
       return;
     }
 
     if (!hasVideoUrl && !hasPdfFile) {
-      alert('Please add video URL or select PDF file');
+      // alert('Please add video URL or select PDF file');
+      this.showSwirl('Please add video URL or select PDF file', true);
       return;
     }
 
@@ -183,7 +212,8 @@ export class CourseContentsComponent implements OnInit {
     );
 
     if (existingContent && !this.isEditMode) {
-      alert('This position is already used.');
+      // alert('This position is already used.');
+       this.showSwirl('This position is already used', true);
       return;
     }
 
@@ -191,11 +221,14 @@ export class CourseContentsComponent implements OnInit {
     if (this.isEditMode && this.editContentId !== null) {
       this.teacherService.updateCourseContent(this.editContentId, formData).subscribe({
         next: () => {
-          alert('Updated successfully');
+          // alert('Updated successfully');
+          this.showSwirl('Updated successfully');
           this.resetForm();
           this.loadContents();
         },
-        error: () => alert('Update failed')
+        error: () => 
+          // alert('Update failed')
+            this.showSwirl('Update failed', true)
       });
       return;
     }
@@ -203,11 +236,14 @@ export class CourseContentsComponent implements OnInit {
     // ADD
     this.teacherService.addCourseContents(this.courseId, formData).subscribe({
       next: () => {
-        alert('Added successfully');
+        // alert('Added successfully');
+         this.showSwirl('Added successfully');
         this.resetForm();
         this.loadContents();
       },
-      error: () => alert('Add failed')
+      error: () => 
+        // alert('Add failed')
+      this.showSwirl('Add failed', true)
     });
   }
 
@@ -263,7 +299,8 @@ export class CourseContentsComponent implements OnInit {
   }
 
   if (idsToDelete.length === 0) {
-    alert('No content found to delete');
+    // alert('No content found to delete');
+      this.showSwirl('No content found to delete', true);
     return;
   }
 
@@ -276,7 +313,8 @@ export class CourseContentsComponent implements OnInit {
         completed++;
 
         if (completed === idsToDelete.length && !hasError) {
-          alert('Deleted successfully');
+          // alert('Deleted successfully');
+          this.showSwirl('Deleted successfully');
           this.loadContents();
         }
       },
@@ -284,7 +322,8 @@ export class CourseContentsComponent implements OnInit {
         console.error('Delete content error:', err);
         if (!hasError) {
           hasError = true;
-          alert('Delete failed');
+          // alert('Delete failed');
+            this.showSwirl('Delete failed', true);
         }
       }
     });
@@ -317,7 +356,8 @@ export class CourseContentsComponent implements OnInit {
     })
     .catch((err) => {
       console.error('Open PDF error:', err);
-      alert('PDF open failed');
+      // alert('PDF open failed');
+      this.showSwirl('PDF open failed', true);
     });
   }
 

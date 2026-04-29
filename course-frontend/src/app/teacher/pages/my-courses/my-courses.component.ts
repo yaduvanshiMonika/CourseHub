@@ -14,6 +14,11 @@ export class MyCoursesComponent implements OnInit {
   courses: any[] = [];
   isLoading: boolean = false;
 
+  // NEW
+  showSuccessModal = false;
+  showErrorModal = false;
+  swirlMessage = '';
+
   constructor(
     private teacherService: TeacherService,
     private router: Router,
@@ -30,6 +35,28 @@ export class MyCoursesComponent implements OnInit {
       this.loadCourses();   // 🔥 auto refresh when coming back
     });
 }
+
+ // NEW
+  showSwirl(message: string, isError = false) {
+    this.swirlMessage = message;
+    if (isError) {
+      this.showErrorModal = true;
+    } else {
+      this.showSuccessModal = true;
+    }
+  }
+
+  // NEW
+  closeModal() {
+    this.showSuccessModal = false;
+  }
+
+  // NEW
+  closeErrorModal() {
+    this.showErrorModal = false;
+  }
+
+
 
    loadCourses(): void {
     this.isLoading = true;
@@ -78,11 +105,28 @@ export class MyCoursesComponent implements OnInit {
   }
 
   
-  deleteCourse(courseId: number) {
-  this.teacherService.deleteCourse(courseId).subscribe(() => {
-    alert('Deleted');
-    this.loadCourses();   //  auto refresh
-  });
-}
+//   deleteCourse(courseId: number) {
+//   this.teacherService.deleteCourse(courseId).subscribe(() => {
+//     // alert('Deleted');
+//      this.showSwirl('Course deleted successfully');
+//     this.loadCourses();   //  auto refresh
+    
+//   });
+// }
   
-}
+// }
+
+deleteCourse(courseId: number) {
+    this.teacherService.deleteCourse(courseId).subscribe({
+      next: () => {
+        this.showSwirl('Course deleted successfully');
+        this.loadCourses();
+      },
+      error: (err) => {
+        console.error('Delete course error:', err);
+        this.showSwirl('Course delete failed', true);
+      }
+    });
+  }
+
+} 

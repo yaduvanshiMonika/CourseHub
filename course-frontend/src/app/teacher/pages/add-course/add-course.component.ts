@@ -11,6 +11,13 @@ export class AddCourseComponent implements OnInit {
   isEditMode: boolean = false;
   editCourseId: number | null = null;
 
+
+    // NEW
+  showSuccessModal = false;
+  showErrorModal = false;
+  swirlMessage = '';
+
+
   courseData: any = {
     title: '',
     category: '',
@@ -145,18 +152,44 @@ export class AddCourseComponent implements OnInit {
 //   }
 // }
 
+
+  // NEW
+  showSwirl(message: string, isError = false) {
+    this.swirlMessage = message;
+    if (isError) {
+      this.showErrorModal = true;
+    } else {
+      this.showSuccessModal = true;
+    }
+  }
+
+  // NEW
+  closeModal() {
+    this.showSuccessModal = false;
+    this.router.navigate(['/teacher/my-courses']);
+  }
+
+  // NEW
+  closeErrorModal() {
+    this.showErrorModal = false;
+  }
+
+
+
 submitCourse(): void {
 
   // 🔥 EDIT MODE
   if (this.isEditMode && this.editCourseId) {
     this.teacherService.updateCourse(this.editCourseId, this.courseData).subscribe({
       next: () => {
-        alert('Course updated successfully');
-        this.router.navigate(['/teacher/my-courses']);
+        // alert('Course updated successfully');
+        this.showSwirl('Course updated successfully');
+        // this.router.navigate(['/teacher/my-courses']);
       },
       error: (err) => {
         console.error('Update course error:', err);
-        alert('Course update failed');
+        // alert('Course update failed');
+        this.showSwirl('Course update failed', true);
       }
     });
     return; // 🔥 important
@@ -175,12 +208,14 @@ submitCourse(): void {
 
     this.teacherService.uploadCourseWithPdf(formData).subscribe({
       next: () => {
-        alert('Course added with PDF upload');
-        this.router.navigate(['/teacher/my-courses']);
+        // alert('Course added with PDF upload');
+         this.showSwirl('Course added with PDF upload');
+        // this.router.navigate(['/teacher/my-courses']);
       },
       error: (err) => {
         console.error('Upload course error:', err);
-        alert('Course upload failed');
+        // alert('Course upload failed');
+         this.showSwirl('Course upload failed', true);
       }
     });
 
@@ -188,12 +223,14 @@ submitCourse(): void {
     // 👉 Normal add (no file)
     this.teacherService.addCourse(this.courseData).subscribe({
       next: () => {
-        alert('Course added successfully');
-        this.router.navigate(['/teacher/my-courses']);
+        // alert('Course added successfully');
+        this.showSwirl('Course added successfully');
+        // this.router.navigate(['/teacher/my-courses']);
       },
       error: (err) => {
         console.error('Add course error:', err);
-        alert('Course add failed');
+        // alert('Course add failed');
+        this.showSwirl('Course add failed', true);
       }
     });
   }

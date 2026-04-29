@@ -75,7 +75,8 @@ const addCourse = async (req, res) => {
     const finalInstructor =
       instructor && instructor.trim() ? instructor.trim() : req.user.name;
 
-    const allowedStatus = ["draft", "published", "archived"];
+    // const allowedStatus = ["draft", "published", "archived"];
+    const allowedStatus = ["draft", "published"];
     const finalStatus = allowedStatus.includes(status) ? status : "draft";
 
     const allowedLevels = ["beginner", "intermediate", "advanced"];
@@ -301,7 +302,14 @@ const updateCourse = async (req, res) => {
     const finalCategory = category !== undefined ? category.trim() : course.category;
     const finalInstructor = instructor !== undefined ? instructor.trim() : course.instructor;
     const finalPrice = price !== undefined ? Number(price) : course.price;
-    const finalStatus = status !== undefined ? status : course.status;
+    // const finalStatus = status !== undefined ? status : course.status;
+    const allowedStatus = ["draft", "published"];
+
+const finalStatus =
+  status !== undefined && allowedStatus.includes(status)
+    ? status
+    : course.status;
+    
     const finalValidityDays =
       validity_days !== undefined ? (Number(validity_days) === 180 ? 180 : 90) : course.validity_days;
     const finalVideoLink = video_link !== undefined ? video_link : course.video_link;
