@@ -29,7 +29,8 @@ export class AdminDashboardComponent implements OnInit {
   showDropdown: boolean = false;
 
   formData = {
-    id: null, fullName: '', email: '', expertise: '',
+    id: null, fullName: '', email: '', expertise: '',password: '',  // ✅ ADD THIS
+
     title: '', category: 'Development', instructor: '',
     user: '', course: '', amount: '', status: 'published',
     validity_days: 90,
@@ -256,73 +257,180 @@ export class AdminDashboardComponent implements OnInit {
   // ─────────────────────────────────────────
   // SAVE
   // ─────────────────────────────────────────
-  onSave(): void {
-    if (this.activeTab === 'teachers') {
-      if (!this.formData.fullName || !this.formData.email || !this.formData.expertise) {
-        this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Name, Email and Expertise are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
-      }
-      const p = { id: this.formData.id, name: this.formData.fullName, email: this.formData.email, expertise: this.formData.expertise };
-      if (this.formData.id) {
-        this.adminService.updateTeacher(p).subscribe({ next: () => this.handleSuccess('Teacher Updated ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
-      } else {
-        this.adminService.saveTeacher(p).subscribe({ next: () => this.handleSuccess('Teacher Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
-      }
-    } else if (this.activeTab === 'users') {
-      if (!this.formData.fullName || !this.formData.email) {
-        this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Name and Email are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
-      }
-      const p = { id: this.formData.id, name: this.formData.fullName, email: this.formData.email, role: 'student' };
-      if (this.formData.id) {
-        this.adminService.updateStudent(p).subscribe({ next: () => this.handleSuccess('Student Updated ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
-      } else {
-        this.adminService.saveStudent(p).subscribe({ next: () => this.handleSuccess('Student Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
-      }
-    } else if (this.activeTab === 'courses') {
-      if (!this.formData.title || !this.formData.category || !this.formData.teacher_id) {
-        this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Title, Category and Teacher are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
-      }
+//   onSave(): void {
+//     if (this.activeTab === 'teachers') {
+//       // if (!this.formData.fullName || !this.formData.email || !this.formData.expertise || (!this.formData.id && !this.formData.password)) {
+//       //   this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Name, Email and Expertise are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+//       // }
+//       if (!this.formData.fullName || !this.formData.email || !this.formData.expertise || (!this.formData.id && !this.formData.password)) {
+//   this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Name, Email, Expertise and Password are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+// }
+//       const p = { id: this.formData.id, name: this.formData.fullName, email: this.formData.email, expertise: this.formData.expertise ,  password: this.formData.password };
+//       if (this.formData.id) {
+//         this.adminService.updateTeacher(p).subscribe({ next: () => this.handleSuccess('Teacher Updated ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
+//       } else {
+//         this.adminService.saveTeacher(p).subscribe({ next: () => this.handleSuccess('Teacher Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
+//       }
+//     } else if (this.activeTab === 'users') {
+//       if (!this.formData.fullName || !this.formData.email) {
+//         this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Name and Email are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+//       }
+//       const p = { id: this.formData.id, name: this.formData.fullName, email: this.formData.email, role: 'student' };
+//       if (this.formData.id) {
+//         this.adminService.updateStudent(p).subscribe({ next: () => this.handleSuccess('Student Updated ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
+//       } else {
+//         this.adminService.saveStudent(p).subscribe({ next: () => this.handleSuccess('Student Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
+//       }
+//     } else if (this.activeTab === 'courses') {
+//       if (!this.formData.title || !this.formData.category || !this.formData.teacher_id) {
+//         this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Title, Category and Teacher are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+//       }
 
-      const teacher = this.teachersList.find(t => Number(t.id) === Number(this.formData.teacher_id));
-      const instructorName = teacher?.name || this.formData.instructor || '';
+//       const teacher = this.teachersList.find(t => Number(t.id) === Number(this.formData.teacher_id));
+//       const instructorName = teacher?.name || this.formData.instructor || '';
 
-      if (this.formData.id) {
-        this.adminService.updateCourse({
-          id: this.formData.id,
-          title: this.formData.title,
-          category: this.formData.category,
-          instructor: instructorName,
-          teacher_id: Number(this.formData.teacher_id),
-          price: Number(this.formData.price || 0),
-          status: this.formData.status,
-          validity_days: this.formData.validity_days,
-          level: this.formData.level,
-          description: this.formData.description,
-          video_link: this.formData.video_link,
-          pdf_link: this.formData.pdf_link,
-          thumbnailUrl: this.formData.thumbnailUrl
-        })
-          .subscribe({ next: () => this.handleSuccess('Course Updated ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
-      } else {
-        this.adminService.uploadCourse(
-          this.formData.title,
-          this.formData.category,
-          instructorName,
-          this.selectedFile,
-          this.formData.status,
-          this.formData.validity_days,
-          Number(this.formData.teacher_id),
-          Number(this.formData.price || 0),
-          this.formData.level,
-          this.formData.description,
-          this.formData.video_link,
-          this.formData.pdf_link,
-          this.formData.thumbnailUrl
-        )
-          .subscribe({ next: () => this.handleSuccess('Course Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
-      }
+//       if (this.formData.id) {
+//         this.adminService.updateCourse({
+//           id: this.formData.id,
+//           title: this.formData.title,
+//           category: this.formData.category,
+//           instructor: instructorName,
+//           teacher_id: Number(this.formData.teacher_id),
+//           price: Number(this.formData.price || 0),
+//           status: this.formData.status,
+//           validity_days: this.formData.validity_days,
+//           level: this.formData.level,
+//           description: this.formData.description,
+//           video_link: this.formData.video_link,
+//           pdf_link: this.formData.pdf_link,
+//           thumbnailUrl: this.formData.thumbnailUrl
+//         })
+//           .subscribe({ next: () => this.handleSuccess('Course Updated ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
+//       } else {
+//         this.adminService.uploadCourse(
+//           this.formData.title,
+//           this.formData.category,
+//           instructorName,
+//           this.selectedFile,
+//           this.formData.status,
+//           this.formData.validity_days,
+//           Number(this.formData.teacher_id),
+//           Number(this.formData.price || 0),
+//           this.formData.level,
+//           this.formData.description,
+//           this.formData.video_link,
+//           this.formData.pdf_link,
+//           this.formData.thumbnailUrl
+//         )
+//           .subscribe({ next: () => this.handleSuccess('Course Added ✅'), error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' }) });
+//       }
+//     }
+//   }
+
+onSave(): void {
+  if (this.activeTab === 'teachers') {
+    const isEditing = !!this.formData.id;
+
+    if (!this.formData.fullName) {
+      this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Name is required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+    }
+    if (!this.formData.email) {
+      this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Email is required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+    }
+    if (!this.formData.expertise) {
+      this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Expertise is required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+    }
+    if (!isEditing && !this.formData.password) {
+      this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Password is required for new teachers.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+    }
+
+    const p: any = {
+      id: this.formData.id,
+      name: this.formData.fullName,
+      email: this.formData.email,
+        password: this.formData.password ,
+      expertise: this.formData.expertise
+    };
+    
+
+    if (isEditing) {
+      this.adminService.updateTeacher(p).subscribe({
+        next: () => this.handleSuccess('Teacher Updated ✅'),
+        error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' })
+      });
+    } else {
+      this.adminService.saveTeacher(p).subscribe({
+        next: () => this.handleSuccess('Teacher Added ✅'),
+        error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' })
+      });
+    }
+
+  } else if (this.activeTab === 'users') {
+    if (!this.formData.fullName || !this.formData.email) {
+      this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Name and Email are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+    }
+    const p = { id: this.formData.id, name: this.formData.fullName, email: this.formData.email, role: 'student' };
+    if (this.formData.id) {
+      this.adminService.updateStudent(p).subscribe({
+        next: () => this.handleSuccess('Student Updated ✅'),
+        error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' })
+      });
+    } else {
+      this.adminService.saveStudent(p).subscribe({
+        next: () => this.handleSuccess('Student Added ✅'),
+        error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' })
+      });
+    }
+
+  } else if (this.activeTab === 'courses') {
+    if (!this.formData.title || !this.formData.category || !this.formData.teacher_id) {
+      this.glassSwal({ icon: '⚠️', title: 'Missing Fields', text: 'Title, Category and Teacher are required.', color: 'rgba(255,170,50,0.95)', confirm: 'OK' }); return;
+    }
+
+    const teacher = this.teachersList.find(t => Number(t.id) === Number(this.formData.teacher_id));
+    const instructorName = teacher?.name || this.formData.instructor || '';
+
+    if (this.formData.id) {
+      this.adminService.updateCourse({
+        id: this.formData.id,
+        title: this.formData.title,
+        category: this.formData.category,
+        instructor: instructorName,
+        teacher_id: Number(this.formData.teacher_id),
+        price: Number(this.formData.price || 0),
+        status: this.formData.status,
+        validity_days: this.formData.validity_days,
+        level: this.formData.level,
+        description: this.formData.description,
+        video_link: this.formData.video_link,
+        pdf_link: this.formData.pdf_link,
+        thumbnailUrl: this.formData.thumbnailUrl
+      }).subscribe({
+        next: () => this.handleSuccess('Course Updated ✅'),
+        error: (e: any) => this.glassSwal({ icon: '❌', title: 'Update Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' })
+      });
+    } else {
+      this.adminService.uploadCourse(
+        this.formData.title,
+        this.formData.category,
+        instructorName,
+        this.selectedFile,
+        this.formData.status,
+        this.formData.validity_days,
+        Number(this.formData.teacher_id),
+        Number(this.formData.price || 0),
+        this.formData.level,
+        this.formData.description,
+        this.formData.video_link,
+        this.formData.pdf_link,
+        this.formData.thumbnailUrl
+      ).subscribe({
+        next: () => this.handleSuccess('Course Added ✅'),
+        error: (e: any) => this.glassSwal({ icon: '❌', title: 'Save Failed', text: e.message, color: 'rgba(255,100,100,0.95)', confirm: 'OK' })
+      });
     }
   }
-
+}
   private handleSuccess(type: string): void {
     this.glassSwal({ icon: '✅', title: type, text: 'Changes saved successfully.', color: 'rgba(68,221,136,0.95)', timer: 2000 });
     this.closeModal(); this.loadData(); this.resetForm();
@@ -359,29 +467,30 @@ export class AdminDashboardComponent implements OnInit {
   // MODAL
   // ─────────────────────────────────────────
   editItem(item: any): void {
-    this.formData = {
-      id: item.id,
-      fullName: item.name || '',
-      email: item.email || '',
-      expertise: item.expertise || '',
-      title: item.title || '',
-      category: item.category || 'Development',
-      instructor: item.instructor || '',
-      teacher_id: item.teacher_id ?? null,
-      user: item.user || '',
-      course: item.course || '',
-      amount: item.amount || '',
-      status: item.status || 'published',
-      validity_days: item.validity_days || 90,
-      price: item.price || 0,
-      level: item.level || 'beginner',
-      description: item.description || '',
-      video_link: item.video_link || '',
-      pdf_link: item.pdf_link || '',
-      thumbnailUrl: item.thumbnail_url || item.thumbnailUrl || ''
-    };
-    this.showModal = true;
-  }
+  this.formData = {
+    id: item.id,
+    fullName: item.name || '',
+    email: item.email || '',
+    expertise: item.expertise || '',
+    password: '',              // ✅ ADD THIS
+    title: item.title || '',
+    category: item.category || 'Development',
+    instructor: item.instructor || '',
+    teacher_id: item.teacher_id ?? null,
+    user: item.user || '',
+    course: item.course || '',
+    amount: item.amount || '',
+    status: item.status || 'published',
+    validity_days: item.validity_days || 90,
+    price: item.price || 0,
+    level: item.level || 'beginner',
+    description: item.description || '',
+    video_link: item.video_link || '',
+    pdf_link: item.pdf_link || '',
+    thumbnailUrl: item.thumbnail_url || item.thumbnailUrl || ''
+  };
+  this.showModal = true;
+}
   openAddModal() { this.resetForm(); this.showModal = true; }
   closeModal()   { this.showModal = false; this.resetForm(); }
   resetForm() {
@@ -390,6 +499,7 @@ export class AdminDashboardComponent implements OnInit {
       fullName: '',
       email: '',
       expertise: '',
+         password: '',  // ✅ ADD THIS
       title: '',
       category: 'Development',
       instructor: '',

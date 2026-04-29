@@ -245,26 +245,9 @@ router.put('/courses/:id', authorize(['admin']), async (req, res) => {
 // ==============================
 // ✏️ UPDATE TEACHER
 // ==============================
-router.put('/teachers/:id', authorize(['admin']), async (req, res) => {
-    const { name, email, expertise } = req.body;
 
-    // ✅ validation
-    if (!name || !email || !expertise) {
-        return res.status(400).json({ message: "All fields required ❌" });
-    }
 
-    try {
-        await db.query(
-            "UPDATE users SET name=?, email=?, expertise=? WHERE id=?",
-            [name, email, expertise, req.params.id]
-        );
 
-        res.json({ message: "Teacher updated successfully ✅" });
-    } catch (err) {
-        console.error("Update error:", err);
-        res.status(500).json({ message: "Update failed ❌", error: err.message });
-    }
-});
 // ==============================
 // 🗑️ DELETE TEACHER
 
@@ -330,32 +313,64 @@ router.delete('/users/:id', authorize(['admin']), async (req, res) => {
 // ==============================
 // ➕ ADD TEACHER
 // ==============================
-router.post('/teachers', authorize(['admin']), async (req, res) => {
-    const { name, email, expertise } = req.body;
 
-    // 1. Basic validation
-    if (!name || !email || !expertise) {
-        return res.status(400).json({ message: "All fields are required ❌" });
+
+
+// commented anshika 
+// ==============================
+// ➕ ADD TEACHER
+// ==============================
+router.post('/teachers', authorize(['admin']), async (req, res) => {
+    const { name, email, expertise, password } = req.body;
+
+    if (!name || !email || !expertise || !password) {
+        return res.status(400).json({ message: "All fields including password are required ❌" });
     }
 
     try {
-        // 2. Insert into the users table with the role 'teacher'
-        // Note: You might want to add a default password or a password field here
-        const sql = "INSERT INTO users (name, email, expertise, role) VALUES (?, ?, ?, 'teacher')";
-        
-        await db.query(sql, [name, email, expertise]);
+        // ✅ Store plain text password (no bcrypt)
+        const sql = "INSERT INTO users (name, email, expertise, role, password) VALUES (?, ?, ?, 'teacher', ?)";
+        await db.query(sql, [name, email, expertise, password]);
 
         res.status(201).json({ message: "Teacher added successfully! ✅" });
     } catch (err) {
         console.error("ADD TEACHER ERROR:", err);
-        
-        // Handle duplicate email error
         if (err.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ message: "Email already exists ❌" });
         }
-        
         res.status(500).json({ message: "Database Error", error: err.message });
     }
+});
+
+// ==============================
+// ✏️ UPDATE TEACHER
+// ==============================
+router.put('/teachers/:id', authorize(['admin']), async (req, res) => {
+  const { name, email, expertise, password } = req.body;
+
+  if (!name || !email || !expertise) {
+    return res.status(400).json({ message: "All fields required ❌" });
+  }
+
+  try {
+    if (password && password.trim()) {
+      // ✅ Update with new plain text password
+      await db.query(
+        "UPDATE users SET name=?, email=?, expertise=?, password=? WHERE id=?",
+        [name, email, expertise, password, req.params.id]
+      );
+    } else {
+      // ✅ Update without touching password
+      await db.query(
+        "UPDATE users SET name=?, email=?, expertise=? WHERE id=?",
+        [name, email, expertise, req.params.id]
+      );
+    }
+    res.json({ message: "Teacher updated successfully ✅" });
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ message: "Update failed ❌", error: err.message });
+  }
 });
 // ==============================
 // ➕ ADD STUDENT (The missing route)

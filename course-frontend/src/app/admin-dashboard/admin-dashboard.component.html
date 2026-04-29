@@ -973,7 +973,7 @@
       <div class="modal-body" [class.modal-body-courses]="activeTab === 'courses'">
         <div class="adm-field" *ngIf="activeTab === 'teachers' || activeTab === 'users'">
           <label>Full name</label>
-          <input type="text" [(ngModel)]="formData.fullName" name="fullName" placeholder="e.g. Rahul Sharma" required>
+         <input type="text" [(ngModel)]="formData.fullName" name="fullName" placeholder="e.g. Rahul Sharma" required>
         </div>
         <div class="adm-field" *ngIf="activeTab === 'teachers' || activeTab === 'users'">
           <label>Email</label>
@@ -983,6 +983,18 @@
           <label>Expertise</label>
           <input type="text" [(ngModel)]="formData.expertise" name="expertise" placeholder="e.g. Java, UI/UX" required>
         </div>
+        <!-- ✅ ADD THIS BELOW EXPERTISE -->
+<!-- <div class="adm-field" *ngIf="activeTab === 'teachers' && !formData.id">
+  <label>Password *</label>
+  <input type="password" [(ngModel)]="formData.password" name="password" placeholder="Set login password" required>
+</div> -->
+
+
+<div class="adm-field" *ngIf="activeTab === 'teachers'">
+  <label>{{ formData.id ? 'New Password (leave blank to keep current)' : 'Password *' }}</label>
+  <input type="password" [(ngModel)]="formData.password" name="teacherPassword" 
+         [placeholder]="formData.id ? 'Leave blank to keep current password' : 'Set login password'">
+</div>
 
         <!-- COURSES -->
         <div class="adm-field" *ngIf="activeTab === 'courses'">

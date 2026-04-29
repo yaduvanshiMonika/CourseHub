@@ -2451,3 +2451,10 @@ tr:hover td {
   gap: 8px;
   margin-top: 12px;
 }
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #1e1e2e inset !important; /* match your input background */
+  -webkit-text-fill-color: #fff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
