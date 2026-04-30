@@ -1,0 +1,122 @@
+CREATE DATABASE IF NOT EXISTS course_db;
+USE course_db;
+
+-- USERS
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(100),
+  password VARCHAR(255),
+  role VARCHAR(20),
+  expertise VARCHAR(255),
+  phone VARCHAR(20),
+  bio TEXT,
+  photo TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- COURSES
+CREATE TABLE IF NOT EXISTS courses (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(200),
+  category VARCHAR(100),
+  instructor VARCHAR(100),
+  thumbnail_url TEXT,
+  thumbnail_file VARCHAR(255),
+  teacher_id INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  price DECIMAL(10,2),
+  status ENUM('draft','published','archived'),
+  level ENUM('beginner','intermediate','advanced'),
+  description TEXT,
+  video_link TEXT,
+  pdf_link TEXT,
+  validity_days INT
+);
+
+-- COURSE CONTENTS
+CREATE TABLE IF NOT EXISTS course_contents (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  course_id INT,
+  title VARCHAR(255),
+  type ENUM('video','pdf'),
+  url VARCHAR(500),
+  duration INT,
+  position INT,
+  pdf_name VARCHAR(255),
+  pdf_data LONGBLOB
+);
+
+-- ENROLLMENTS
+CREATE TABLE IF NOT EXISTS enrollments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  course_id INT,
+  enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('pending','active','cancelled')
+);
+
+-- PAYMENTS
+CREATE TABLE IF NOT EXISTS payments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  course_id INT,
+  amount DECIMAL(10,2),
+  status ENUM('pending','success','failed'),
+  payment_date TIMESTAMP,
+  subscription_end DATE,
+  enrollment_id INT,
+  transaction_id VARCHAR(255),
+  razorpay_order_id VARCHAR(255),
+  razorpay_signature VARCHAR(255)
+);
+
+-- REVIEWS
+CREATE TABLE IF NOT EXISTS reviews (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  course_id INT,
+  rating INT,
+  comment TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CONTACTS
+CREATE TABLE IF NOT EXISTS contacts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(100),
+  message TEXT,
+  reply TEXT,
+  status ENUM('pending','replied'),
+  created_at TIMESTAMP,
+  phone VARCHAR(20),
+  subject VARCHAR(255),
+  replied_at DATETIME
+);
+
+-- ADMIN LOGS
+CREATE TABLE IF NOT EXISTS admin_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  action TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- COURSE PROGRESS
+CREATE TABLE IF NOT EXISTS course_progress (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  course_id INT,
+  completed_items INT,
+  progress_percentage FLOAT
+);
+
+--  IMPORTANT TABLE 
+CREATE TABLE IF NOT EXISTS student_lesson_completions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  course_id INT NOT NULL,
+  content_id INT NOT NULL,
+  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_completion (user_id, course_id, content_id)
+);
