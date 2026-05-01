@@ -7,7 +7,7 @@
 // })
 // export class CourseService {
 
-//   private apiUrl = 'http://localhost:5000/api'; // ✅ FIXED
+//   private apiUrl = 'https://coursehub-production-b7b9.up.railway.app/api'; // ✅ FIXED
 
 //   constructor(private http: HttpClient) {}
 
@@ -91,7 +91,7 @@ import { throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class CourseService {
-  private apiUrl = 'http://localhost:5000/api';
+  private apiUrl = 'https://coursehub-production-b7b9.up.railway.app/api';
 
   constructor(private http: HttpClient) {}
 

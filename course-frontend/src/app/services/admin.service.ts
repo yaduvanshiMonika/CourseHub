@@ -7,7 +7,7 @@
 // })
 // export class AdminService {
   
-//   private apiUrl = 'http://localhost:5000/api/admin'; 
+//   private apiUrl = 'https://coursehub-production-b7b9.up.railway.app/api/admin'; 
 
 //   constructor(private http: HttpClient) { }
 
@@ -65,7 +65,7 @@
 //   const token = localStorage.getItem('token'); // 🔥 GET TOKEN
 
 //   return this.http.post(
-//     'http://localhost:5000/api/admin/courses/add',
+//     'https://coursehub-production-b7b9.up.railway.app/api/admin/courses/add',
 //     formData,
 //     {
 //       headers: {
@@ -170,7 +170,7 @@ import { Observable } from 'rxjs';
 })
 export class AdminService {
 
-  private apiUrl = 'http://localhost:5000/api/admin';
+  private apiUrl = 'https://coursehub-production-b7b9.up.railway.app/api/admin';
 
   constructor(private http: HttpClient) {}
 
@@ -366,6 +366,6 @@ export class AdminService {
     );
   }
   getPayments() {
-  return this.http.get<any[]>('http://localhost:5000/api/payments');
+  return this.http.get<any[]>('https://coursehub-production-b7b9.up.railway.app/api/payments');
 }
 }

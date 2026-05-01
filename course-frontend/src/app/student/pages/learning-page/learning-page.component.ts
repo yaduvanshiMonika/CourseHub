@@ -116,7 +116,7 @@ export class LearningPageComponent implements OnInit {
       return url;
     }
 
-    return `http://localhost:5000${url}`;
+    return `https://coursehub-production-b7b9.up.railway.app${url}`;
   }
 
   private convertToEmbedUrl(url: string): string {

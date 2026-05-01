@@ -96,7 +96,7 @@ export class AdminDashboardComponent implements OnInit {
   // ─────────────────────────────────────────
   // API BASE
   // ─────────────────────────────────────────
-  private apiBase = 'http://localhost:5000/api';
+  private apiBase = 'https://coursehub-production-b7b9.up.railway.app/api';
 
   // ─────────────────────────────────────────
   // CONTACTS STATE
@@ -768,7 +768,7 @@ onSave(): void {
 
   downloadAdminContentPdf(pdfId: number): void {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    fetch(`http://localhost:5000/api/admin/content/pdf/${pdfId}`, {
+    fetch(`https://coursehub-production-b7b9.up.railway.app/api/admin/content/pdf/${pdfId}`, {
       headers: { Authorization: `Bearer ${token || ''}` }
     })
       .then(async (res) => {

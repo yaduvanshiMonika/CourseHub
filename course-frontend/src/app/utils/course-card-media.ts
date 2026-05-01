@@ -1,5 +1,5 @@
 /** Matches backend `thumbnailHelper` API origin usage in this app. */
-const API_ORIGIN = 'http://localhost:5000';
+const API_ORIGIN = 'https://coursehub-production-b7b9.up.railway.app';
 
 export function extractYouTubeVideoId(url: string): string | null {
   if (!url || typeof url !== 'string') return null;

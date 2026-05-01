@@ -14,7 +14,7 @@ export class ReceiptComponent implements OnInit {
 
   ngOnInit(): void {
     this.enrollmentId = Number(this.route.snapshot.paramMap.get('id'));
-    this.receiptUrl = `http://localhost:5000/api/payments/receipt/${this.enrollmentId}`;
+    this.receiptUrl = `https://coursehub-production-b7b9.up.railway.app/api/payments/receipt/${this.enrollmentId}`;
   }
 
   downloadReceipt(): void {

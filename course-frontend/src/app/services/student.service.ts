@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class StudentService {
-  private baseUrl = 'http://localhost:5000/api/student';
+  private baseUrl = 'https://coursehub-production-b7b9.up.railway.app/api/student';
 
   constructor(private http: HttpClient) {}
 

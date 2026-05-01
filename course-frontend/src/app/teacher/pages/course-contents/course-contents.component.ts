@@ -333,7 +333,7 @@ export class CourseContentsComponent implements OnInit {
   downloadPdfFile(pdfId: number, fileName: string) {
   const token = sessionStorage.getItem('token') || localStorage.getItem('token');
 
-  fetch(`http://localhost:5000/api/teacher/content/pdf/${pdfId}`, {
+  fetch(`https://coursehub-production-b7b9.up.railway.app/api/teacher/content/pdf/${pdfId}`, {
     headers: {
       Authorization: `Bearer ${token || ''}`
     }

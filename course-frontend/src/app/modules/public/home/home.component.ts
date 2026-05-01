@@ -220,7 +220,7 @@ submitContact() {
     : undefined;
 
   this.http
-    .post('http://localhost:5000/api/contacts', this.contact, { headers })
+    .post('https://coursehub-production-b7b9.up.railway.app/api/contacts', this.contact, { headers })
     .subscribe({
       next: () => {
         alert("Message sent successfully ✅");
@@ -286,7 +286,7 @@ submitWebinar() {
   };
 
   this.isSubmittingWebinar = true;
-  this.http.post('http://localhost:5000/api/webinar', payload).subscribe({
+  this.http.post('https://coursehub-production-b7b9.up.railway.app/api/webinar', payload).subscribe({
     next: () => {
       this.isSubmittingWebinar = false;
       alert('✅ Request sent! We will contact you within 24 hours.');
