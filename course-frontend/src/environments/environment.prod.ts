@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  apiUrl: 'https://coursehub-production-b7b9.up.railway.app'
 };
